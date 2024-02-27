@@ -5,10 +5,10 @@ import androidx.room.PrimaryKey
 //设备更换记录
 @Entity
 data class EquReplaceRec(
-    @PrimaryKey val uid: Int,
+    @PrimaryKey(autoGenerate = true)
+    var id: Int = 0,
     // 编号
-    var dyNumber: String,
-
+    var dyNumber: String?=null,
     // 序号
     var serialNumber: String? = null,
 

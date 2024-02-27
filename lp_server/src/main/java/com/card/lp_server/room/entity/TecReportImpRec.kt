@@ -6,9 +6,10 @@ import androidx.room.PrimaryKey
 //技术通报
 @Entity
 data class TecReportImpRec(
-    @PrimaryKey val uid: Int,
+    @PrimaryKey(autoGenerate = true)
+    var id: Int = 0,
     // 编号
-    var dyNumber: String,
+    var dyNumber: String?=null,
     // 完成日期
     var finishDate: String? = null,
 

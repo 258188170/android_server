@@ -5,9 +5,10 @@ import androidx.room.PrimaryKey
 //交接记录
 @Entity
 data class HandoverRec(
-    @PrimaryKey val uid: Int,
+    @PrimaryKey(autoGenerate = true)
+    var id: Int = 0,
     // 编号
-    var dyNumber: String,
+    var dyNumber: String?=null,
     // 移交日期
     var hdDate: String? = null,
 

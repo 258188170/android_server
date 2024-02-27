@@ -4,9 +4,10 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 @Entity
 data class ImportantNote(
-    @PrimaryKey val uid: Int,
+    @PrimaryKey(autoGenerate = true)
+    var id: Int = 0,
     // 编号
-    var dyNumber: String,
+    var dyNumber: String?=null,
     // 记事日期
     var noteDate: String? = null,
 

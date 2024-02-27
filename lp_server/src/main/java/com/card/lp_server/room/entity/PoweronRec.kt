@@ -5,9 +5,10 @@ import androidx.room.PrimaryKey
 //通电时间
 @Entity
 data class PoweronRec(
-    @PrimaryKey val uid: Int,
+    @PrimaryKey(autoGenerate = true)
+    var id: Int = 0,
     // 编号
-    var dyNumber: String,
+    var dyNumber: String?=null,
     var pwDate: String? = null,
 
     // 地面通电时间 HH:mm。

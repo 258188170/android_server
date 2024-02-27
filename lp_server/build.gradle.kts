@@ -44,6 +44,7 @@ dependencies {
     implementation("com.google.android.material:material:1.9.0")
     api("org.nanohttpd:nanohttpd:2.3.1")
     api("com.blankj:utilcodex:1.31.1")
+    implementation("androidx.lifecycle:lifecycle-process:2.7.0")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

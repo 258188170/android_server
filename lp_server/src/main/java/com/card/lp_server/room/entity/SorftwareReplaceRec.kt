@@ -6,10 +6,10 @@ import androidx.room.PrimaryKey
 //软件变更记录
 @Entity
 data class SorftwareReplaceRec(
-
-    @PrimaryKey val uid: Int,
+    @PrimaryKey(autoGenerate = true)
+    var id: Int = 0,
     // 编号
-    var dyNumber: String,
+    var dyNumber: String?=null,
     var serialNumber: String? = null,
     var sftName: String? = null,
     var replaceDate: String? = null,

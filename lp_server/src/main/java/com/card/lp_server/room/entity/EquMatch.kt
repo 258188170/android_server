@@ -5,9 +5,10 @@ import androidx.room.PrimaryKey
 // 设备装备配套表
 @Entity
 data class EquMatch(
-    @PrimaryKey val uid: Int,
+    @PrimaryKey(autoGenerate = true)
+    var id: Int = 0,
     // 编号
-    var dyNumber: String,
+    var dyNumber: String?=null,
     // 编号
     var serialNumber: String? = "ZB-A",
     // 名称

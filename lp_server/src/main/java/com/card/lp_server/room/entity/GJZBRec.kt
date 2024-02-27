@@ -5,9 +5,10 @@ import androidx.room.PrimaryKey
 //GJ值班记录
 @Entity
 data class GJZBRec(
-    @PrimaryKey val uid: Int,
+    @PrimaryKey(autoGenerate = true)
+    var id: Int = 0,
     // 编号
-    var dyNumber: String,
+    var dyNumber: String?=null,
     // 开始日期
     var startDate: String? = null,
 

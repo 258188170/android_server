@@ -5,9 +5,13 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import com.blankj.utilcode.util.LogUtils
-import com.card.lp_server.ServerSingleton
+import com.card.lp_server.appContainer
+import com.card.lp_server.appContext
+import com.card.lp_server.room.entity.RecordBean
 import com.card.lp_server.server.LServer
 import fi.iki.elonen.NanoHTTPD
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import rxhttp.toFlow
 import rxhttp.wrapper.param.RxHttp
 
@@ -16,14 +20,12 @@ class MainActivity : AppCompatActivity() {
         private const val TAG = "MainActivity"
     }
 
-    private val lServer by lazy {
-        LServer(9988)
-    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        ServerSingleton.init(this)
+        appContext
     }
 
     fun testHttp(view: View) {
@@ -37,13 +39,13 @@ class MainActivity : AppCompatActivity() {
 
         }
 
-
     }
 
+    fun testroom(view: View) {
 
-    override fun onDestroy() {
-        super.onDestroy()
-        lServer.closeAllConnections()
+        lifecycleScope.launch(Dispatchers.IO) {
+            appContainer.recordRepository.insertItem(RecordBean())
+        }
     }
 
 }

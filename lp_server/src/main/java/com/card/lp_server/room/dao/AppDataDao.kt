@@ -23,8 +23,8 @@ interface RecordBeanDao:BaseDao<RecordBean> {
     @Query("SELECT * FROM recordbean")
      fun getAll(): List<RecordBean>
 
-    @Query("SELECT * FROM recordbean WHERE uid IN (:userIds)")
-     fun loadAllByIds(userIds: IntArray): List<RecordBean>
+    @Query("SELECT * FROM recordbean WHERE id IN (:ids)")
+     fun loadAllByIds(ids: IntArray): List<RecordBean>
 
     @Query("SELECT * FROM recordbean WHERE dyNumber = (:dyNumber)")
      fun loadById(dyNumber: String): RecordBean?

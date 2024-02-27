@@ -3,6 +3,7 @@ package com.card.lp_server.room.entity
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Entity
+import androidx.room.Ignore
 import androidx.room.Insert
 import androidx.room.PrimaryKey
 import androidx.room.Query
@@ -12,9 +13,10 @@ import androidx.room.Query
  */
 @Entity()
 data class RecordBean(
-    @PrimaryKey val uid: Int,
+    @PrimaryKey(autoGenerate = true)
+    var id: Int = 0,
     // 编号
-    var dyNumber: String,
+    var dyNumber: String? = "",
 
     // 型号
     var dyvModel: String? = "PL-12",
@@ -23,7 +25,7 @@ data class RecordBean(
     var qualityLevel: String? = "新品",
 
     // 验收日期
-    var acpetDate: String? = null,
+    var acpetDate: String? = "",
 
     // 验收方代表
     var acptRepersent: String? = "李代表",
@@ -32,13 +34,13 @@ data class RecordBean(
     var cntCmpy: String? = "A单位",
 
     // 交付日期
-    var delDate: String? = null,
+    var delDate: String? = "",
 
     // 验收证明熟属性j
-    var wtyPeriod: Int? = null,
+    var wtyPeriod: Int? = 0,
 
     // 质保起算日期
-    var wtyStartDate: String? = null,
+    var wtyStartDate: String? = "",
 
     // 质保期
     var zbq: String? = "10",
@@ -47,7 +49,7 @@ data class RecordBean(
     var stgLife: Int? = 30,
 
     // 存储寿命起算日期
-    var stgStartDate: String? = null,
+    var stgStartDate: String? = "",
 
     // 首翻期
     var fristRpPeriod: Int? = 10,
@@ -92,7 +94,6 @@ data class RecordBean(
     var specExplan: String? = "无",
 
 
-
     // 该版本是否和标签同步
     // 1:同步 0：未同步，具体怎么控制，还要想一下
     var syncToLabel: Int? = null,
@@ -102,50 +103,48 @@ data class RecordBean(
     // 文件版本号
     var fileVersion: String? = null,
     // 最后一次写入时间
-    var lastWriteTime: Long = System.currentTimeMillis(),
+    var lastWriteTime: Long? = System.currentTimeMillis(),
     //-------------------以下是经常变更的---------------------
     // 设备配套表
-
+    @Ignore
     var equMatches: List<EquMatch>? = null,
-
+    @Ignore
     // 设备更换记录
     var equReplaceRecs: List<EquReplaceRec>? = null,
-
+    @Ignore
     // 软件变更记录
     var sftReplaceRecs: List<SorftwareReplaceRec>? = null,
-
+    @Ignore
     // 交接记录
     var hdRecs: List<HandoverRec>? = null,
-
+    @Ignore
     // GJ值班记录
     var gjzbRecs: List<GJZBRec>? = null,
-
+    @Ignore
     // 通电时间
     var poweronRecs: List<PoweronRec>? = null,
-
+    @Ignore
     // 维护记录
     var mtRecs: List<MtRec>? = null,
-
+    @Ignore
     // 加汽油记录
     var gasUpRecs: List<GasUpRec>? = null,
-
     // --------------码加注记录、技术通报实施记录\修理记录、重要记事
     // 码说明
     var codeDesc: String? = null,
-
+    @Ignore
     // 码记录
     var codeUpRecs: List<CodeUpRec>? = null,
-
-
+    @Ignore
     // 技术通报
     var tecReportImpRecs: List<TecReportImpRec>? = null,
-
+    @Ignore
     // 修理记录
     var repairRecs: List<RepairRec>? = null,
-
+    @Ignore
     // 重要记事
-    var importantNotes: List<ImportantNote>? = null
-)
+    var importantNotes: List<ImportantNote>? = null,
 
+    )
 
 
