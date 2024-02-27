@@ -26,7 +26,7 @@ public class XferFrame {
     private Object dir = null;
     private String cmdDir = null;
     private Integer size = null;
-    private String crc = null;
+     String crc = null;
     private final List<Byte> data = new ArrayList<Byte>();
     CRC16 crc16 = CRC16.getInstance();
 

@@ -63,7 +63,7 @@ public class FpsService {
         List<Future<List<Byte>>> futures = new ArrayList<>();
 
         while (length > 0) {
-            Callable<List<Byte>> task = () -> LPE370Hid.getInstance().readFpsReport();
+            Callable<List<Byte>> task = () -> LPE370Hid.Companion.getInstance().readFpsReport();
             Future<List<Byte>> future = executorService.submit(task);
             futures.add(future);
             length -= future.get().size();
@@ -164,7 +164,7 @@ public class FpsService {
         //2.拆分数据
         List<byte[]> dataList = ByteUtil.splitData(data, s, l);
         //并行写入数据块
-        dataList.parallelStream().forEach(detail -> LPE370Hid.getInstance().writeReport(ByteUtil.byteToList(detail)));
+        dataList.parallelStream().forEach(detail -> LPE370Hid.Companion.getInstance().writeReport(ByteUtil.byteToList(detail)));
         return true;
     }
 
