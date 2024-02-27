@@ -1,9 +1,9 @@
 package com.card.lp_server.room
 
-import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.card.lp_server.mAppContext
 import com.card.lp_server.room.dao.CodeUpRecDao
 import com.card.lp_server.room.dao.EquMatchDao
 import com.card.lp_server.room.dao.EquReplaceRecDao
@@ -56,6 +56,7 @@ abstract class AppDataDatabase : RoomDatabase() {
     abstract fun recordBeanDao(): RecordBeanDao
     abstract fun codeUpRecDao(): CodeUpRecDao
     abstract fun equReplaceRecDao(): EquReplaceRecDao
+    abstract fun equMatchDao(): EquMatchDao
     abstract fun gasUpRecDao(): GasUpRecDao
     abstract fun gJZBRecDao(): GJZBRecDao
     abstract fun handoverRecDao(): HandoverRecDao
@@ -69,10 +70,10 @@ abstract class AppDataDatabase : RoomDatabase() {
     companion object {
         @Volatile
         private var Instance: AppDataDatabase? = null
-        fun getDatabase(context: Context): AppDataDatabase {
+        fun getDatabase(): AppDataDatabase {
             // if the Instance is not null, return it, otherwise create a new database instance.
             return Instance ?: synchronized(this) {
-                Room.databaseBuilder(context, AppDataDatabase::class.java, "lp_server_database")
+                Room.databaseBuilder(mAppContext, AppDataDatabase::class.java, "lp_server_database")
                     .build()
                     .also { Instance = it }
             }

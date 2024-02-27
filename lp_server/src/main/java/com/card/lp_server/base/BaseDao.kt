@@ -1,9 +1,8 @@
-package com.card.lp_server.room.dao
+package com.card.lp_server.base
 
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
-import androidx.room.Query
 import androidx.room.Update
 
 interface BaseDao<T> {

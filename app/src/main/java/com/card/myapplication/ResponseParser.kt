@@ -1,6 +1,6 @@
 package com.card.myapplication
 
-import com.card.lp_server.model.BaseResponse
+import com.card.lp_server.base.BaseResponse
 import rxhttp.wrapper.annotation.Parser
 import rxhttp.wrapper.exception.ParseException
 import rxhttp.wrapper.parse.TypeParser

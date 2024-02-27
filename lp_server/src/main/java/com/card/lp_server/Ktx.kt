@@ -10,14 +10,15 @@ import com.card.lp_server.room.AppContainer
 import com.card.lp_server.room.AppDataContainer
 import com.card.lp_server.server.LServer
 
-val appContext: Application by lazy { Ktx.app }
+val mAppContext: Application by lazy { Ktx.app }
 
-val appContainer: AppContainer by lazy {
+val mAppContainer: AppContainer by lazy {
     AppDataContainer()
 }
-val lpServer by lazy {
-    LServer(9988)
+val mLpServer by lazy {
+    LServer()
 }
+
 class Ktx : ContentProvider() {
     companion object {
         lateinit var app: Application
@@ -32,7 +33,7 @@ class Ktx : ContentProvider() {
     private fun install(application: Application) {
         app = application
         try {
-            lpServer.start()
+            mLpServer.start()
             LogUtils.i("启动成功!")
         } catch (e: Exception) {
             LogUtils.e("启动失败-->>${e.message}")

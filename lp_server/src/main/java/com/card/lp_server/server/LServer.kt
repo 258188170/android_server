@@ -13,7 +13,7 @@ import javax.net.ssl.SSLSocketFactory
 import javax.net.ssl.TrustManager
 import javax.net.ssl.X509TrustManager
 
-class LServer(port: Int) : NanoHTTPD(port) {
+class LServer(port: Int = 9988) : NanoHTTPD(port) {
 //    init {
 //        makeSecure(createSSLServerSocketFactory(), null)
 //    }

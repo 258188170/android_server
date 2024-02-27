@@ -1,8 +1,6 @@
-package com.card.lp_server.room.repository
+package com.card.lp_server.base
 
-import com.card.lp_server.room.entity.RecordBean
-
-interface BaseRepository<T> {
+interface IBaseRepository<T> {
 
     suspend fun getAll(): List<T>
 
@@ -10,6 +8,7 @@ interface BaseRepository<T> {
      * Retrieve an item from the given data source that matches with the [dyNumber].
      */
     suspend fun loadByNumber(dyNumber: String): T?
+    suspend fun loadById(id: Int): T?
 
     /**
      * Insert item in the data source

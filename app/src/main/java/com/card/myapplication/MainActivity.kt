@@ -1,15 +1,13 @@
 package com.card.myapplication
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import com.blankj.utilcode.util.LogUtils
-import com.card.lp_server.appContainer
-import com.card.lp_server.appContext
+import com.card.lp_server.mAppContainer
+import com.card.lp_server.mAppContext
 import com.card.lp_server.room.entity.RecordBean
-import com.card.lp_server.server.LServer
-import fi.iki.elonen.NanoHTTPD
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import rxhttp.toFlow
@@ -25,7 +23,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        appContext
+        mAppContext
     }
 
     fun testHttp(view: View) {
@@ -42,9 +40,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun testroom(view: View) {
-
         lifecycleScope.launch(Dispatchers.IO) {
-            appContainer.recordRepository.insertItem(RecordBean())
+            mAppContainer.recordRepository.insertItem(RecordBean())
 
         }
     }
