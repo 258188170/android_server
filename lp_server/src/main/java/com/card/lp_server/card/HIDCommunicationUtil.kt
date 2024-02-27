@@ -12,7 +12,6 @@ import android.hardware.usb.UsbDeviceConnection
 import android.hardware.usb.UsbEndpoint
 import android.hardware.usb.UsbManager
 import android.util.Log
-import com.blankj.utilcode.BuildConfig
 import com.blankj.utilcode.util.AppUtils
 import com.blankj.utilcode.util.LogUtils
 import com.card.lp_server.mAppContext
@@ -33,7 +32,8 @@ class HIDCommunicationUtil private constructor() {
     private var usbDevice: UsbDevice? = null
     private var usbConnection: UsbDeviceConnection? = null
     private var connectionListener: ConnectionListener = DefaultConnectionListener()
-
+    private var vendorId: Int = 6790
+    private var productId: Int = 58409
     init {
         registerUSBReceiver()
     }
@@ -47,7 +47,9 @@ class HIDCommunicationUtil private constructor() {
         connectionListener = listener
     }
 
-    fun findAndOpenHIDDevice() {
+    fun findAndOpenHIDDevice(vendorId: Int = 6790, productId: Int = 58409) {
+        this.vendorId = vendorId
+        this.productId = productId
         usbDevice = findHIDDevice()
         if (usbDevice != null) {
             if (usbManager.hasPermission(usbDevice)) {
@@ -63,7 +65,7 @@ class HIDCommunicationUtil private constructor() {
     private fun findHIDDevice(): UsbDevice? {
         val deviceList: HashMap<String, UsbDevice> = usbManager.deviceList
         for (device in deviceList.values) {
-            if (device.vendorId == 6790 && device.productId == 58409) {
+            if (device.vendorId == vendorId && device.productId == productId) {
                 return device
             }
         }
@@ -160,7 +162,11 @@ class HIDCommunicationUtil private constructor() {
 
 
     private fun ensureHIDConnection(): Boolean {
-        if (usbConnection == null || !usbConnection!!.claimInterface(usbDevice?.getInterface(0), true)) {
+        if (usbConnection == null || !usbConnection!!.claimInterface(
+                usbDevice?.getInterface(0),
+                true
+            )
+        ) {
             // If connection is not open or interface claim fails, attempt to reconnect
             return reconnectToHID()
         }
@@ -169,9 +175,10 @@ class HIDCommunicationUtil private constructor() {
 
     private fun reconnectToHID(): Boolean {
         closeUSBConnection()
-        findAndOpenHIDDevice()
+        findAndOpenHIDDevice(vendorId,productId)
         return usbConnection != null
     }
+
     companion object {
         val ACTION_USB_PERMISSION: String = "${AppUtils.getAppPackageName()}.USB_PERMISSION"
         private const val TIMEOUT = 1000 // 5 seconds timeout
