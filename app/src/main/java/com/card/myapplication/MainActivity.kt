@@ -45,6 +45,7 @@ class MainActivity : AppCompatActivity() {
 
         lifecycleScope.launch(Dispatchers.IO) {
             appContainer.recordRepository.insertItem(RecordBean())
+
         }
     }
 
