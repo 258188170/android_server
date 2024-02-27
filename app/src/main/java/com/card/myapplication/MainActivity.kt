@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.blankj.utilcode.util.LogUtils
+import com.card.lp_server.card.HIDCommunicationUtil
 import com.card.lp_server.mAppContainer
 import com.card.lp_server.mAppContext
 import com.card.lp_server.room.entity.RecordBean
@@ -41,9 +42,13 @@ class MainActivity : AppCompatActivity() {
 
     fun testroom(view: View) {
         lifecycleScope.launch(Dispatchers.IO) {
-            mAppContainer.recordRepository.insertItem(RecordBean())
+            mAppContainer.mRecordRepository.insertItem(RecordBean())
 
         }
+    }
+
+    fun testcon(view: View) {
+        HIDCommunicationUtil.instance.findAndOpenHIDDevice()
     }
 
 }
