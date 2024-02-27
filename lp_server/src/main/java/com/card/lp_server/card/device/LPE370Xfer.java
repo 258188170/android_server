@@ -149,7 +149,7 @@ public class LPE370Xfer {
         while (nakCount < MAX_ERROR_RED_SIZE) {
             // 从数据帧中获取数据
             byte[] data = frame.readDataFrame(this.num);
-            byte[] head = frame.getHead();
+            byte[] head = frame.head;
             // 检查获取到的数据是否非空 4个0也是哈
             if (ByteUtil.isNonEmpty(data) && checkCrc(data, frame)) {
                 //如果获取到有效数据，则将数据设置到命令对象中 这个重新实现哈
@@ -188,7 +188,7 @@ public class LPE370Xfer {
     private boolean checkCrc(byte[] data, XferFrame frame) {
         crc16.calculateCRC(data);
         String createCrc = ByteUtil.bytesToHex(crc16.getCrcH(), crc16.getCrcL());
-        return createCrc.equals(frame.getCrc());
+        return createCrc.equals(frame.crc);
     }
 
 

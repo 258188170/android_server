@@ -2,7 +2,6 @@ package com.card.lp_server.card.device;
 
 import android.os.Build;
 
-import com.card.lp_server.card.HIDCommunicationUtil;
 import com.card.lp_server.card.device.util.ByteUtil;
 import com.card.lp_server.card.device.util.CRC16;
 import com.card.lp_server.card.device.util.CmdUtil;
@@ -13,13 +12,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 
 public class XferFrame {
 
@@ -169,7 +162,7 @@ public class XferFrame {
         //System.out.println("命令:" + data.size());
         //System.out.print("命令:");
         //ByteUtil.printByteArrayAsHex(ByteUtil.listToByte(data));
-        LPE370Hid.getInstance().write(data);
+        LPE370Hid.Companion.getInstance().write(data);
         return true;
     }
 
@@ -236,7 +229,7 @@ public class XferFrame {
         this.data.addAll(byteList);
         this.data.addAll(Collections.nCopies(CmdUtil.TYPE_DSIZE.get(type) - data.length, (byte) 0));
         //System.out.println("写数据:" + bytesToHexString(this.data));
-        LPE370Hid.getInstance().write(this.data);
+        LPE370Hid.Companion.getInstance().write(this.data);
         return true;
     }
 
@@ -331,7 +324,7 @@ public class XferFrame {
         CompletableFuture<Boolean> future = null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             future = CompletableFuture.supplyAsync(() -> {
-                LPE370Hid.getInstance().read(data, dataLen);
+                LPE370Hid.Companion.getInstance().read(data, dataLen);
                 return true; // 读取成功时返回true
             });
         }
@@ -362,7 +355,7 @@ public class XferFrame {
         //System.out.print("ack send start:");
         //ByteUtil.printByteArrayAsHex(head);
         byte[] rspFrame = new byte[]{rspValue.byteValue(), head[1], head[2], head[3], head[4], 0x00, 0x00, 0x03};
-        boolean isSuccess = LPE370Hid.getInstance().write(ByteUtil.byteToList(rspFrame));
+        boolean isSuccess = LPE370Hid.Companion.getInstance().write(ByteUtil.byteToList(rspFrame));
         //System.out.print("ack send end:"+isSuccess);
         return isSuccess;
     }
@@ -376,7 +369,7 @@ public class XferFrame {
     public Talk recvRspFrame() {
         for (int retry = 0; retry < maxRetries; retry++) {
             data.clear();
-            Future<Boolean> future = executorService.submit(() -> LPE370Hid.getInstance().read(data, 8));
+            Future<Boolean> future = executorService.submit(() -> LPE370Hid.Companion.getInstance().read(data, 8));
             try {
                 Boolean result = future.get(timeoutInSeconds, TimeUnit.SECONDS);
 //                ByteUtil.printByteArrayAsHex(ByteUtil.listToByte(data));
