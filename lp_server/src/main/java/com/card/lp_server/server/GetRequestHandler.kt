@@ -14,10 +14,12 @@ import fi.iki.elonen.NanoHTTPD
 
 class GetRequestHandler : RequestHandlerStrategy {
     private val handlers = mapOf(
-        "/api/list_file" to ::handleListFile,
+        "/api/list_files" to ::handleListFile,
         "/api/read_file" to ::handleReadFile,
         "/api/delete_file" to ::handleDeleteFile,
         "/api/clear_tag" to ::handleClearTag,
+        "/api/tag_infos" to ::handleTagInfo,
+        "/api/tag_version" to ::handleTagVersion,
     )
 
     override fun handleRequest(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response? {
@@ -30,6 +32,19 @@ class GetRequestHandler : RequestHandlerStrategy {
         return handleResponse {
             val listFiles = LonbestCard.getInstance().listFiles()
             stringConvertToList(listFiles)
+        }
+    }
+
+    private fun handleTagVersion(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
+        return handleResponse {
+            LonbestCard.getInstance().version
+        }
+    }
+
+    private fun handleTagInfo(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
+        return handleResponse {
+            val info = LonbestCard.getInstance().info
+            ConvertUtils.bytes2String(info)
         }
     }
 
