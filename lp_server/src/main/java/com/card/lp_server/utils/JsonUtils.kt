@@ -17,7 +17,7 @@ fun <T > T.responseJsonStringSuccess(
 
 fun <T> T.responseJsonStringFail(
     msg: String? = "",
-    code: Int = 404,
+    code: Int = 500,
 ): NanoHTTPD.Response {
     val response = BaseResponse(code, this, msg)
     LogUtils.d("responseJsonString: $response")
