@@ -19,9 +19,12 @@ class PostRequestHandler : RequestHandlerStrategy {
     }
 
     private val handlers = mapOf(
+        //common
         "/api/update_display" to ::handleUpdateDisplay,
         "/api/common_write" to ::handleCommonWrite,
         "/api/find_file_size" to ::handleFindFileSize,
+        //dy
+        "/api/add_base_info" to ::handleAddBaseInfo,
 
         // Add more URL mappings as needed
     )
@@ -33,6 +36,9 @@ class PostRequestHandler : RequestHandlerStrategy {
     }
 
     private fun handleHome(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
+        return NanoHTTPD.newFixedLengthResponse("<html><body style=\"font-size:40px;\">这里是首页</body></html>")
+    }private fun handleAddBaseInfo(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
+
         return NanoHTTPD.newFixedLengthResponse("<html><body style=\"font-size:40px;\">这里是首页</body></html>")
     }
 

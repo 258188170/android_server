@@ -20,6 +20,7 @@ class GetRequestHandler : RequestHandlerStrategy {
         "/api/clear_tag" to ::handleClearTag,
         "/api/tag_infos" to ::handleTagInfo,
         "/api/tag_version" to ::handleTagVersion,
+
     )
 
     override fun handleRequest(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response? {
