@@ -6,8 +6,20 @@ import com.card.lp_server.base.BaseResponse
 import fi.iki.elonen.NanoHTTPD
 
 
- fun <T : Any> responseJsonString(code: Int, data: T, msg: String): NanoHTTPD.Response {
-    val response = BaseResponse<T>(code, data, msg)
+fun <T > T.responseJsonStringSuccess(
+    code: Int = 200,
+    msg: String = "success"
+): NanoHTTPD.Response {
+    val response = BaseResponse(code, this, msg)
+    LogUtils.d("responseJsonString: $response")
+    return NanoHTTPD.newFixedLengthResponse(GsonUtils.toJson(response))//返回对应的响应体Response
+}
+
+fun <T> T.responseJsonStringFail(
+    msg: String? = "",
+    code: Int = 404,
+): NanoHTTPD.Response {
+    val response = BaseResponse(code, this, msg)
     LogUtils.d("responseJsonString: $response")
     return NanoHTTPD.newFixedLengthResponse(GsonUtils.toJson(response))//返回对应的响应体Response
 }

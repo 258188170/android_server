@@ -15,6 +15,7 @@ import android.util.Log
 import com.blankj.utilcode.util.AppUtils
 import com.blankj.utilcode.util.LogUtils
 import com.card.lp_server.mAppContext
+import com.card.lp_server.utils.logD
 
 
 class HIDCommunicationUtil private constructor() {
@@ -34,6 +35,8 @@ class HIDCommunicationUtil private constructor() {
     private var connectionListener: ConnectionListener = DefaultConnectionListener()
     private var vendorId: Int = 6790
     private var productId: Int = 58409
+    private var isConnect: Boolean = false
+
     init {
         registerUSBReceiver()
     }
@@ -47,19 +50,20 @@ class HIDCommunicationUtil private constructor() {
         connectionListener = listener
     }
 
-    fun findAndOpenHIDDevice(vendorId: Int = 6790, productId: Int = 58409) {
+    fun findAndOpenHIDDevice(vendorId: Int = 6790, productId: Int = 58409): Boolean {
         this.vendorId = vendorId
         this.productId = productId
         usbDevice = findHIDDevice()
         if (usbDevice != null) {
             if (usbManager.hasPermission(usbDevice)) {
-                openUSBConnection(usbDevice!!)
+                return openUSBConnection(usbDevice!!)
             } else {
                 requestUSBPermission(usbDevice!!)
             }
         } else {
             connectionListener.onConnectionFailed("HID device not found")
         }
+        return false
     }
 
     private fun findHIDDevice(): UsbDevice? {
@@ -95,16 +99,20 @@ class HIDCommunicationUtil private constructor() {
         }
     }
 
-    private fun openUSBConnection(usbDevice: UsbDevice) {
+    private fun openUSBConnection(usbDevice: UsbDevice): Boolean {
         usbConnection = usbManager.openDevice(usbDevice)
         if (usbConnection != null) {
+            isConnect = true
             connectionListener.onConnectedSuccess()
         } else {
+            isConnect = false
             connectionListener.onConnectionFailed("Failed to open USB connection")
         }
+        return isConnect
     }
 
     fun closeUSBConnection() {
+        isConnect = false
         if (usbConnection != null) {
             usbConnection?.close()
             connectionListener.onDisconnected()
@@ -147,19 +155,6 @@ class HIDCommunicationUtil private constructor() {
         return false
     }
 
-    private fun findHIDEndpoint(direction: Int): UsbEndpoint? {
-        if (usbDevice != null) {
-            val endpointCount = usbDevice?.getInterface(0)?.endpointCount ?: 0
-            for (i in 0 until endpointCount) {
-                val endpoint = usbDevice?.getInterface(0)?.getEndpoint(i)
-                if (endpoint?.direction == direction && endpoint.type == UsbConstants.USB_ENDPOINT_XFER_BULK) {
-                    return endpoint
-                }
-            }
-        }
-        return null
-    }
-
 
     private fun ensureHIDConnection(): Boolean {
         if (usbConnection == null || !usbConnection!!.claimInterface(
@@ -175,15 +170,35 @@ class HIDCommunicationUtil private constructor() {
 
     private fun reconnectToHID(): Boolean {
         closeUSBConnection()
-        findAndOpenHIDDevice(vendorId,productId)
-        return usbConnection != null
+        val findAndOpenHIDDevice = findAndOpenHIDDevice(vendorId, productId)
+        return usbConnection != null && findAndOpenHIDDevice
+    }
+
+    private fun findHIDEndpoint(direction: Int): UsbEndpoint? {
+        if (usbDevice != null) {
+            val endpointCount = usbDevice?.getInterface(0)?.endpointCount ?: 0
+            for (i in 0 until endpointCount) {
+                val endpoint = usbDevice?.getInterface(0)?.getEndpoint(i)
+                if (
+                    endpoint?.type == UsbConstants.USB_ENDPOINT_XFER_INT &&
+                    endpoint.direction == direction
+                ) {
+                    logD(endpoint)
+                    return endpoint
+                }
+            }
+        }
+        isConnect = false
+        return null
     }
 
     companion object {
         val ACTION_USB_PERMISSION: String = "${AppUtils.getAppPackageName()}.USB_PERMISSION"
         private const val TIMEOUT = 1000 // 5 seconds timeout
         val instance: HIDCommunicationUtil by lazy {
-            HIDCommunicationUtil()
+            val hidCommunicationUtil = HIDCommunicationUtil()
+            hidCommunicationUtil.findAndOpenHIDDevice()
+            hidCommunicationUtil
         }
     }
 }

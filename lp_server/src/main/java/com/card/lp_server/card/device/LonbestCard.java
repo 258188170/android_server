@@ -55,7 +55,6 @@ public class LonbestCard extends VendorDevice {
     public Pair<Boolean, String> connect() {
         Pair<Boolean, String> connect = HidUtils.connect(6790, 58409);
         isOpen = connect.getFirst();
-//        isOpen = HidUtils.connect(23112, 22352);
         return connect;
     }
 
@@ -73,9 +72,7 @@ public class LonbestCard extends VendorDevice {
      */
 //    @DevService("<p>读文件，可传递1个参数</p><ul><li>文件名</li></ul><b>返回读取到的数据</b>")
     public byte[] readFile(String name) throws Exception {
-        if (!HidUtils.isConnet) {
-            throw new LonbestException("请检查连接");
-        }
+
         if (name == null) {
             return null;
         }
@@ -131,9 +128,7 @@ public class LonbestCard extends VendorDevice {
 
     //    @DevService("<p>根据文件名称写入文件内容。</p><ul><li>文件名称</li><li>文件内容</li></ul><b>成功则返回True；否则返回False。</b>")
     public boolean writeFile(String name, byte[] data) throws Exception {
-        if (!HidUtils.isConnet) {
-            throw new LonbestException("请检查连接");
-        }
+
         if (name == null || null == data || data.length == 0) {
             return false;
         }
@@ -231,9 +226,7 @@ public class LonbestCard extends VendorDevice {
         if (bytes == null || bytes.length == 0) {
             return false;
         }
-        if (!HidUtils.isConnet) {
-            throw new LonbestException("请检查连接");
-        }
+
 
         Log.d(TAG, "updateEInk: isOpen " + isOpen);
         if (!getConnectStatus()) return false;
@@ -264,9 +257,6 @@ public class LonbestCard extends VendorDevice {
 
     //    @DevService("<p>读取前次通信执行结果信息。</p><b>执行结果是否成功，则返回True；否则返回False。</b>")
     public boolean getStatus(String cmdName) throws ExecutionException, InterruptedException {
-        if (!HidUtils.isConnet) {
-            throw new LonbestException("请检查连接");
-        }
         // 检查输入参数是否为空
         if (cmdName.isEmpty()) {
             return false;
@@ -294,9 +284,6 @@ public class LonbestCard extends VendorDevice {
 
 
     private boolean getConnectStatus() throws ExecutionException, InterruptedException {
-        if (!HidUtils.isConnet) {
-            throw new LonbestException("请检查连接");
-        }
         // 创建一个命令对象
         Command command = CmdUtil.cmdMap.get("CMD_CONNECT");
         final String currentYear = DateTimeUtils.getCurrentYear();
@@ -329,9 +316,7 @@ public class LonbestCard extends VendorDevice {
     }
 
     public String getVersion() throws ExecutionException, InterruptedException {
-        if (!HidUtils.isConnet) {
-            throw new LonbestException("请检查连接");
-        }
+
         // 创建一个命令对象
         Command command = CmdUtil.cmdMap.get("CMD_GET_VERSION");
         assert command != null;
@@ -357,9 +342,7 @@ public class LonbestCard extends VendorDevice {
      */
 //    @DevService("<p>根据文件名称删除文件内容。如果文件成功删除，则返回True；否则返回False。<ul><li>文件名称</li></ul></p><b>成功返回True；否则返回False。</b>")
     public boolean deleteFile(String name) throws ExecutionException, InterruptedException {
-        if (!HidUtils.isConnet) {
-            throw new LonbestException("请检查连接");
-        }
+
         if (name == null) {
             return false;
         }
@@ -392,9 +375,7 @@ public class LonbestCard extends VendorDevice {
      */
 //    @DevService("<p>根据文件名称追加文件内容。</p><ul><li>文件名称</li><li>文件内容</li></ul><b>成功则返回True；否则返回False。</b>")
     public boolean appendFile(String name, byte[] data) throws ExecutionException, InterruptedException {
-        if (!HidUtils.isConnet) {
-            throw new LonbestException("请检查连接");
-        }
+
         if (name == null || null == data || data.length == 0) {
             return false;
         }
@@ -424,11 +405,10 @@ public class LonbestCard extends VendorDevice {
 
     //    @DevService("<p>获取所有文件名，所有文件名以字符串形式连续返回，以字符串结束标志（'\\0'）识别每个文件名。</p><b>所有文件名字节数组</b>")
     public byte[] listFiles() throws Exception {
-        if (!HidUtils.isConnet) {
-            throw new LonbestException("请检查连接");
-        }
+
         if (!getConnectStatus()) return null;
         Command fileCommand = CmdUtil.cmdMap.get("CMD_LIST_FILES");
+        assert fileCommand != null;
         fileCommand.clearBytes();
         short maxValue = Short.MAX_VALUE;
         fileCommand.setLength((int) maxValue);
@@ -480,9 +460,7 @@ public class LonbestCard extends VendorDevice {
      */
 //    @DevService("<p>​获取存储信息，包括文件总数、存储总容量、可用存储容量、碎片值和文件名总长度。</p><b>存储信息，包括文件总数、存储总容量、可用存储容量、碎片值和文件名总长度字节数组</b>")
     public byte[] getInfo() throws ExecutionException, InterruptedException {
-        if (!HidUtils.isConnet) {
-            throw new LonbestException("请检查连接");
-        }
+
         if (!getConnectStatus()) return null;
         Command infoCommand = CmdUtil.cmdMap.get("CMD_GET_INFO");
         assert infoCommand != null;
@@ -528,9 +506,7 @@ public class LonbestCard extends VendorDevice {
      * 升级
      */
     public boolean upgrade(byte[] data) throws Exception {
-        if (!HidUtils.isConnet) {
-            throw new LonbestException("请检查连接");
-        }
+
         Log.d(TAG, "updateVer: " + "开始执行写入升级文件 _SYS_FIRMWARE。");
         boolean sysFirmware = writeFile("_SYS_FIRMWARE", data);
         if (sysFirmware) {
