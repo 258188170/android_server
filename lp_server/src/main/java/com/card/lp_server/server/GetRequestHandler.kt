@@ -1,8 +1,11 @@
 package com.card.lp_server.server
 
 import com.blankj.utilcode.util.ConvertUtils
+import com.blankj.utilcode.util.GsonUtils
 import com.card.lp_server.card.device.LonbestCard
+import com.card.lp_server.room.entity.RecordBean
 import com.card.lp_server.utils.FILE_NAME
+import com.card.lp_server.utils.__BASE_INFO
 import com.card.lp_server.utils.convertBitmapToBinary
 import com.card.lp_server.utils.generateBitMapForLlFormat
 import com.card.lp_server.utils.getQueryParams
@@ -20,13 +23,21 @@ class GetRequestHandler : RequestHandlerStrategy {
         "/api/clear_tag" to ::handleClearTag,
         "/api/tag_infos" to ::handleTagInfo,
         "/api/tag_version" to ::handleTagVersion,
+        "/api/getBaseInfo" to ::handleBaseInfo,
 
-    )
+        )
 
     override fun handleRequest(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response? {
         val uri = session.uri
         val handler = handlers[uri]
         return handler?.invoke(session)
+    }
+
+    private fun handleBaseInfo(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
+        return handleResponse {
+            val readFile = LonbestCard.getInstance().readFile(__BASE_INFO)
+            String(readFile)
+        }
     }
 
     private fun handleListFile(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
@@ -53,8 +64,7 @@ class GetRequestHandler : RequestHandlerStrategy {
         val queryParams = session.getQueryParams()[FILE_NAME]?.first()
             ?: return responseJsonStringFail("参数[FILE_NAME]不能为空")
         return handleResponse {
-            val data = LonbestCard.getInstance().readFile(queryParams)
-            ConvertUtils.bytes2HexString(data)
+            LonbestCard.getInstance().readFile(queryParams)
         }
     }
 

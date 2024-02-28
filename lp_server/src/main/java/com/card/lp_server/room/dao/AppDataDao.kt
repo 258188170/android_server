@@ -28,13 +28,8 @@ interface RecordBeanDao : BaseDao<RecordBean> {
     fun loadAllByIds(ids: IntArray): List<RecordBean>
 
     @Query("SELECT * FROM recordbean WHERE dyNumber = (:dyNumber)")
-    fun loadById(dyNumber: String): RecordBean?
+    fun loadByNumber(dyNumber: String): RecordBean?
 
-    @Query(
-        "SELECT * FROM recordbean WHERE dyNumber LIKE :first AND " +
-                "dyvModel LIKE :last LIMIT 1"
-    )
-    fun findByName(first: String, last: String): RecordBean
 
     @Insert
     fun insertAll(list: List<RecordBean>)

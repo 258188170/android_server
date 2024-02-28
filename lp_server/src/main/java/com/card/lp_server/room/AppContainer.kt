@@ -1,5 +1,6 @@
 package com.card.lp_server.room
 
+import com.card.lp_server.room.repository.ICodeUpRecRepository
 import com.card.lp_server.room.repository.IEquMatchRepository
 import com.card.lp_server.room.repository.IEquReplaceRecRepository
 import com.card.lp_server.room.repository.IGJZBRecRepository
@@ -12,6 +13,7 @@ import com.card.lp_server.room.repository.IRepairRecRepository
 import com.card.lp_server.room.repository.ISorftwareReplaceRecRepository
 import com.card.lp_server.room.repository.ITecReportImpRecRepository
 import com.card.lp_server.room.repository.ImportantNoteRepository
+import com.card.lp_server.room.repository.impl.CodeUpRecRepositoryImpl
 import com.card.lp_server.room.repository.impl.EquMatchRepositoryImpl
 import com.card.lp_server.room.repository.impl.EquReplaceRecRepositoryImpl
 import com.card.lp_server.room.repository.impl.GJZBRecRepositoryImpl
@@ -38,6 +40,7 @@ interface AppContainer {
     val mRepairRecRepository: IRepairRecRepository
     val mSorftwareReplaceRecRepository: ISorftwareReplaceRecRepository
     val mTecReportImpRecRepository: ITecReportImpRecRepository
+    val mCodeUpRecRepository: ICodeUpRecRepository
 }
 
 /**
@@ -79,6 +82,9 @@ class AppDataContainer : AppContainer {
     }
     override val mTecReportImpRecRepository: ITecReportImpRecRepository by lazy {
         TecReportImpRecRepositoryImpl(AppDataDatabase.getDatabase().tecReportImpRecDao())
+    }
+    override val mCodeUpRecRepository: ICodeUpRecRepository by lazy {
+        CodeUpRecRepositoryImpl(AppDataDatabase.getDatabase().codeUpRecDao())
     }
 
 

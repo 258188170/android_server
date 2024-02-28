@@ -5,8 +5,11 @@ import com.blankj.utilcode.util.ConvertUtils
 import com.blankj.utilcode.util.GsonUtils
 import com.card.lp_server.card.device.LonbestCard
 import com.card.lp_server.mAppContainer
+import com.card.lp_server.room.entity.CodeUpRec
 import com.card.lp_server.room.entity.RecordBean
 import com.card.lp_server.room.entity.TagEntity
+import com.card.lp_server.utils.__BASE_INFO
+import com.card.lp_server.utils.__CODE_UP_REC
 import com.card.lp_server.utils.getPostParams
 import com.card.lp_server.utils.handleResponse
 import com.card.lp_server.utils.responseJsonStringFail
@@ -26,7 +29,8 @@ class PostRequestHandler : RequestHandlerStrategy {
         "/api/common_write" to ::handleCommonWrite,
         "/api/find_file_size" to ::handleFindFileSize,
         //dy
-        "/api/add_base_info" to ::handleAddBaseInfo,
+        "/api/addBaseInfo" to ::handleAddBaseInfo,
+        "/api/addCodeUpRec" to ::handleAddCodeUpRec,
 
         // Add more URL mappings as needed
     )
@@ -41,18 +45,47 @@ class PostRequestHandler : RequestHandlerStrategy {
         return NanoHTTPD.newFixedLengthResponse("<html><body style=\"font-size:40px;\">这里是首页</body></html>")
     }
 
+    private fun handleAddCodeUpRec(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
+        val postParams = session.getPostParams() ?: return responseJsonStringFail("参数不能为空!")
+        val fromJson = GsonUtils.fromJson(postParams, CodeUpRec::class.java)
+            ?: return responseJsonStringFail("参数不能为空!")
+        if (fromJson.dyNumber.isNullOrEmpty())
+            return responseJsonStringFail("dyNumber is not empty")
+        Log.d(TAG, "handleAddBaseInfo: $fromJson")
+        return handleResponse {
+            val writeFile =
+                LonbestCard.getInstance().writeFile(__CODE_UP_REC, postParams.toByteArray())
+            if (writeFile)
+                mAppContainer.mCodeUpRecRepository.insertItem(fromJson)
+            writeFile
+        }
+    }
+
     private fun handleAddBaseInfo(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
         val postParams = session.getPostParams() ?: return responseJsonStringFail("参数不能为空!")
         val fromJson = GsonUtils.fromJson(postParams, RecordBean::class.java)
             ?: return responseJsonStringFail("参数不能为空!")
+        if (fromJson.dyNumber.isNullOrEmpty())
+            return responseJsonStringFail("dyNumber is not empty")
         Log.d(TAG, "handleAddBaseInfo: $fromJson")
         return handleResponse {
             val writeFile =
-                LonbestCard.getInstance().writeFile("__base_info", postParams.toByteArray())
-            mAppContainer.mRecordRepository.insertItem(fromJson)
-
+                LonbestCard.getInstance().writeFile(__BASE_INFO, postParams.toByteArray())
+            if (writeFile){
+                val loadByNumber = mAppContainer.mRecordRepository.loadByNumber(fromJson.dyNumber!!)
+                if (loadByNumber?.dyNumber.isNullOrEmpty()){
+                    mAppContainer.mRecordRepository.insertItem(fromJson)
+                }else{
+                    if (loadByNumber!!.dyNumber == fromJson.dyNumber){
+                        mAppContainer.mRecordRepository.updateItem(fromJson)
+                    }else{
+                        responseJsonStringFail("与标签绑定弹号不一致!")
+                    }
+                }
+            }
             writeFile
-        } }
+        }
+    }
 
     private fun handleFindFileSize(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
         val postParams = session.getPostParams() ?: return responseJsonStringFail("参数不能为空!")

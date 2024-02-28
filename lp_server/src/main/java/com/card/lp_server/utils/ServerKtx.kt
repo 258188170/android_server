@@ -8,6 +8,9 @@ import java.net.URLDecoder
 
 const val FILE_NAME = "fileName"
 
+const val __CODE_UP_REC = "__CodeUpRec"
+const val __BASE_INFO = "__BaseInfo"
+
 
 fun <T> handleResponse(action: () -> T): NanoHTTPD.Response {
     return try {

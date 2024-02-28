@@ -7,27 +7,27 @@ import com.card.lp_server.room.repository.IRecordRepository
 
 class RecordRepositoryImpl(private val recordBeanDao: RecordBeanDao) :
     IRecordRepository {
-    override  fun getAll(): List<RecordBean> {
+    override fun getAll(): List<RecordBean> {
         return recordBeanDao.getAll()
     }
 
-    override  fun loadByNumber(dyNumber: String): RecordBean? {
-        return recordBeanDao.loadById(dyNumber)
+    override fun loadByNumber(dyNumber: String): RecordBean? {
+        return recordBeanDao.loadByNumber(dyNumber)
     }
 
-    override  fun loadById(id: Int): RecordBean? {
+    override fun loadById(id: Int): RecordBean? {
         TODO("Not yet implemented")
     }
 
-    override  fun insertItem(t: RecordBean) {
+    override fun insertItem(t: RecordBean) {
         return recordBeanDao.insert(t)
     }
 
-    override  fun deleteItem(t: RecordBean) {
+    override fun deleteItem(t: RecordBean) {
         return recordBeanDao.remove(t)
     }
 
-    override  fun updateItem(t: RecordBean) {
+    override fun updateItem(t: RecordBean) {
         return recordBeanDao.update(t)
     }
 
