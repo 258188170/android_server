@@ -1,12 +1,23 @@
 package com.card.lp_server.server
 
+import android.util.Log
+import com.blankj.utilcode.util.GsonUtils
+import com.card.lp_server.card.device.LonbestCard
+import com.card.lp_server.room.entity.EinkData
+import com.card.lp_server.utils.getPostParams
+import com.card.lp_server.utils.handleResponse
+import com.card.lp_server.utils.responseJsonStringFail
 import fi.iki.elonen.NanoHTTPD
+
 
 // 策略实现2: 处理POST请求
 class PostRequestHandler : RequestHandlerStrategy {
+    companion object {
+        private const val TAG = "PostRequestHandler"
+    }
 
     private val handlers = mapOf(
-        "/home" to ::handleHome,
+        "/api/update_display" to ::handleUpdateDisplay,
         "/about" to ::handleAbout
         // Add more URL mappings as needed
     )
@@ -19,6 +30,16 @@ class PostRequestHandler : RequestHandlerStrategy {
 
     private fun handleHome(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
         return NanoHTTPD.newFixedLengthResponse("<html><body style=\"font-size:40px;\">这里是首页</body></html>")
+    }
+
+    private fun handleUpdateDisplay(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
+        val postParams = session.getPostParams() ?: return responseJsonStringFail("参数不能为空!")
+        val fromJson = GsonUtils.fromJson(postParams, EinkData::class.java).data
+            ?: return responseJsonStringFail("屏幕数据不能为空!")
+        Log.d(TAG, "handleUpdateDisplay: $fromJson")
+        return handleResponse {
+            LonbestCard.getInstance().updateEInk(fromJson)
+        }
     }
 
     private fun handleAbout(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {

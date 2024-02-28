@@ -8,7 +8,7 @@ class RequestHandlerFactory {
         return when (method) {
             NanoHTTPD.Method.GET -> GetRequestHandler()
             NanoHTTPD.Method.POST -> PostRequestHandler()
-            else -> throw IllegalArgumentException("Unsupported HTTP method")
+            else -> GetRequestHandler()
         }
     }
 }

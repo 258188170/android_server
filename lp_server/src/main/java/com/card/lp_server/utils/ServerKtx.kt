@@ -4,6 +4,7 @@ import android.util.Log
 import com.blankj.utilcode.util.ConvertUtils
 import com.card.lp_server.card.HIDCommunicationUtil
 import fi.iki.elonen.NanoHTTPD
+import java.net.URLDecoder
 
 const val FILE_NAME = "fileName"
 
@@ -46,14 +47,20 @@ fun NanoHTTPD.IHTTPSession.getQueryParams(): Map<String, List<String>> {
     return this.parameters
 }
 
-fun NanoHTTPD.IHTTPSession.getPostParams(): Map<String, String> {
+fun NanoHTTPD.IHTTPSession.getPostParams(): String? {
     // 获取POST参数
     val postParams = mutableMapOf<String, String>()
     try {
         this.parseBody(postParams)
+        logD("POST 请求参数： $postParams")
+        val postData = postParams["postData"]?.takeIf { it.isNotEmpty() }?.let {
+            URLDecoder.decode(it, "UTF-8")
+        }
+        logD("请求的 JSON 数据:$postData")
+        return postData
     } catch (e: Exception) {
         // 处理解析异常
         e.printStackTrace()
     }
-    return postParams
+    return null
 }

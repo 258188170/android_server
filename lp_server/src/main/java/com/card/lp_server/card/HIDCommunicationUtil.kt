@@ -23,12 +23,12 @@ class HIDCommunicationUtil private constructor() {
     private val usbManager: UsbManager =
         mAppContext.getSystemService(Context.USB_SERVICE) as UsbManager
 
-    @SuppressLint("UnspecifiedImmutableFlag")
+    @SuppressLint("MutableImplicitPendingIntent")
     private val permissionIntent: PendingIntent = PendingIntent.getBroadcast(
         mAppContext,
         0,
         Intent(ACTION_USB_PERMISSION),
-        0
+        PendingIntent.FLAG_IMMUTABLE
     )
     private var usbDevice: UsbDevice? = null
     private var usbConnection: UsbDeviceConnection? = null
