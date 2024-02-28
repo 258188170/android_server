@@ -6,27 +6,27 @@ import com.card.lp_server.room.repository.IMtRecRepository
 
 class MtRecRepositoryImpl(private val mtRecDao: MtRecDao) :
     IMtRecRepository {
-    override suspend fun getAll(): List<MtRec> {
+    override  fun getAll(): List<MtRec> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun loadByNumber(dyNumber: String): MtRec? {
+    override  fun loadByNumber(dyNumber: String): MtRec? {
         TODO("Not yet implemented")
     }
 
-    override suspend fun loadById(id: Int): MtRec? {
+    override  fun loadById(id: Int): MtRec? {
         TODO("Not yet implemented")
     }
 
-    override suspend fun insertItem(t: MtRec) {
+    override  fun insertItem(t: MtRec) {
         TODO("Not yet implemented")
     }
 
-    override suspend fun deleteItem(t: MtRec) {
+    override  fun deleteItem(t: MtRec) {
         TODO("Not yet implemented")
     }
 
-    override suspend fun updateItem(t: MtRec) {
+    override  fun updateItem(t: MtRec) {
         TODO("Not yet implemented")
     }
 

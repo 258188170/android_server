@@ -6,27 +6,27 @@ import com.card.lp_server.room.repository.ISorftwareReplaceRecRepository
 
 class SorftwareReplaceRecRepositoryImpl(private val sorftwareReplaceRecDao: SorftwareReplaceRecDao) :
     ISorftwareReplaceRecRepository {
-    override suspend fun getAll(): List<SorftwareReplaceRec> {
+    override  fun getAll(): List<SorftwareReplaceRec> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun loadByNumber(dyNumber: String): SorftwareReplaceRec? {
+    override  fun loadByNumber(dyNumber: String): SorftwareReplaceRec? {
         TODO("Not yet implemented")
     }
 
-    override suspend fun loadById(id: Int): SorftwareReplaceRec? {
+    override  fun loadById(id: Int): SorftwareReplaceRec? {
         TODO("Not yet implemented")
     }
 
-    override suspend fun insertItem(t: SorftwareReplaceRec) {
+    override  fun insertItem(t: SorftwareReplaceRec) {
         TODO("Not yet implemented")
     }
 
-    override suspend fun deleteItem(t: SorftwareReplaceRec) {
+    override  fun deleteItem(t: SorftwareReplaceRec) {
         TODO("Not yet implemented")
     }
 
-    override suspend fun updateItem(t: SorftwareReplaceRec) {
+    override  fun updateItem(t: SorftwareReplaceRec) {
         TODO("Not yet implemented")
     }
 

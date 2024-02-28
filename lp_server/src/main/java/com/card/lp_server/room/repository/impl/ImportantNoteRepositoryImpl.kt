@@ -6,27 +6,27 @@ import com.card.lp_server.room.repository.ImportantNoteRepository
 
 class ImportantNoteRepositoryImpl(private val importantNoteDao: ImportantNoteDao) :
     ImportantNoteRepository {
-    override suspend fun getAll(): List<ImportantNote> {
+    override  fun getAll(): List<ImportantNote> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun loadByNumber(dyNumber: String): ImportantNote? {
+    override  fun loadByNumber(dyNumber: String): ImportantNote? {
         TODO("Not yet implemented")
     }
 
-    override suspend fun loadById(id: Int): ImportantNote? {
+    override  fun loadById(id: Int): ImportantNote? {
         TODO("Not yet implemented")
     }
 
-    override suspend fun insertItem(t: ImportantNote) {
+    override  fun insertItem(t: ImportantNote) {
         TODO("Not yet implemented")
     }
 
-    override suspend fun deleteItem(t: ImportantNote) {
+    override  fun deleteItem(t: ImportantNote) {
         TODO("Not yet implemented")
     }
 
-    override suspend fun updateItem(t: ImportantNote) {
+    override  fun updateItem(t: ImportantNote) {
         TODO("Not yet implemented")
     }
 

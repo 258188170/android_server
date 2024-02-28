@@ -7,27 +7,27 @@ import com.card.lp_server.room.repository.IEquReplaceRecRepository
 
 class EquReplaceRecRepositoryImpl(private val equMatchDao: EquReplaceRecDao) :
     IEquReplaceRecRepository {
-    override suspend fun getAll(): List<EquReplaceRec> {
+    override  fun getAll(): List<EquReplaceRec> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun loadByNumber(dyNumber: String): EquReplaceRec? {
+    override  fun loadByNumber(dyNumber: String): EquReplaceRec? {
         TODO("Not yet implemented")
     }
 
-    override suspend fun loadById(id: Int): EquReplaceRec? {
+    override  fun loadById(id: Int): EquReplaceRec? {
         TODO("Not yet implemented")
     }
 
-    override suspend fun insertItem(t: EquReplaceRec) {
+    override  fun insertItem(t: EquReplaceRec) {
         TODO("Not yet implemented")
     }
 
-    override suspend fun deleteItem(t: EquReplaceRec) {
+    override  fun deleteItem(t: EquReplaceRec) {
         TODO("Not yet implemented")
     }
 
-    override suspend fun updateItem(t: EquReplaceRec) {
+    override  fun updateItem(t: EquReplaceRec) {
         TODO("Not yet implemented")
     }
 

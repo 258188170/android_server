@@ -6,27 +6,27 @@ import com.card.lp_server.room.repository.IEquMatchRepository
 
 class EquMatchRepositoryImpl(private val equMatch: EquMatchDao) :
     IEquMatchRepository {
-    override suspend fun getAll(): List<EquMatch> {
+    override  fun getAll(): List<EquMatch> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun loadByNumber(dyNumber: String): EquMatch? {
+    override  fun loadByNumber(dyNumber: String): EquMatch? {
         TODO("Not yet implemented")
     }
 
-    override suspend fun loadById(id: Int): EquMatch? {
+    override  fun loadById(id: Int): EquMatch? {
         TODO("Not yet implemented")
     }
 
-    override suspend fun insertItem(t: EquMatch) {
+    override  fun insertItem(t: EquMatch) {
         TODO("Not yet implemented")
     }
 
-    override suspend fun deleteItem(t: EquMatch) {
+    override  fun deleteItem(t: EquMatch) {
         TODO("Not yet implemented")
     }
 
-    override suspend fun updateItem(t: EquMatch) {
+    override  fun updateItem(t: EquMatch) {
         TODO("Not yet implemented")
     }
 

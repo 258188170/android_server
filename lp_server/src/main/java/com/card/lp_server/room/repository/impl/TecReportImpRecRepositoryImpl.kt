@@ -6,27 +6,27 @@ import com.card.lp_server.room.repository.ITecReportImpRecRepository
 
 class TecReportImpRecRepositoryImpl(private val tecReportImpRecDao: TecReportImpRecDao) :
     ITecReportImpRecRepository {
-    override suspend fun getAll(): List<TecReportImpRec> {
+    override  fun getAll(): List<TecReportImpRec> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun loadByNumber(dyNumber: String): TecReportImpRec? {
+    override  fun loadByNumber(dyNumber: String): TecReportImpRec? {
         TODO("Not yet implemented")
     }
 
-    override suspend fun loadById(id: Int): TecReportImpRec? {
+    override  fun loadById(id: Int): TecReportImpRec? {
         TODO("Not yet implemented")
     }
 
-    override suspend fun insertItem(t: TecReportImpRec) {
+    override  fun insertItem(t: TecReportImpRec) {
         TODO("Not yet implemented")
     }
 
-    override suspend fun deleteItem(t: TecReportImpRec) {
+    override  fun deleteItem(t: TecReportImpRec) {
         TODO("Not yet implemented")
     }
 
-    override suspend fun updateItem(t: TecReportImpRec) {
+    override  fun updateItem(t: TecReportImpRec) {
         TODO("Not yet implemented")
     }
 

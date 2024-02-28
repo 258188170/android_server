@@ -6,27 +6,27 @@ import com.card.lp_server.room.repository.IRepairRecRepository
 
 class RepairRecRepositoryImpl(private val repairRecDao: RepairRecDao) :
     IRepairRecRepository {
-    override suspend fun getAll(): List<RepairRec> {
+    override  fun getAll(): List<RepairRec> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun loadByNumber(dyNumber: String): RepairRec? {
+    override  fun loadByNumber(dyNumber: String): RepairRec? {
         TODO("Not yet implemented")
     }
 
-    override suspend fun loadById(id: Int): RepairRec? {
+    override  fun loadById(id: Int): RepairRec? {
         TODO("Not yet implemented")
     }
 
-    override suspend fun insertItem(t: RepairRec) {
+    override  fun insertItem(t: RepairRec) {
         TODO("Not yet implemented")
     }
 
-    override suspend fun deleteItem(t: RepairRec) {
+    override  fun deleteItem(t: RepairRec) {
         TODO("Not yet implemented")
     }
 
-    override suspend fun updateItem(t: RepairRec) {
+    override  fun updateItem(t: RepairRec) {
         TODO("Not yet implemented")
     }
 

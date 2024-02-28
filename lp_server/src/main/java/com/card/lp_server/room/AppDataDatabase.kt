@@ -74,6 +74,7 @@ abstract class AppDataDatabase : RoomDatabase() {
             // if the Instance is not null, return it, otherwise create a new database instance.
             return Instance ?: synchronized(this) {
                 Room.databaseBuilder(mAppContext, AppDataDatabase::class.java, "lp_server_database")
+                    .allowMainThreadQueries()
                     .build()
                     .also { Instance = it }
             }

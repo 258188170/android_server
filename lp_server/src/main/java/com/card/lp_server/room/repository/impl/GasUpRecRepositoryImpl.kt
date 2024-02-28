@@ -6,27 +6,27 @@ import com.card.lp_server.room.repository.IGasUpRecRepository
 
 class GasUpRecRepositoryImpl(private val gasUpRecDao: GasUpRecDao) :
     IGasUpRecRepository {
-    override suspend fun getAll(): List<GasUpRec> {
+    override  fun getAll(): List<GasUpRec> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun loadByNumber(dyNumber: String): GasUpRec? {
+    override  fun loadByNumber(dyNumber: String): GasUpRec? {
         TODO("Not yet implemented")
     }
 
-    override suspend fun loadById(id: Int): GasUpRec? {
+    override  fun loadById(id: Int): GasUpRec? {
         TODO("Not yet implemented")
     }
 
-    override suspend fun insertItem(t: GasUpRec) {
+    override  fun insertItem(t: GasUpRec) {
         TODO("Not yet implemented")
     }
 
-    override suspend fun deleteItem(t: GasUpRec) {
+    override  fun deleteItem(t: GasUpRec) {
         TODO("Not yet implemented")
     }
 
-    override suspend fun updateItem(t: GasUpRec) {
+    override  fun updateItem(t: GasUpRec) {
         TODO("Not yet implemented")
     }
 
