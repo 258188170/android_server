@@ -25,10 +25,30 @@ import com.card.lp_server.mAppContainer
 import com.card.lp_server.model.TagEntity
 import com.card.lp_server.room.entity.CodeUpRec
 import com.card.lp_server.room.entity.EquMatch
+import com.card.lp_server.room.entity.EquReplaceRec
+import com.card.lp_server.room.entity.GJZBRec
+import com.card.lp_server.room.entity.GasUpRec
+import com.card.lp_server.room.entity.HandoverRec
+import com.card.lp_server.room.entity.ImportantNote
+import com.card.lp_server.room.entity.MtRec
+import com.card.lp_server.room.entity.PoweronRec
 import com.card.lp_server.room.entity.RecordBean
+import com.card.lp_server.room.entity.RepairRec
+import com.card.lp_server.room.entity.SorftwareReplaceRec
+import com.card.lp_server.room.entity.TecReportImpRec
 import com.card.lp_server.server.ADD_BASE_INFO
 import com.card.lp_server.server.ADD_CODE_UP_REC
 import com.card.lp_server.server.ADD_EQU_MATCH
+import com.card.lp_server.server.ADD_EQU_REPLACE_REC
+import com.card.lp_server.server.ADD_GAS_UP_REC
+import com.card.lp_server.server.ADD_GJZB_REC
+import com.card.lp_server.server.ADD_HANDOVER_REC
+import com.card.lp_server.server.ADD_IMPORTANT_NOTE
+import com.card.lp_server.server.ADD_MT_REC
+import com.card.lp_server.server.ADD_POWERON_REC
+import com.card.lp_server.server.ADD_REPAIR_REC
+import com.card.lp_server.server.ADD_SORFTWARE_REPLACE_REC
+import com.card.lp_server.server.ADD_TEC_REPORT_IMP_REC
 import com.card.lp_server.server.CLEAR_TAG
 import com.card.lp_server.server.COMMON_WRITE
 import com.card.lp_server.server.DELETE_FILE
@@ -336,5 +356,53 @@ class MainActivity : AppCompatActivity() {
 
     fun addEquMatch(view: View) {
         requestPost(ADD_EQU_MATCH, EquMatch(dyNumber = "555"))
+    }
+
+    fun addEquReplaceRec(view: View) {
+        requestPost(ADD_EQU_REPLACE_REC, EquReplaceRec(dyNumber = "555"))
+
+    }
+
+    fun addGasUpRec(view: View) {
+        requestPost(ADD_GAS_UP_REC, GasUpRec(dyNumber = "555"))
+
+    }
+
+    fun addTecReportImpRec(view: View) {
+        requestPost(ADD_TEC_REPORT_IMP_REC, TecReportImpRec(dyNumber = "555"))
+    }
+
+    fun addSorftwareReplaceRec(view: View) {
+        requestPost(ADD_SORFTWARE_REPLACE_REC, SorftwareReplaceRec(dyNumber = "555"))
+
+    }
+
+    fun addRepairRec(view: View) {
+        requestPost(ADD_REPAIR_REC, RepairRec(dyNumber = "555"))
+
+    }
+
+    fun addPoweronRec(view: View) {
+        requestPost(ADD_POWERON_REC, PoweronRec(dyNumber = "555"))
+
+    }
+
+    fun addMtRec(view: View) {
+        requestPost(ADD_MT_REC, MtRec(dyNumber = "555"))
+
+    }
+
+    fun addImportantNote(view: View) {
+        requestPost(ADD_IMPORTANT_NOTE, ImportantNote(dyNumber = "555"))
+
+    }
+
+    fun addHandoverRec(view: View) {
+        requestPost(ADD_HANDOVER_REC, HandoverRec(dyNumber = "555"))
+
+    }
+
+    fun addGJZBRec(view: View) {
+        requestPost(ADD_GJZB_REC, GJZBRec(dyNumber = "555"))
     }
 }
