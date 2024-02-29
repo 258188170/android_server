@@ -2,13 +2,14 @@ package com.card.lp_server.room.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+
 // 设备装备配套表
 @Entity
 data class EquMatch(
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0,
     // 编号
-    var dyNumber: String?=null,
+    var dyNumber: String? = null,
     // 编号
     var serialNumber: String? = "ZB-A",
     // 名称
@@ -32,5 +33,5 @@ data class EquMatch(
     // 备注
     var memo: String? = "无",
     // 文件版本号
-    var fileVersion: Int?
+    var fileVersion: Int? = 0
 )

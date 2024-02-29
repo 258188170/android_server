@@ -9,7 +9,15 @@ import com.card.lp_server.room.entity.RecordBean
 import com.card.lp_server.model.TagEntity
 import com.card.lp_server.room.entity.EquMatch
 import com.card.lp_server.room.entity.EquReplaceRec
+import com.card.lp_server.room.entity.GJZBRec
 import com.card.lp_server.room.entity.GasUpRec
+import com.card.lp_server.room.entity.HandoverRec
+import com.card.lp_server.room.entity.ImportantNote
+import com.card.lp_server.room.entity.MtRec
+import com.card.lp_server.room.entity.PoweronRec
+import com.card.lp_server.room.entity.RepairRec
+import com.card.lp_server.room.entity.SorftwareReplaceRec
+import com.card.lp_server.room.entity.TecReportImpRec
 import com.card.lp_server.utils.convertBitmapToBinary
 import com.card.lp_server.utils.generateBitMapForLl
 import com.card.lp_server.utils.getPostParams
@@ -34,9 +42,17 @@ class PostRequestHandler : RequestHandlerStrategy {
         ADD_BASE_INFO to ::handleBaseInfo,
         ADD_CODE_UP_REC to ::handleCodeUpRec,
         ENCODE_AND_UPDATE_EINK to ::handleEncode,
-        "/api/addEquMatch" to ::handleAddEquMatch,
+        ADD_EQU_MATCH to ::handleAddEquMatch,
         "/api/addEquReplaceRec" to ::handleAddEquReplaceRec,
         "/api/addGasUpRec" to ::handleAddGasUpRec,
+        "/api/addTecReportImpRec" to ::handleAddTecReportImpRec,
+        "/api/addSorftwareReplaceRec" to ::handleAddSorftwareReplaceRec,
+        "/api/addRepairRec" to ::handleAddRepairRec,
+        "/api/addPoweronRec" to ::handleAddPoweronRec,
+        "/api/addMtRec" to ::handleAddMtRec,
+        "/api/addImportantNote" to ::handleAddImportantNote,
+        "/api/addHandoverRec" to ::handleAddHandoverRec,
+        "/api/addGJZBRec" to ::handleAddGJZBRec,
 
         // Add more URL mappings as needed
     )
@@ -279,6 +295,454 @@ class PostRequestHandler : RequestHandlerStrategy {
                     }
                 } else {
                     Log.d(TAG, "handleCodeUpRec: 要写入标签弹号与标签内不一致")
+                    responseJsonStringSuccess(false, "要写入标签弹号与当前标签内不一致!")
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return responseJsonStringFail(e.message)
+        }
+    }
+    private fun handleAddTecReportImpRec(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
+        val postParams = session.getPostParams() ?: return responseJsonStringFail("参数不能为空!")
+        val tecReportImpRec = GsonUtils.fromJson(postParams, TecReportImpRec::class.java)
+            ?: return responseJsonStringFail("参数不能为空!")
+        if (tecReportImpRec.dyNumber.isNullOrEmpty())
+            return responseJsonStringFail("dyNumber is not empty")
+        Log.d(TAG, "handleTecReportImpRec: $tecReportImpRec")
+        try {
+            val readFile = LonbestCard.getInstance()
+                .readFile(Types.TECREPORTIMP_REC.value)
+            val writeFile: Boolean
+            if (readFile == null) {
+                val toByteArray = GsonUtils.toJson(arrayListOf(tecReportImpRec)).toByteArray()
+                Log.d(TAG, "handleTecReportImpRec: toByteArray $toByteArray")
+                writeFile = LonbestCard.getInstance()
+                    .writeFile(
+                        Types.CODE_UP_REC.value,
+                        toByteArray
+                    )
+                Log.d(TAG, "handleTecReportImpRec: writeFile $writeFile")
+                return if (writeFile) {
+                    responseJsonStringSuccess(true)
+                } else {
+                    responseJsonStringSuccess(false, "操作失败!")
+                }
+            } else {
+                val string = String(readFile)
+                Log.d(TAG, "handleTecReportImpRec: $string")
+                val recordBean = GsonUtils.fromJson<List<TecReportImpRec>>(
+                    String(readFile),
+                    GsonUtils.getListType(TecReportImpRec::class.java)
+                ).toMutableList()
+                return if (recordBean.first().dyNumber == tecReportImpRec.dyNumber) {
+                    recordBean.add(tecReportImpRec)
+                    writeFile = LonbestCard.getInstance()
+                        .writeFile(
+                            Types.CODE_UP_REC.value,
+                            GsonUtils.toJson(recordBean).toByteArray()
+                        )
+                    Log.d(TAG, "handleTecReportImpRec: writeFile $writeFile")
+                    if (writeFile) {
+                        responseJsonStringSuccess(true)
+                    } else {
+                        Log.d(TAG, "handleTecReportImpRec: 写入 TecReportImpRec 失败")
+                        responseJsonStringSuccess(false, "操作失败!")
+                    }
+                } else {
+                    Log.d(TAG, "handleTecReportImpRec: 要写入标签弹号与标签内不一致")
+                    responseJsonStringSuccess(false, "要写入标签弹号与当前标签内不一致!")
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return responseJsonStringFail(e.message)
+        }
+    }
+    private fun handleAddSorftwareReplaceRec(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
+        val postParams = session.getPostParams() ?: return responseJsonStringFail("参数不能为空!")
+        val sorftwareReplaceRec = GsonUtils.fromJson(postParams, SorftwareReplaceRec::class.java)
+            ?: return responseJsonStringFail("参数不能为空!")
+        if (sorftwareReplaceRec.dyNumber.isNullOrEmpty())
+            return responseJsonStringFail("dyNumber is not empty")
+        Log.d(TAG, "handleSorftwareReplaceRec: $sorftwareReplaceRec")
+        try {
+            val readFile = LonbestCard.getInstance()
+                .readFile(Types.TECREPORTIMP_REC.value)
+            val writeFile: Boolean
+            if (readFile == null) {
+                val toByteArray = GsonUtils.toJson(arrayListOf(sorftwareReplaceRec)).toByteArray()
+                Log.d(TAG, "handleSorftwareReplaceRec: toByteArray $toByteArray")
+                writeFile = LonbestCard.getInstance()
+                    .writeFile(
+                        Types.CODE_UP_REC.value,
+                        toByteArray
+                    )
+                Log.d(TAG, "handleSorftwareReplaceRec: writeFile $writeFile")
+                return if (writeFile) {
+                    responseJsonStringSuccess(true)
+                } else {
+                    responseJsonStringSuccess(false, "操作失败!")
+                }
+            } else {
+                val string = String(readFile)
+                Log.d(TAG, "handleSorftwareReplaceRec: $string")
+                val recordBean = GsonUtils.fromJson<List<SorftwareReplaceRec>>(
+                    String(readFile),
+                    GsonUtils.getListType(SorftwareReplaceRec::class.java)
+                ).toMutableList()
+                return if (recordBean.first().dyNumber == sorftwareReplaceRec.dyNumber) {
+                    recordBean.add(sorftwareReplaceRec)
+                    writeFile = LonbestCard.getInstance()
+                        .writeFile(
+                            Types.CODE_UP_REC.value,
+                            GsonUtils.toJson(recordBean).toByteArray()
+                        )
+                    Log.d(TAG, "handleSorftwareReplaceRec: writeFile $writeFile")
+                    if (writeFile) {
+                        responseJsonStringSuccess(true)
+                    } else {
+                        Log.d(TAG, "handleSorftwareReplaceRec: 写入 SorftwareReplaceRec 失败")
+                        responseJsonStringSuccess(false, "操作失败!")
+                    }
+                } else {
+                    Log.d(TAG, "handleSorftwareReplaceRec: 要写入标签弹号与标签内不一致")
+                    responseJsonStringSuccess(false, "要写入标签弹号与当前标签内不一致!")
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return responseJsonStringFail(e.message)
+        }
+    }
+    private fun handleAddRepairRec(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
+        val postParams = session.getPostParams() ?: return responseJsonStringFail("参数不能为空!")
+        val repairRec = GsonUtils.fromJson(postParams, RepairRec::class.java)
+            ?: return responseJsonStringFail("参数不能为空!")
+        if (repairRec.dyNumber.isNullOrEmpty())
+            return responseJsonStringFail("dyNumber is not empty")
+        Log.d(TAG, "handleRepairRec: $repairRec")
+        try {
+            val readFile = LonbestCard.getInstance()
+                .readFile(Types.TECREPORTIMP_REC.value)
+            val writeFile: Boolean
+            if (readFile == null) {
+                val toByteArray = GsonUtils.toJson(arrayListOf(repairRec)).toByteArray()
+                Log.d(TAG, "handleRepairRec: toByteArray $toByteArray")
+                writeFile = LonbestCard.getInstance()
+                    .writeFile(
+                        Types.CODE_UP_REC.value,
+                        toByteArray
+                    )
+                Log.d(TAG, "handleRepairRec: writeFile $writeFile")
+                return if (writeFile) {
+                    responseJsonStringSuccess(true)
+                } else {
+                    responseJsonStringSuccess(false, "操作失败!")
+                }
+            } else {
+                val string = String(readFile)
+                Log.d(TAG, "handleRepairRec: $string")
+                val recordBean = GsonUtils.fromJson<List<RepairRec>>(
+                    String(readFile),
+                    GsonUtils.getListType(RepairRec::class.java)
+                ).toMutableList()
+                return if (recordBean.first().dyNumber == repairRec.dyNumber) {
+                    recordBean.add(repairRec)
+                    writeFile = LonbestCard.getInstance()
+                        .writeFile(
+                            Types.CODE_UP_REC.value,
+                            GsonUtils.toJson(recordBean).toByteArray()
+                        )
+                    Log.d(TAG, "handleRepairRec: writeFile $writeFile")
+                    if (writeFile) {
+                        responseJsonStringSuccess(true)
+                    } else {
+                        Log.d(TAG, "handleRepairRec: 写入 RepairRec 失败")
+                        responseJsonStringSuccess(false, "操作失败!")
+                    }
+                } else {
+                    Log.d(TAG, "handleRepairRec: 要写入标签弹号与标签内不一致")
+                    responseJsonStringSuccess(false, "要写入标签弹号与当前标签内不一致!")
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return responseJsonStringFail(e.message)
+        }
+    }
+    private fun handleAddPoweronRec(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
+        val postParams = session.getPostParams() ?: return responseJsonStringFail("参数不能为空!")
+        val poweronRec = GsonUtils.fromJson(postParams, PoweronRec::class.java)
+            ?: return responseJsonStringFail("参数不能为空!")
+        if (poweronRec.dyNumber.isNullOrEmpty())
+            return responseJsonStringFail("dyNumber is not empty")
+        Log.d(TAG, "handlePoweronRec: $poweronRec")
+        try {
+            val readFile = LonbestCard.getInstance()
+                .readFile(Types.TECREPORTIMP_REC.value)
+            val writeFile: Boolean
+            if (readFile == null) {
+                val toByteArray = GsonUtils.toJson(arrayListOf(poweronRec)).toByteArray()
+                Log.d(TAG, "handlePoweronRec: toByteArray $toByteArray")
+                writeFile = LonbestCard.getInstance()
+                    .writeFile(
+                        Types.CODE_UP_REC.value,
+                        toByteArray
+                    )
+                Log.d(TAG, "handlePoweronRec: writeFile $writeFile")
+                return if (writeFile) {
+                    responseJsonStringSuccess(true)
+                } else {
+                    responseJsonStringSuccess(false, "操作失败!")
+                }
+            } else {
+                val string = String(readFile)
+                Log.d(TAG, "handlePoweronRec: $string")
+                val recordBean = GsonUtils.fromJson<List<PoweronRec>>(
+                    String(readFile),
+                    GsonUtils.getListType(PoweronRec::class.java)
+                ).toMutableList()
+                return if (recordBean.first().dyNumber == poweronRec.dyNumber) {
+                    recordBean.add(poweronRec)
+                    writeFile = LonbestCard.getInstance()
+                        .writeFile(
+                            Types.CODE_UP_REC.value,
+                            GsonUtils.toJson(recordBean).toByteArray()
+                        )
+                    Log.d(TAG, "handlePoweronRec: writeFile $writeFile")
+                    if (writeFile) {
+                        responseJsonStringSuccess(true)
+                    } else {
+                        Log.d(TAG, "handlePoweronRec: 写入 PoweronRec 失败")
+                        responseJsonStringSuccess(false, "操作失败!")
+                    }
+                } else {
+                    Log.d(TAG, "handlePoweronRec: 要写入标签弹号与标签内不一致")
+                    responseJsonStringSuccess(false, "要写入标签弹号与当前标签内不一致!")
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return responseJsonStringFail(e.message)
+        }
+    }
+    private fun handleAddMtRec(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
+        val postParams = session.getPostParams() ?: return responseJsonStringFail("参数不能为空!")
+        val mtRec = GsonUtils.fromJson(postParams, MtRec::class.java)
+            ?: return responseJsonStringFail("参数不能为空!")
+        if (mtRec.dyNumber.isNullOrEmpty())
+            return responseJsonStringFail("dyNumber is not empty")
+        Log.d(TAG, "handleMtRec: $mtRec")
+        try {
+            val readFile = LonbestCard.getInstance()
+                .readFile(Types.TECREPORTIMP_REC.value)
+            val writeFile: Boolean
+            if (readFile == null) {
+                val toByteArray = GsonUtils.toJson(arrayListOf(mtRec)).toByteArray()
+                Log.d(TAG, "handleMtRec: toByteArray $toByteArray")
+                writeFile = LonbestCard.getInstance()
+                    .writeFile(
+                        Types.CODE_UP_REC.value,
+                        toByteArray
+                    )
+                Log.d(TAG, "handleMtRec: writeFile $writeFile")
+                return if (writeFile) {
+                    responseJsonStringSuccess(true)
+                } else {
+                    responseJsonStringSuccess(false, "操作失败!")
+                }
+            } else {
+                val string = String(readFile)
+                Log.d(TAG, "handleMtRec: $string")
+                val recordBean = GsonUtils.fromJson<List<MtRec>>(
+                    String(readFile),
+                    GsonUtils.getListType(MtRec::class.java)
+                ).toMutableList()
+                return if (recordBean.first().dyNumber == mtRec.dyNumber) {
+                    recordBean.add(mtRec)
+                    writeFile = LonbestCard.getInstance()
+                        .writeFile(
+                            Types.CODE_UP_REC.value,
+                            GsonUtils.toJson(recordBean).toByteArray()
+                        )
+                    Log.d(TAG, "handleMtRec: writeFile $writeFile")
+                    if (writeFile) {
+                        responseJsonStringSuccess(true)
+                    } else {
+                        Log.d(TAG, "handleMtRec: 写入 MtRec 失败")
+                        responseJsonStringSuccess(false, "操作失败!")
+                    }
+                } else {
+                    Log.d(TAG, "handleMtRec: 要写入标签弹号与标签内不一致")
+                    responseJsonStringSuccess(false, "要写入标签弹号与当前标签内不一致!")
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return responseJsonStringFail(e.message)
+        }
+    }
+    private fun handleAddImportantNote(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
+        val postParams = session.getPostParams() ?: return responseJsonStringFail("参数不能为空!")
+        val importantNote = GsonUtils.fromJson(postParams, ImportantNote::class.java)
+            ?: return responseJsonStringFail("参数不能为空!")
+        if (importantNote.dyNumber.isNullOrEmpty())
+            return responseJsonStringFail("dyNumber is not empty")
+        Log.d(TAG, "handleImportantNote: $importantNote")
+        try {
+            val readFile = LonbestCard.getInstance()
+                .readFile(Types.TECREPORTIMP_REC.value)
+            val writeFile: Boolean
+            if (readFile == null) {
+                val toByteArray = GsonUtils.toJson(arrayListOf(importantNote)).toByteArray()
+                Log.d(TAG, "handleImportantNote: toByteArray $toByteArray")
+                writeFile = LonbestCard.getInstance()
+                    .writeFile(
+                        Types.CODE_UP_REC.value,
+                        toByteArray
+                    )
+                Log.d(TAG, "handleImportantNote: writeFile $writeFile")
+                return if (writeFile) {
+                    responseJsonStringSuccess(true)
+                } else {
+                    responseJsonStringSuccess(false, "操作失败!")
+                }
+            } else {
+                val string = String(readFile)
+                Log.d(TAG, "handleImportantNote: $string")
+                val recordBean = GsonUtils.fromJson<List<ImportantNote>>(
+                    String(readFile),
+                    GsonUtils.getListType(ImportantNote::class.java)
+                ).toMutableList()
+                return if (recordBean.first().dyNumber == importantNote.dyNumber) {
+                    recordBean.add(importantNote)
+                    writeFile = LonbestCard.getInstance()
+                        .writeFile(
+                            Types.CODE_UP_REC.value,
+                            GsonUtils.toJson(recordBean).toByteArray()
+                        )
+                    Log.d(TAG, "handleImportantNote: writeFile $writeFile")
+                    if (writeFile) {
+                        responseJsonStringSuccess(true)
+                    } else {
+                        Log.d(TAG, "handleImportantNote: 写入 ImportantNote 失败")
+                        responseJsonStringSuccess(false, "操作失败!")
+                    }
+                } else {
+                    Log.d(TAG, "handleImportantNote: 要写入标签弹号与标签内不一致")
+                    responseJsonStringSuccess(false, "要写入标签弹号与当前标签内不一致!")
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return responseJsonStringFail(e.message)
+        }
+    }
+    private fun handleAddHandoverRec(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
+        val postParams = session.getPostParams() ?: return responseJsonStringFail("参数不能为空!")
+        val handoverRec = GsonUtils.fromJson(postParams, HandoverRec::class.java)
+            ?: return responseJsonStringFail("参数不能为空!")
+        if (handoverRec.dyNumber.isNullOrEmpty())
+            return responseJsonStringFail("dyNumber is not empty")
+        Log.d(TAG, "handleHandoverRec: $handoverRec")
+        try {
+            val readFile = LonbestCard.getInstance()
+                .readFile(Types.TECREPORTIMP_REC.value)
+            val writeFile: Boolean
+            if (readFile == null) {
+                val toByteArray = GsonUtils.toJson(arrayListOf(handoverRec)).toByteArray()
+                Log.d(TAG, "handleHandoverRec: toByteArray $toByteArray")
+                writeFile = LonbestCard.getInstance()
+                    .writeFile(
+                        Types.CODE_UP_REC.value,
+                        toByteArray
+                    )
+                Log.d(TAG, "handleHandoverRec: writeFile $writeFile")
+                return if (writeFile) {
+                    responseJsonStringSuccess(true)
+                } else {
+                    responseJsonStringSuccess(false, "操作失败!")
+                }
+            } else {
+                val string = String(readFile)
+                Log.d(TAG, "handleHandoverRec: $string")
+                val recordBean = GsonUtils.fromJson<List<HandoverRec>>(
+                    String(readFile),
+                    GsonUtils.getListType(HandoverRec::class.java)
+                ).toMutableList()
+                return if (recordBean.first().dyNumber == handoverRec.dyNumber) {
+                    recordBean.add(handoverRec)
+                    writeFile = LonbestCard.getInstance()
+                        .writeFile(
+                            Types.CODE_UP_REC.value,
+                            GsonUtils.toJson(recordBean).toByteArray()
+                        )
+                    Log.d(TAG, "handleHandoverRec: writeFile $writeFile")
+                    if (writeFile) {
+                        responseJsonStringSuccess(true)
+                    } else {
+                        Log.d(TAG, "handleHandoverRec: 写入 HandoverRec 失败")
+                        responseJsonStringSuccess(false, "操作失败!")
+                    }
+                } else {
+                    Log.d(TAG, "handleHandoverRec: 要写入标签弹号与标签内不一致")
+                    responseJsonStringSuccess(false, "要写入标签弹号与当前标签内不一致!")
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return responseJsonStringFail(e.message)
+        }
+    }
+    private fun handleAddGJZBRec(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
+        val postParams = session.getPostParams() ?: return responseJsonStringFail("参数不能为空!")
+        val gjzbRec = GsonUtils.fromJson(postParams, GJZBRec::class.java)
+            ?: return responseJsonStringFail("参数不能为空!")
+        if (gjzbRec.dyNumber.isNullOrEmpty())
+            return responseJsonStringFail("dyNumber is not empty")
+        Log.d(TAG, "handleGJZBRec: $gjzbRec")
+        try {
+            val readFile = LonbestCard.getInstance()
+                .readFile(Types.TECREPORTIMP_REC.value)
+            val writeFile: Boolean
+            if (readFile == null) {
+                val toByteArray = GsonUtils.toJson(arrayListOf(gjzbRec)).toByteArray()
+                Log.d(TAG, "handleGJZBRec: toByteArray $toByteArray")
+                writeFile = LonbestCard.getInstance()
+                    .writeFile(
+                        Types.CODE_UP_REC.value,
+                        toByteArray
+                    )
+                Log.d(TAG, "handleGJZBRec: writeFile $writeFile")
+                return if (writeFile) {
+                    responseJsonStringSuccess(true)
+                } else {
+                    responseJsonStringSuccess(false, "操作失败!")
+                }
+            } else {
+                val string = String(readFile)
+                Log.d(TAG, "handleGJZBRec: $string")
+                val recordBean = GsonUtils.fromJson<List<GJZBRec>>(
+                    String(readFile),
+                    GsonUtils.getListType(GJZBRec::class.java)
+                ).toMutableList()
+                return if (recordBean.first().dyNumber == gjzbRec.dyNumber) {
+                    recordBean.add(gjzbRec)
+                    writeFile = LonbestCard.getInstance()
+                        .writeFile(
+                            Types.CODE_UP_REC.value,
+                            GsonUtils.toJson(recordBean).toByteArray()
+                        )
+                    Log.d(TAG, "handleGJZBRec: writeFile $writeFile")
+                    if (writeFile) {
+                        responseJsonStringSuccess(true)
+                    } else {
+                        Log.d(TAG, "handleGJZBRec: 写入 GJZBRec 失败")
+                        responseJsonStringSuccess(false, "操作失败!")
+                    }
+                } else {
+                    Log.d(TAG, "handleGJZBRec: 要写入标签弹号与标签内不一致")
                     responseJsonStringSuccess(false, "要写入标签弹号与当前标签内不一致!")
                 }
             }

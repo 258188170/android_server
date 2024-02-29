@@ -24,9 +24,11 @@ import com.card.lp_server.card.HIDCommunicationUtil
 import com.card.lp_server.mAppContainer
 import com.card.lp_server.model.TagEntity
 import com.card.lp_server.room.entity.CodeUpRec
+import com.card.lp_server.room.entity.EquMatch
 import com.card.lp_server.room.entity.RecordBean
 import com.card.lp_server.server.ADD_BASE_INFO
 import com.card.lp_server.server.ADD_CODE_UP_REC
+import com.card.lp_server.server.ADD_EQU_MATCH
 import com.card.lp_server.server.CLEAR_TAG
 import com.card.lp_server.server.COMMON_WRITE
 import com.card.lp_server.server.DELETE_FILE
@@ -330,5 +332,9 @@ class MainActivity : AppCompatActivity() {
 
     fun encodeAndUpdateEink(view: View) {
         requestPost(ENCODE_AND_UPDATE_EINK, CodeUpRec(dyNumber = "555"))
+    }
+
+    fun addEquMatch(view: View) {
+        requestPost(ADD_EQU_MATCH, EquMatch(dyNumber = "555"))
     }
 }
