@@ -96,7 +96,7 @@ class PostRequestHandler : RequestHandlerStrategy {
                 Log.d(TAG, "handleAddGasUpRec: $string")
                 val recordBean = GsonUtils.fromJson<List<GasUpRec>>(
                     String(readFile),
-                    GsonUtils.getListType(CodeUpRec::class.java)
+                    GsonUtils.getListType(GasUpRec::class.java)
                 ).toMutableList()
                 return if (recordBean.first().dyNumber == gasUpRec.dyNumber) {
                     recordBean.add(gasUpRec)
@@ -153,7 +153,7 @@ class PostRequestHandler : RequestHandlerStrategy {
                 Log.d(TAG, "handleAddEquReplaceRec: $string")
                 val recordBean = GsonUtils.fromJson<List<EquReplaceRec>>(
                     String(readFile),
-                    GsonUtils.getListType(CodeUpRec::class.java)
+                    GsonUtils.getListType(EquReplaceRec::class.java)
                 ).toMutableList()
                 return if (recordBean.first().dyNumber == equReplaceRec.dyNumber) {
                     recordBean.add(equReplaceRec)
@@ -210,7 +210,7 @@ class PostRequestHandler : RequestHandlerStrategy {
                 Log.d(TAG, "handleAddEquMatch: $string")
                 val recordBean = GsonUtils.fromJson<List<EquMatch>>(
                     String(readFile),
-                    GsonUtils.getListType(CodeUpRec::class.java)
+                    GsonUtils.getListType(EquMatch::class.java)
                 ).toMutableList()
                 return if (recordBean.first().dyNumber == equMatch.dyNumber) {
                     recordBean.add(equMatch)
