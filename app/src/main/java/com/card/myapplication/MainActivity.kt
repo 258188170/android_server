@@ -7,6 +7,7 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.ViewTreeObserver
 import android.widget.ScrollView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -20,11 +21,21 @@ import com.blankj.utilcode.util.ToastUtils
 import com.card.lp_server.card.HIDCommunicationUtil
 import com.card.lp_server.mAppContainer
 import com.card.lp_server.model.TagEntity
+import com.card.lp_server.room.entity.CodeUpRec
 import com.card.lp_server.room.entity.RecordBean
+import com.card.lp_server.server.ADD_BASE_INFO
+import com.card.lp_server.server.ADD_CODE_UP_REC
 import com.card.lp_server.server.CLEAR_TAG
 import com.card.lp_server.server.COMMON_WRITE
+import com.card.lp_server.server.DELETE_FILE
+import com.card.lp_server.server.ENCODE_AND_UPDATE_EINK
+import com.card.lp_server.server.FIND_FILE_SIZE
+import com.card.lp_server.server.GET_BASE_INFO
+import com.card.lp_server.server.GET_TYPE_LIST
 import com.card.lp_server.server.LIST_FILES
 import com.card.lp_server.server.READ_FILE
+import com.card.lp_server.server.TAG_INFO
+import com.card.lp_server.server.TAG_VERSION
 import com.card.lp_server.server.UPDATE_DISPLAY
 import com.card.lp_server.utils.convertBitmapToBinary
 import com.card.lp_server.utils.generateBitMapForLl
@@ -34,6 +45,7 @@ import rxhttp.toFlow
 import rxhttp.wrapper.param.RxHttp
 import java.io.InputStream
 import java.io.ByteArrayOutputStream
+import kotlin.random.Random
 
 
 class MainActivity : AppCompatActivity() {
@@ -117,8 +129,16 @@ class MainActivity : AppCompatActivity() {
         requestGet(LIST_FILES)
     }
 
+    fun deleteFile(view: View) {
+        requestGet("$DELETE_FILE?fileName=$TEST_NAME")
+    }
+
+    fun tagInfo(view: View) {
+        requestGet(TAG_INFO)
+    }
+
     fun readFile(view: View) {
-        requestGet(READ_FILE)
+        requestGet("$READ_FILE?fileName=$TEST_NAME")
     }
 
     fun testroom(view: View) {
@@ -130,21 +150,8 @@ class MainActivity : AppCompatActivity() {
     fun testcon(view: View) {
         HIDCommunicationUtil.instance.findAndOpenHIDDevice()
     }
-
-    fun testHttpPost(view: View) {
-        requestPost(UPDATE_DISPLAY, TagEntity(data = byteArrayOf()))
-    }
-
     fun add_base_info(view: View) {
-        lifecycleScope.launchWhenCreated {
-            RxHttp.postBody("/api/addBaseInfo")  //第一步，确定请求方式，可以选择postForm、postJson等方法
-                .setBody(RecordBean(dyNumber = "123"))
-                .toFlow<String>()       //第二步，调用toFlow方法并输入泛型类型，拿到Flow对象
-                .collect {              //第三步，调用collect方法发起请求
-                    LogUtils.d(it)
-                }
-
-        }
+        requestPost(ADD_BASE_INFO, RecordBean(dyNumber = "123"))
     }
 
     fun testUpdateDisplay(view: View) {
@@ -159,18 +166,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    fun get_base_info(view: View) {
-        lifecycleScope.launchWhenCreated {
-            RxHttp.get("/api/getBaseInfo")  //第一步，确定请求方式，可以选择postForm、postJson等方法
-                .toFlow<String>()       //第二步，调用toFlow方法并输入泛型类型，拿到Flow对象
-                .collect {              //第三步，调用collect方法发起请求
-                    LogUtils.d(it)
-                }
-
-        }
-    }
-
-    fun requestGet(url: String) {
+    private fun requestGet(url: String) {
         tvFileList.text = "${tvFileList.text}\n\n request: GET path = $url"
         lifecycleScope.launchWhenCreated {
             RxHttp.get(url)  //第一步，确定请求方式，可以选择postForm、postJson等方法
@@ -178,18 +174,24 @@ class MainActivity : AppCompatActivity() {
                 .collect {              //第三步，调用collect方法发起请求
                     LogUtils.d(it)
                     tvFileList.text = "${tvFileList.text}\n response: path = $url \n result: $it"
-                    tvFileList.viewTreeObserver
-                        .addOnPreDrawListener { // 在 View 绘制完成后的回调操作
-                            scroll.fullScroll(ScrollView.FOCUS_DOWN)
-                            true
+                    tvFileList.viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
+                        override fun onPreDraw(): Boolean {
+                            tvFileList.viewTreeObserver.removeOnPreDrawListener(this) // 确保只触发一次
+
+                            tvFileList.post {
+                                scroll.fullScroll(ScrollView.FOCUS_DOWN)
+                            }
+
+                            return true
                         }
+                    })
 
                 }
 
         }
     }
 
-    fun requestPost(url: String, body: Any) {
+    private fun requestPost(url: String, body: Any) {
         tvFileList.text = "${tvFileList.text}\n\n request: POST path = $url"
 
         lifecycleScope.launchWhenCreated {
@@ -251,5 +253,31 @@ class MainActivity : AppCompatActivity() {
         }
 
         return byteBuffer.toByteArray()
+    }
+
+    fun tagVersion(view: View) {
+        requestGet(TAG_VERSION)
+    }
+
+    fun getBaseInfo(view: View) {
+        requestGet(GET_BASE_INFO)
+    }
+
+    fun getTypeList(view: View) {
+        val randomNumber = Random.nextInt(2, 13) // 生成一个范围在 2 到 12 之间的随机数
+        requestGet("$GET_TYPE_LIST?typeNumber=$randomNumber")
+    }
+
+    fun findFileSize(view: View) {
+        requestPost(FIND_FILE_SIZE, TagEntity(TEST_NAME))
+    }
+
+    fun addCodeUpRec(view: View) {
+        requestPost(ADD_CODE_UP_REC, CodeUpRec(dyNumber = "555"))
+
+    }
+
+    fun encodeAndUpdateEink(view: View) {
+        requestPost(ENCODE_AND_UPDATE_EINK, CodeUpRec(dyNumber = "555"))
     }
 }

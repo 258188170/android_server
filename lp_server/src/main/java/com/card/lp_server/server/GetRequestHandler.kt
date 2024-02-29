@@ -2,10 +2,8 @@ package com.card.lp_server.server
 
 import android.util.Log
 import com.blankj.utilcode.util.ConvertUtils
-import com.blankj.utilcode.util.GsonUtils
 import com.card.lp_server.card.device.LonbestCard
 import com.card.lp_server.model.Types
-import com.card.lp_server.room.entity.RecordBean
 import com.card.lp_server.utils.FILE_NAME
 import com.card.lp_server.utils.TAG
 import com.card.lp_server.utils.TYPE_NUMBER

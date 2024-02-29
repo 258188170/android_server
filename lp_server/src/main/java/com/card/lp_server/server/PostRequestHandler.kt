@@ -28,11 +28,11 @@ class PostRequestHandler : RequestHandlerStrategy {
         //common
         UPDATE_DISPLAY to ::handleUpdateDisplay,
         COMMON_WRITE to ::handleCommonWrite,
-        "/api/find_file_size" to ::handleFindFileSize,
+        FIND_FILE_SIZE to ::handleFindFileSize,
         //dy
-        "/api/addBaseInfo" to ::handleBaseInfo,
-        "/api/addCodeUpRec" to ::handleCodeUpRec,
-        "/api/encodeAndUpdateEink" to ::handleEncode,
+        ADD_BASE_INFO to ::handleBaseInfo,
+        ADD_CODE_UP_REC to ::handleCodeUpRec,
+        ENCODE_AND_UPDATE_EINK to ::handleEncode,
 
         // Add more URL mappings as needed
     )
@@ -123,7 +123,7 @@ class PostRequestHandler : RequestHandlerStrategy {
         val fromJson = GsonUtils.fromJson(postParams, TagEntity::class.java)
             ?: return responseJsonStringFail("屏幕数据不能为空!")
         Log.d(TAG, "handleUpdateDisplay: $fromJson")
-        if (fromJson.fileName == null || fromJson.data == null) return responseJsonStringFail("参数不能为空")
+        if (fromJson.fileName == null) return responseJsonStringFail("参数不能为空")
         return handleResponse {
             val findFileSize = LonbestCard.getInstance().findFileSize(fromJson.fileName)
             ByteBuffer.wrap(findFileSize).int
