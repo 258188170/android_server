@@ -62,23 +62,50 @@ class PostRequestHandler : RequestHandlerStrategy {
             ?: return responseJsonStringFail("参数不能为空!")
         if (fromJson.dyNumber.isNullOrEmpty())
             return responseJsonStringFail("dyNumber is not empty")
-        Log.d(TAG, "handleAddBaseInfo: $fromJson")
-
-
-        return try {
-            val writeFile =
-                LonbestCard.getInstance()
-                    .writeFile(Types.CODE_UP_REC.value, postParams.toByteArray())
-            if (writeFile) {
-                mAppContainer.mCodeUpRecRepository.insertItem(fromJson)
-                responseJsonStringSuccess(true)
+        Log.d(TAG, "handleCodeUpRec: $fromJson")
+        try {
+            val readFile = LonbestCard.getInstance()
+                .readFile(Types.CODE_UP_REC.value)
+            val writeFile: Boolean
+            if (readFile == null) {
+                writeFile = LonbestCard.getInstance()
+                    .writeFile(
+                        Types.CODE_UP_REC.value,
+                        GsonUtils.toJson(arrayListOf(fromJson)).toByteArray()
+                    )
+                Log.d(TAG, "handleCodeUpRec: writeFile $writeFile")
+                return if (writeFile) {
+                    responseJsonStringSuccess(true)
+                } else {
+                    responseJsonStringSuccess(false, "操作失败!")
+                }
             } else {
-                responseJsonStringSuccess(false, "操作失败")
+                val recordBean = GsonUtils.fromJson<List<CodeUpRec>>(
+                    String(readFile),
+                    GsonUtils.getListType(CodeUpRec::class.java)
+                ).toMutableList()
+                return if (recordBean.first().dyNumber == fromJson.dyNumber) {
+                    recordBean.add(fromJson)
+                    writeFile = LonbestCard.getInstance()
+                        .writeFile(
+                            Types.CODE_UP_REC.value,
+                            GsonUtils.toJson(recordBean).toByteArray()
+                        )
+                    Log.d(TAG, "handleCodeUpRec: writeFile $writeFile")
+                    if (writeFile) {
+                        responseJsonStringSuccess(true)
+                    } else {
+                        Log.d(TAG, "handleCodeUpRec: 写入 CodeUpRec 失败")
+                        responseJsonStringSuccess(false, "操作失败!")
+                    }
+                } else {
+                    Log.d(TAG, "handleCodeUpRec: 要写入标签弹号与标签内不一致")
+                    responseJsonStringSuccess(false, "要写入标签弹号与当前标签内不一致!")
+                }
             }
         } catch (e: Exception) {
-            responseJsonStringFail(e.message)
+            return responseJsonStringFail(e.message)
         }
-
     }
 
     private fun handleBaseInfo(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
@@ -90,21 +117,24 @@ class PostRequestHandler : RequestHandlerStrategy {
         Log.d(TAG, "handleAddBaseInfo: $fromJson")
 
         try {
+            //读数据
             val readFile = LonbestCard.getInstance()
                 .readFile(Types.BASE_INFO.value)
-            var writeFile = false
+            val writeFile: Boolean
             if (readFile == null) {
                 writeFile = LonbestCard.getInstance()
                     .writeFile(Types.BASE_INFO.value, postParams.toByteArray())
-                mAppContainer.mRecordRepository.insertItem(fromJson)
                 Log.d(TAG, "handleBaseInfo: writeFile $writeFile")
-                return responseJsonStringSuccess(writeFile)
+                return if (writeFile) {
+                    responseJsonStringSuccess(true)
+                } else {
+                    responseJsonStringSuccess(false, "操作失败!")
+                }
             } else {
                 val recordBean = GsonUtils.fromJson(String(readFile), RecordBean::class.java)
                 if (recordBean.dyNumber == fromJson.dyNumber) {
                     writeFile = LonbestCard.getInstance()
                         .writeFile(Types.BASE_INFO.value, postParams.toByteArray())
-                    mAppContainer.mRecordRepository.updateItem(fromJson)
                     Log.d(TAG, "handleBaseInfo: writeFile $writeFile")
                     if (writeFile) {
                         return if (recordBean.isEink == true) {
