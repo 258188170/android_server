@@ -16,7 +16,7 @@ data class RecordBean(
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0,
     // 编号
-    var dyNumber: String? = "",
+    var dyNumber: String? = "dddd",
 
     // 型号
     var dyvModel: String? = "PL-12",

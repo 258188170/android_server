@@ -23,19 +23,18 @@ class HIDCommunicationUtil private constructor() {
     private val usbManager: UsbManager =
         mAppContext.getSystemService(Context.USB_SERVICE) as UsbManager
 
-    @SuppressLint("MutableImplicitPendingIntent")
     private val permissionIntent: PendingIntent = PendingIntent.getBroadcast(
         mAppContext,
         0,
         Intent(ACTION_USB_PERMISSION),
-        PendingIntent.FLAG_IMMUTABLE
+        0
     )
     private var usbDevice: UsbDevice? = null
     private var usbConnection: UsbDeviceConnection? = null
     private var connectionListener: ConnectionListener = DefaultConnectionListener()
     private var vendorId: Int = 6790
     private var productId: Int = 58409
-    private var isConnect: Boolean = false
+     var isConnect: Boolean = false
 
     init {
         registerUSBReceiver()

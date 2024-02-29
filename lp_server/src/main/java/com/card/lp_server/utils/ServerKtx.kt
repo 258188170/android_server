@@ -16,7 +16,7 @@ const val TYPE_NUMBER = "typeNumber"
 
 fun <T> handleResponse(action: () -> T): NanoHTTPD.Response {
     return try {
-        val findAndOpenHIDDevice = HIDCommunicationUtil.instance.findAndOpenHIDDevice()
+        val findAndOpenHIDDevice = HIDCommunicationUtil.instance.isConnect
         if (findAndOpenHIDDevice) {
             val action1 = action()
             action1.responseJsonStringSuccess()
