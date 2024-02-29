@@ -155,7 +155,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun testUpdateDisplay(view: View) {
-        lifecycleScope.launchWhenCreated {
+        lifecycleScope.launch(Dispatchers.IO) {
             val generateBitMapForLl = generateBitMapForLl()
             val convertBitmapToBinary =
                 convertBitmapToBinary(generateBitMapForLl)
@@ -168,7 +168,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun requestGet(url: String) {
         tvFileList.text = "${tvFileList.text}\n\n request: GET path = $url"
-        lifecycleScope.launchWhenCreated {
+        lifecycleScope.launch(Dispatchers.IO) {
             RxHttp.get(url)  //第一步，确定请求方式，可以选择postForm、postJson等方法
                 .toFlow<String>()       //第二步，调用toFlow方法并输入泛型类型，拿到Flow对象
                 .collect {              //第三步，调用collect方法发起请求
@@ -194,7 +194,7 @@ class MainActivity : AppCompatActivity() {
     private fun requestPost(url: String, body: Any) {
         tvFileList.text = "${tvFileList.text}\n\n request: POST path = $url"
 
-        lifecycleScope.launchWhenCreated {
+        lifecycleScope.launch(Dispatchers.IO){
             RxHttp.postBody(url)  //第一步，确定请求方式，可以选择postForm、postJson等方法
                 .setBody(body)
                 .toFlow<String>()       //第二步，调用toFlow方法并输入泛型类型，拿到Flow对象
@@ -216,9 +216,7 @@ class MainActivity : AppCompatActivity() {
             if (data != null) {
                 val uri = data.data
                 if (uri != null) {
-                  lifecycleScope.launchWhenCreated {
-                      requestPost(COMMON_WRITE, TagEntity(TEST_NAME, convertFileToByteArray(uri)))
-                  }
+                    requestPost(COMMON_WRITE, TagEntity(TEST_NAME, convertFileToByteArray(uri)))
                 } else {
                     ToastUtils.showLong("获取文件失败")
                 }
