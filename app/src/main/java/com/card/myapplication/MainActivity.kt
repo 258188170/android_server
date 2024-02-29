@@ -187,14 +187,13 @@ class MainActivity : AppCompatActivity() {
         val generateBitMapForLl = generateBitMapForLl(RecordBean(dyNumber = "123"))
         val convertBitmapToBinary = convertBitmapToBinary(generateBitMapForLl)
         runOnUiThread {
-                requestPost(UPDATE_DISPLAY, TagEntity(data = convertBitmapToBinary))
-
-            }
-
+            requestPost(UPDATE_DISPLAY, TagEntity(data = convertBitmapToBinary))
 
         }
 
+
     }
+
 
     private fun requestGet(url: String) {
         show("\n\n request: GET path = $url")
