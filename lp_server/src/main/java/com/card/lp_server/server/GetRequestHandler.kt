@@ -40,7 +40,7 @@ class GetRequestHandler : RequestHandlerStrategy {
         if (type.isEmpty()) return responseJsonStringFail("请传入要读取类型")
         return try {
             val readFile = LonbestCard.getInstance().readFile(type)
-            responseJsonStringSuccess(readFile)
+            responseJsonStringSuccess(String(readFile))
         } catch (e: Exception) {
             responseJsonStringFail(e.message)
         }
