@@ -10,7 +10,6 @@ import fi.iki.elonen.NanoHTTPD
 fun <T> responseJsonStringSuccess(
     data: T?,
     msg: String = "操作成功",
-    success: Boolean = true,
 ): NanoHTTPD.Response {
     val response = BaseResponse(200, data, msg)
     Log.d(TAG, "responseJsonStringSuccess: $data")
@@ -19,8 +18,6 @@ fun <T> responseJsonStringSuccess(
 
 fun responseJsonStringFail(
     msg: String? = "操作失败,请重试",
-
-    success: Boolean = false,
 ): NanoHTTPD.Response {
     val response = BaseResponse(500,null, msg)
     Log.d(TAG, "responseJsonStringFail: ")

@@ -216,7 +216,9 @@ class MainActivity : AppCompatActivity() {
             if (data != null) {
                 val uri = data.data
                 if (uri != null) {
-                    requestPost(COMMON_WRITE, TagEntity(TEST_NAME, convertFileToByteArray(uri)))
+                  lifecycleScope.launchWhenCreated {
+                      requestPost(COMMON_WRITE, TagEntity(TEST_NAME, convertFileToByteArray(uri)))
+                  }
                 } else {
                     ToastUtils.showLong("获取文件失败")
                 }
