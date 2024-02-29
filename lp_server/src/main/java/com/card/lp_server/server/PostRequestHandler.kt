@@ -319,7 +319,7 @@ class PostRequestHandler : RequestHandlerStrategy {
                 Log.d(TAG, "handleTecReportImpRec: toByteArray $toByteArray")
                 writeFile = LonbestCard.getInstance()
                     .writeFile(
-                        Types.CODE_UP_REC.value,
+                        Types.TECREPORTIMP_REC.value,
                         toByteArray
                     )
                 Log.d(TAG, "handleTecReportImpRec: writeFile $writeFile")
@@ -339,7 +339,7 @@ class PostRequestHandler : RequestHandlerStrategy {
                     recordBean.add(tecReportImpRec)
                     writeFile = LonbestCard.getInstance()
                         .writeFile(
-                            Types.CODE_UP_REC.value,
+                            Types.TECREPORTIMP_REC.value,
                             GsonUtils.toJson(recordBean).toByteArray()
                         )
                     Log.d(TAG, "handleTecReportImpRec: writeFile $writeFile")
@@ -368,14 +368,14 @@ class PostRequestHandler : RequestHandlerStrategy {
         Log.d(TAG, "handleSorftwareReplaceRec: $sorftwareReplaceRec")
         try {
             val readFile = LonbestCard.getInstance()
-                .readFile(Types.TECREPORTIMP_REC.value)
+                .readFile(Types.SORFTWARE_REC.value)
             val writeFile: Boolean
             if (readFile == null) {
                 val toByteArray = GsonUtils.toJson(arrayListOf(sorftwareReplaceRec)).toByteArray()
                 Log.d(TAG, "handleSorftwareReplaceRec: toByteArray $toByteArray")
                 writeFile = LonbestCard.getInstance()
                     .writeFile(
-                        Types.CODE_UP_REC.value,
+                        Types.SORFTWARE_REC.value,
                         toByteArray
                     )
                 Log.d(TAG, "handleSorftwareReplaceRec: writeFile $writeFile")
@@ -395,7 +395,7 @@ class PostRequestHandler : RequestHandlerStrategy {
                     recordBean.add(sorftwareReplaceRec)
                     writeFile = LonbestCard.getInstance()
                         .writeFile(
-                            Types.CODE_UP_REC.value,
+                            Types.SORFTWARE_REC.value,
                             GsonUtils.toJson(recordBean).toByteArray()
                         )
                     Log.d(TAG, "handleSorftwareReplaceRec: writeFile $writeFile")
@@ -424,14 +424,14 @@ class PostRequestHandler : RequestHandlerStrategy {
         Log.d(TAG, "handleRepairRec: $repairRec")
         try {
             val readFile = LonbestCard.getInstance()
-                .readFile(Types.TECREPORTIMP_REC.value)
+                .readFile(Types.REPAIR_REC.value)
             val writeFile: Boolean
             if (readFile == null) {
                 val toByteArray = GsonUtils.toJson(arrayListOf(repairRec)).toByteArray()
                 Log.d(TAG, "handleRepairRec: toByteArray $toByteArray")
                 writeFile = LonbestCard.getInstance()
                     .writeFile(
-                        Types.CODE_UP_REC.value,
+                        Types.REPAIR_REC.value,
                         toByteArray
                     )
                 Log.d(TAG, "handleRepairRec: writeFile $writeFile")
@@ -451,7 +451,7 @@ class PostRequestHandler : RequestHandlerStrategy {
                     recordBean.add(repairRec)
                     writeFile = LonbestCard.getInstance()
                         .writeFile(
-                            Types.CODE_UP_REC.value,
+                            Types.REPAIR_REC.value,
                             GsonUtils.toJson(recordBean).toByteArray()
                         )
                     Log.d(TAG, "handleRepairRec: writeFile $writeFile")
@@ -480,14 +480,14 @@ class PostRequestHandler : RequestHandlerStrategy {
         Log.d(TAG, "handlePoweronRec: $poweronRec")
         try {
             val readFile = LonbestCard.getInstance()
-                .readFile(Types.TECREPORTIMP_REC.value)
+                .readFile(Types.POWERON_REC.value)
             val writeFile: Boolean
             if (readFile == null) {
                 val toByteArray = GsonUtils.toJson(arrayListOf(poweronRec)).toByteArray()
                 Log.d(TAG, "handlePoweronRec: toByteArray $toByteArray")
                 writeFile = LonbestCard.getInstance()
                     .writeFile(
-                        Types.CODE_UP_REC.value,
+                        Types.POWERON_REC.value,
                         toByteArray
                     )
                 Log.d(TAG, "handlePoweronRec: writeFile $writeFile")
@@ -507,7 +507,7 @@ class PostRequestHandler : RequestHandlerStrategy {
                     recordBean.add(poweronRec)
                     writeFile = LonbestCard.getInstance()
                         .writeFile(
-                            Types.CODE_UP_REC.value,
+                            Types.POWERON_REC.value,
                             GsonUtils.toJson(recordBean).toByteArray()
                         )
                     Log.d(TAG, "handlePoweronRec: writeFile $writeFile")
@@ -536,14 +536,14 @@ class PostRequestHandler : RequestHandlerStrategy {
         Log.d(TAG, "handleMtRec: $mtRec")
         try {
             val readFile = LonbestCard.getInstance()
-                .readFile(Types.TECREPORTIMP_REC.value)
+                .readFile(Types.MT_REC.value)
             val writeFile: Boolean
             if (readFile == null) {
                 val toByteArray = GsonUtils.toJson(arrayListOf(mtRec)).toByteArray()
                 Log.d(TAG, "handleMtRec: toByteArray $toByteArray")
                 writeFile = LonbestCard.getInstance()
                     .writeFile(
-                        Types.CODE_UP_REC.value,
+                        Types.MT_REC.value,
                         toByteArray
                     )
                 Log.d(TAG, "handleMtRec: writeFile $writeFile")
@@ -563,7 +563,7 @@ class PostRequestHandler : RequestHandlerStrategy {
                     recordBean.add(mtRec)
                     writeFile = LonbestCard.getInstance()
                         .writeFile(
-                            Types.CODE_UP_REC.value,
+                            Types.MT_REC.value,
                             GsonUtils.toJson(recordBean).toByteArray()
                         )
                     Log.d(TAG, "handleMtRec: writeFile $writeFile")
@@ -599,7 +599,7 @@ class PostRequestHandler : RequestHandlerStrategy {
                 Log.d(TAG, "handleImportantNote: toByteArray $toByteArray")
                 writeFile = LonbestCard.getInstance()
                     .writeFile(
-                        Types.CODE_UP_REC.value,
+                        Types.TECREPORTIMP_REC.value,
                         toByteArray
                     )
                 Log.d(TAG, "handleImportantNote: writeFile $writeFile")
@@ -619,7 +619,7 @@ class PostRequestHandler : RequestHandlerStrategy {
                     recordBean.add(importantNote)
                     writeFile = LonbestCard.getInstance()
                         .writeFile(
-                            Types.CODE_UP_REC.value,
+                            Types.TECREPORTIMP_REC.value,
                             GsonUtils.toJson(recordBean).toByteArray()
                         )
                     Log.d(TAG, "handleImportantNote: writeFile $writeFile")
@@ -648,14 +648,14 @@ class PostRequestHandler : RequestHandlerStrategy {
         Log.d(TAG, "handleHandoverRec: $handoverRec")
         try {
             val readFile = LonbestCard.getInstance()
-                .readFile(Types.TECREPORTIMP_REC.value)
+                .readFile(Types.HANDOVER_REC.value)
             val writeFile: Boolean
             if (readFile == null) {
                 val toByteArray = GsonUtils.toJson(arrayListOf(handoverRec)).toByteArray()
                 Log.d(TAG, "handleHandoverRec: toByteArray $toByteArray")
                 writeFile = LonbestCard.getInstance()
                     .writeFile(
-                        Types.CODE_UP_REC.value,
+                        Types.HANDOVER_REC.value,
                         toByteArray
                     )
                 Log.d(TAG, "handleHandoverRec: writeFile $writeFile")
@@ -675,7 +675,7 @@ class PostRequestHandler : RequestHandlerStrategy {
                     recordBean.add(handoverRec)
                     writeFile = LonbestCard.getInstance()
                         .writeFile(
-                            Types.CODE_UP_REC.value,
+                            Types.HANDOVER_REC.value,
                             GsonUtils.toJson(recordBean).toByteArray()
                         )
                     Log.d(TAG, "handleHandoverRec: writeFile $writeFile")
@@ -704,14 +704,14 @@ class PostRequestHandler : RequestHandlerStrategy {
         Log.d(TAG, "handleGJZBRec: $gjzbRec")
         try {
             val readFile = LonbestCard.getInstance()
-                .readFile(Types.TECREPORTIMP_REC.value)
+                .readFile(Types.GJZB_REC.value)
             val writeFile: Boolean
             if (readFile == null) {
                 val toByteArray = GsonUtils.toJson(arrayListOf(gjzbRec)).toByteArray()
                 Log.d(TAG, "handleGJZBRec: toByteArray $toByteArray")
                 writeFile = LonbestCard.getInstance()
                     .writeFile(
-                        Types.CODE_UP_REC.value,
+                        Types.GJZB_REC.value,
                         toByteArray
                     )
                 Log.d(TAG, "handleGJZBRec: writeFile $writeFile")
@@ -731,7 +731,7 @@ class PostRequestHandler : RequestHandlerStrategy {
                     recordBean.add(gjzbRec)
                     writeFile = LonbestCard.getInstance()
                         .writeFile(
-                            Types.CODE_UP_REC.value,
+                            Types.GJZB_REC.value,
                             GsonUtils.toJson(recordBean).toByteArray()
                         )
                     Log.d(TAG, "handleGJZBRec: writeFile $writeFile")
