@@ -66,6 +66,7 @@ class PostRequestHandler : RequestHandlerStrategy {
     private fun handleHome(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
         return NanoHTTPD.newFixedLengthResponse("<html><body style=\"font-size:40px;\">这里是首页</body></html>")
     }
+
     private fun handleAddGasUpRec(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
         val postParams = session.getPostParams() ?: return responseJsonStringFail("参数不能为空!")
         val gasUpRec = GsonUtils.fromJson(postParams, GasUpRec::class.java)
@@ -303,6 +304,7 @@ class PostRequestHandler : RequestHandlerStrategy {
             return responseJsonStringFail(e.message)
         }
     }
+
     private fun handleAddTecReportImpRec(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
         val postParams = session.getPostParams() ?: return responseJsonStringFail("参数不能为空!")
         val tecReportImpRec = GsonUtils.fromJson(postParams, TecReportImpRec::class.java)
@@ -359,6 +361,7 @@ class PostRequestHandler : RequestHandlerStrategy {
             return responseJsonStringFail(e.message)
         }
     }
+
     private fun handleAddSorftwareReplaceRec(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
         val postParams = session.getPostParams() ?: return responseJsonStringFail("参数不能为空!")
         val sorftwareReplaceRec = GsonUtils.fromJson(postParams, SorftwareReplaceRec::class.java)
@@ -415,6 +418,7 @@ class PostRequestHandler : RequestHandlerStrategy {
             return responseJsonStringFail(e.message)
         }
     }
+
     private fun handleAddRepairRec(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
         val postParams = session.getPostParams() ?: return responseJsonStringFail("参数不能为空!")
         val repairRec = GsonUtils.fromJson(postParams, RepairRec::class.java)
@@ -471,6 +475,7 @@ class PostRequestHandler : RequestHandlerStrategy {
             return responseJsonStringFail(e.message)
         }
     }
+
     private fun handleAddPoweronRec(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
         val postParams = session.getPostParams() ?: return responseJsonStringFail("参数不能为空!")
         val poweronRec = GsonUtils.fromJson(postParams, PoweronRec::class.java)
@@ -527,6 +532,7 @@ class PostRequestHandler : RequestHandlerStrategy {
             return responseJsonStringFail(e.message)
         }
     }
+
     private fun handleAddMtRec(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
         val postParams = session.getPostParams() ?: return responseJsonStringFail("参数不能为空!")
         val mtRec = GsonUtils.fromJson(postParams, MtRec::class.java)
@@ -583,6 +589,7 @@ class PostRequestHandler : RequestHandlerStrategy {
             return responseJsonStringFail(e.message)
         }
     }
+
     private fun handleAddImportantNote(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
         val postParams = session.getPostParams() ?: return responseJsonStringFail("参数不能为空!")
         val importantNote = GsonUtils.fromJson(postParams, ImportantNote::class.java)
@@ -639,6 +646,7 @@ class PostRequestHandler : RequestHandlerStrategy {
             return responseJsonStringFail(e.message)
         }
     }
+
     private fun handleAddHandoverRec(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
         val postParams = session.getPostParams() ?: return responseJsonStringFail("参数不能为空!")
         val handoverRec = GsonUtils.fromJson(postParams, HandoverRec::class.java)
@@ -695,6 +703,7 @@ class PostRequestHandler : RequestHandlerStrategy {
             return responseJsonStringFail(e.message)
         }
     }
+
     private fun handleAddGJZBRec(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
         val postParams = session.getPostParams() ?: return responseJsonStringFail("参数不能为空!")
         val gjzbRec = GsonUtils.fromJson(postParams, GJZBRec::class.java)
@@ -770,39 +779,25 @@ class PostRequestHandler : RequestHandlerStrategy {
                     .writeFile(Types.BASE_INFO.value, postParams.toByteArray())
                 Log.d(TAG, "handleBaseInfo: writeFile $writeFile")
                 return if (writeFile) {
-                    responseJsonStringSuccess(true)
+                    response(fromJson)
                 } else {
                     responseJsonStringSuccess(false, "操作失败!")
                 }
             } else {
                 val recordBean = GsonUtils.fromJson(String(readFile), RecordBean::class.java)
-                if (recordBean.dyNumber == fromJson.dyNumber) {
+                return if (recordBean.dyNumber == fromJson.dyNumber) {
                     writeFile = LonbestCard.getInstance()
                         .writeFile(Types.BASE_INFO.value, postParams.toByteArray())
                     Log.d(TAG, "handleBaseInfo: writeFile $writeFile")
                     if (writeFile) {
-                        return if (recordBean.isEink == true) {
-                            val generateBitMapForLl = generateBitMapForLl(recordBean)
-                            val convertBitmapToBinary = convertBitmapToBinary(generateBitMapForLl)
-                            val updateEInk =
-                                LonbestCard.getInstance().updateEInk(convertBitmapToBinary)
-                            if (updateEInk) {
-                                responseJsonStringSuccess(true)
-                            } else {
-                                Log.d(TAG, "handleBaseInfo: 更新屏幕失败")
-                                responseJsonStringSuccess(false, "更新屏幕失败,请重试!")
-                            }
-                        } else {
-                            Log.d(TAG, "handleBaseInfo: 不需要刷屏")
-                            responseJsonStringSuccess(true)
-                        }
+                        response(recordBean)
                     } else {
                         Log.d(TAG, "handleBaseInfo: 写入 RecordBean 失败")
-                        return responseJsonStringSuccess(false, "操作失败!")
+                        responseJsonStringSuccess(false, "操作失败!")
                     }
                 } else {
                     Log.d(TAG, "handleBaseInfo: 要写入标签弹号与标签内不一致")
-                    return responseJsonStringSuccess(false, "要写入标签弹号与当前标签内不一致!")
+                    responseJsonStringSuccess(false, "要写入标签弹号与当前标签内不一致!")
                 }
             }
         } catch (e: Exception) {
@@ -810,6 +805,24 @@ class PostRequestHandler : RequestHandlerStrategy {
             return responseJsonStringFail(e.message)
         }
 
+    }
+
+    private fun response(fromJson: RecordBean): NanoHTTPD.Response {
+        return if (fromJson.isEink == true) {
+            val generateBitMapForLl = generateBitMapForLl(fromJson)
+            val convertBitmapToBinary = convertBitmapToBinary(generateBitMapForLl)
+            val updateEInk =
+                LonbestCard.getInstance().updateEInk(convertBitmapToBinary)
+            if (updateEInk) {
+                responseJsonStringSuccess(true)
+            } else {
+                Log.d(TAG, "handleBaseInfo: 更新屏幕失败")
+                responseJsonStringSuccess(false, "更新屏幕失败,请重试!")
+            }
+        } else {
+            Log.d(TAG, "handleBaseInfo: 不需要刷屏")
+            responseJsonStringSuccess(true)
+        }
     }
 
     private fun handleFindFileSize(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
