@@ -12,6 +12,7 @@ import com.card.lp_server.utils.getPostParams
 import com.card.lp_server.utils.handleResponse
 import com.card.lp_server.utils.responseJsonStringFail
 import fi.iki.elonen.NanoHTTPD
+import org.json.JSONObject
 import java.nio.ByteBuffer
 
 
@@ -42,7 +43,9 @@ class PostRequestHandler : RequestHandlerStrategy {
 
     private fun handleHome(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
         return NanoHTTPD.newFixedLengthResponse("<html><body style=\"font-size:40px;\">这里是首页</body></html>")
-    }  private fun handleEncode(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
+    }
+
+    private fun handleEncode(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
 
         return NanoHTTPD.newFixedLengthResponse("<html><body style=\"font-size:40px;\">这里是首页</body></html>")
     }
@@ -56,7 +59,8 @@ class PostRequestHandler : RequestHandlerStrategy {
         Log.d(TAG, "handleAddBaseInfo: $fromJson")
         return handleResponse {
             val writeFile =
-                LonbestCard.getInstance().writeFile(Types.CODE_UP_REC.value, postParams.toByteArray())
+                LonbestCard.getInstance()
+                    .writeFile(Types.CODE_UP_REC.value, postParams.toByteArray())
             if (writeFile)
                 mAppContainer.mCodeUpRecRepository.insertItem(fromJson)
             writeFile
@@ -71,21 +75,25 @@ class PostRequestHandler : RequestHandlerStrategy {
             return responseJsonStringFail("dyNumber is not empty")
         Log.d(TAG, "handleAddBaseInfo: $fromJson")
         return handleResponse {
-            val writeFile =
-                LonbestCard.getInstance().writeFile(Types.BASE_INFO.value, postParams.toByteArray())
-            if (writeFile){
-                val loadByNumber = mAppContainer.mRecordRepository.loadByNumber(fromJson.dyNumber!!)
-                if (loadByNumber?.dyNumber.isNullOrEmpty()){
-                    mAppContainer.mRecordRepository.insertItem(fromJson)
-                }else{
-                    if (loadByNumber!!.dyNumber == fromJson.dyNumber){
-                        mAppContainer.mRecordRepository.updateItem(fromJson)
-                    }else{
-                        responseJsonStringFail("与标签绑定弹号不一致!")
-                    }
+            val loadByNumber = mAppContainer.mRecordRepository.loadByNumber(fromJson.dyNumber!!)
+
+            val readFile = LonbestCard.getInstance()
+                .readFile(Types.BASE_INFO.value)
+            val recordBean = GsonUtils.fromJson(String(readFile), RecordBean::class.java)
+            Log.d(TAG, "handleBaseInfo: loadByNumber: $recordBean")
+            if (loadByNumber?.dyNumber.isNullOrEmpty()) {
+                mAppContainer.mRecordRepository.insertItem(fromJson)
+                LonbestCard.getInstance()
+                    .writeFile(Types.BASE_INFO.value, postParams.toByteArray())
+            } else {
+                if (loadByNumber!!.dyNumber == fromJson.dyNumber) {
+                    mAppContainer.mRecordRepository.updateItem(fromJson)
+                    LonbestCard.getInstance()
+                        .writeFile(Types.BASE_INFO.value, postParams.toByteArray())
+                } else {
+                    responseJsonStringFail("与标签绑定弹号不一致!")
                 }
             }
-            writeFile
         }
     }
 

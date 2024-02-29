@@ -6,6 +6,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.blankj.utilcode.util.LogUtils
 import com.blankj.utilcode.util.NetworkUtils
+import com.blankj.utilcode.util.StringUtils
 import com.card.lp_server.card.HIDCommunicationUtil
 import com.card.lp_server.mAppContainer
 import com.card.lp_server.room.entity.TagEntity
@@ -69,7 +70,7 @@ class MainActivity : AppCompatActivity() {
     fun add_base_info(view: View) {
         lifecycleScope.launchWhenCreated {
             RxHttp.postBody("/api/addBaseInfo")  //第一步，确定请求方式，可以选择postForm、postJson等方法
-                .setBody(RecordBean())
+                .setBody(RecordBean(dyNumber = "123"))
                 .toFlow<String>()       //第二步，调用toFlow方法并输入泛型类型，拿到Flow对象
                 .collect {              //第三步，调用collect方法发起请求
                     LogUtils.d(it)
@@ -86,8 +87,9 @@ class MainActivity : AppCompatActivity() {
             RxHttp.postBody("/api/update_display")  //第一步，确定请求方式，可以选择postForm、postJson等方法
                 .setBody(TagEntity(data = convertBitmapToBinary))
                 .toFlow<String>()       //第二步，调用toFlow方法并输入泛型类型，拿到Flow对象
-                .collect {              //第三步，调用collect方法发起请求
+                .collect {
                     LogUtils.d(it)
+
                 }
 
         }

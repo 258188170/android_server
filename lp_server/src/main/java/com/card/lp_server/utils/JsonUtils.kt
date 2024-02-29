@@ -15,11 +15,12 @@ fun <T > T.responseJsonStringSuccess(
     return NanoHTTPD.newFixedLengthResponse(GsonUtils.toJson(response))//返回对应的响应体Response
 }
 
-fun responseJsonStringFail(
+fun <T> responseJsonStringFail(
+    data: T?,
     msg: String? = "设备未连接,请重试",
     code: Int = 500,
 ): NanoHTTPD.Response {
-    val response = BaseResponse(code, null, msg)
+    val response = BaseResponse(code, data, msg)
     LogUtils.d("responseJsonString: $response")
     return NanoHTTPD.newFixedLengthResponse(GsonUtils.toJson(response))//返回对应的响应体Response
 }

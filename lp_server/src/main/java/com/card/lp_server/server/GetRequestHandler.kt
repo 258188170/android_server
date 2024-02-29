@@ -27,7 +27,7 @@ class GetRequestHandler : RequestHandlerStrategy {
         "/api/tag_version" to ::handleTagVersion,
         "/api/getBaseInfo" to ::handleBaseInfo,
         "/api/getTypeList" to ::handleTypeList,
-        )
+    )
 
     override fun handleRequest(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response? {
         val uri = session.uri
@@ -38,12 +38,14 @@ class GetRequestHandler : RequestHandlerStrategy {
     private fun handleTypeList(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
         val queryParams = session.getQueryParams()[TYPE_NUMBER]?.first()
         val type = queryParams.getType()
-        if (type.isEmpty())return responseJsonStringFail("请传入要读取类型")
+        if (type.isEmpty()) return responseJsonStringFail("请传入要读取类型")
         return handleResponse {
             val readFile = LonbestCard.getInstance().readFile(type)
             String(readFile)
         }
-    } private fun handleBaseInfo(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
+    }
+
+    private fun handleBaseInfo(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
         return handleResponse {
             val readFile = LonbestCard.getInstance().readFile(Types.BASE_INFO.value)
             String(readFile)
@@ -90,10 +92,11 @@ class GetRequestHandler : RequestHandlerStrategy {
         return handleResponse {
             val listFiles = LonbestCard.getInstance().listFiles()
             val stringConvertToList = stringConvertToList(listFiles)
+
             stringConvertToList.forEach {
-                val deleteFile = LonbestCard.getInstance().deleteFile(it)
-                if (deleteFile) {
-                    return@handleResponse responseJsonStringFail()
+                val tag = LonbestCard.getInstance().deleteFile(it)
+                if (!tag) {
+                    return@handleResponse responseJsonStringFail(false, msg = "删除文件失败,请重试")
                 }
             }
             val generateBitMapForLlFormat = generateBitMapForLlFormat()
