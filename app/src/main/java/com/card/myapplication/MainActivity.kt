@@ -180,16 +180,13 @@ class MainActivity : AppCompatActivity() {
     fun add_base_info(view: View) {
         val randomNumber = Random.nextInt(2, 130) // 生成一个范围在 2 到 12 之间的随机数
 
-        requestPost(ADD_BASE_INFO, RecordBean(dyNumber = "$randomNumber"))
+        requestPost(ADD_BASE_INFO, RecordBean(dyNumber = "$randomNumber", isEink = true))
     }
 
     fun testUpdateDisplay(view: View) {
-        lifecycleScope.launch(Dispatchers.IO) {
-            val generateBitMapForLl = generateBitMapForLl()
-            val convertBitmapToBinary =
-                convertBitmapToBinary(generateBitMapForLl)
-
-            runOnUiThread {
+        val generateBitMapForLl = generateBitMapForLl(RecordBean(dyNumber = "123"))
+        val convertBitmapToBinary = convertBitmapToBinary(generateBitMapForLl)
+        runOnUiThread {
                 requestPost(UPDATE_DISPLAY, TagEntity(data = convertBitmapToBinary))
 
             }

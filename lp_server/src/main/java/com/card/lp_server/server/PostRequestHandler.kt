@@ -89,7 +89,7 @@ class PostRequestHandler : RequestHandlerStrategy {
             return responseJsonStringFail("dyNumber is not empty")
         Log.d(TAG, "handleAddBaseInfo: $fromJson")
 
-        return try {
+        try {
             val readFile = LonbestCard.getInstance()
                 .readFile(Types.BASE_INFO.value)
             var writeFile = false
@@ -98,7 +98,7 @@ class PostRequestHandler : RequestHandlerStrategy {
                     .writeFile(Types.BASE_INFO.value, postParams.toByteArray())
                 mAppContainer.mRecordRepository.insertItem(fromJson)
                 Log.d(TAG, "handleBaseInfo: writeFile $writeFile")
-                responseJsonStringSuccess(writeFile)
+                return responseJsonStringSuccess(writeFile)
             } else {
                 val recordBean = GsonUtils.fromJson(String(readFile), RecordBean::class.java)
                 if (recordBean.dyNumber == fromJson.dyNumber) {
@@ -107,7 +107,7 @@ class PostRequestHandler : RequestHandlerStrategy {
                     mAppContainer.mRecordRepository.updateItem(fromJson)
                     Log.d(TAG, "handleBaseInfo: writeFile $writeFile")
                     if (writeFile) {
-                        if (recordBean.isEink == true) {
+                        return if (recordBean.isEink == true) {
                             val generateBitMapForLl = generateBitMapForLl(recordBean)
                             val convertBitmapToBinary = convertBitmapToBinary(generateBitMapForLl)
                             val updateEInk =
@@ -115,18 +115,24 @@ class PostRequestHandler : RequestHandlerStrategy {
                             if (updateEInk) {
                                 responseJsonStringSuccess(true)
                             } else {
-                                responseJsonStringSuccess(false, "更新屏幕失败,请重试")
+                                Log.d(TAG, "handleBaseInfo: 更新屏幕失败")
+                                responseJsonStringSuccess(false, "更新屏幕失败,请重试!")
                             }
+                        } else {
+                            Log.d(TAG, "handleBaseInfo: 不需要刷屏")
+                            responseJsonStringSuccess(true)
                         }
+                    } else {
+                        Log.d(TAG, "handleBaseInfo: 写入 RecordBean 失败")
+                        return responseJsonStringSuccess(false, "操作失败!")
                     }
-                    responseJsonStringSuccess(false)
                 } else {
                     Log.d(TAG, "handleBaseInfo: 要写入标签弹号与标签内不一致")
-                    responseJsonStringSuccess(false, "要写入标签弹号与标签内不一致")
+                    return responseJsonStringSuccess(false, "要写入标签弹号与当前标签内不一致!")
                 }
             }
         } catch (e: Exception) {
-            responseJsonStringFail(e.message)
+            return responseJsonStringFail(e.message)
         }
 
     }
