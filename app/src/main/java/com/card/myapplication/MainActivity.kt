@@ -1,5 +1,6 @@
 package com.card.myapplication
 
+import android.app.ProgressDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -15,6 +16,7 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.widget.NestedScrollView
+import com.blankj.utilcode.util.GsonUtils
 import com.blankj.utilcode.util.LogUtils
 import com.blankj.utilcode.util.NetworkUtils
 import com.blankj.utilcode.util.ToastUtils
@@ -57,6 +59,18 @@ class MainActivity : AppCompatActivity() {
         private const val REQUEST_READ_EXTERNAL_STORAGE = 2
         private const val TEST_NAME = "test_name"
     }
+
+    private val progressDialog by lazy {
+        val progressDialog = ProgressDialog(this)
+        progressDialog.setMessage("加载中...")
+        progressDialog.setCancelable(true) // 设置是否可以通过返回键取消
+        progressDialog
+    }
+
+    private val stringBuilder by lazy {
+        StringBuilder() // 创建一个空的 StringBuilder 对象
+    }
+
 
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
@@ -164,7 +178,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun add_base_info(view: View) {
-        requestPost(ADD_BASE_INFO, RecordBean(dyNumber = "123"))
+        val randomNumber = Random.nextInt(2, 130) // 生成一个范围在 2 到 12 之间的随机数
+
+        requestPost(ADD_BASE_INFO, RecordBean(dyNumber = "$randomNumber"))
     }
 
     fun testUpdateDisplay(view: View) {
@@ -173,57 +189,72 @@ class MainActivity : AppCompatActivity() {
             val convertBitmapToBinary =
                 convertBitmapToBinary(generateBitMapForLl)
 
-            requestPost(UPDATE_DISPLAY, TagEntity(data = convertBitmapToBinary))
+            runOnUiThread {
+                requestPost(UPDATE_DISPLAY, TagEntity(data = convertBitmapToBinary))
+
+            }
+
 
         }
 
     }
 
     private fun requestGet(url: String) {
-        tvFileList.text = "${tvFileList.text}\n\n request: GET path = $url"
+        show("\n\n request: GET path = $url")
         lifecycleScope.launch(Dispatchers.IO) {
             RxHttp.get(url)  //第一步，确定请求方式，可以选择postForm、postJson等方法
                 .toFlow<String>()       //第二步，调用toFlow方法并输入泛型类型，拿到Flow对象
                 .collect {              //第三步，调用collect方法发起请求
                     LogUtils.d(it)
-                    withContext(Dispatchers.Main){
-                        tvFileList.text = "${tvFileList.text}\n response: path = $url \n result: $it"
-                        tvFileList.viewTreeObserver.addOnPreDrawListener(object :
-                            ViewTreeObserver.OnPreDrawListener {
-                            override fun onPreDraw(): Boolean {
-                                tvFileList.viewTreeObserver.removeOnPreDrawListener(this) // 确保只触发一次
-
-                                tvFileList.post {
-                                    scroll.fullScroll(ScrollView.FOCUS_DOWN)
-                                }
-
-                                return true
-                            }
-                        })
-                    }
-
+                    dismiss("\n response: path = $url \n result: $it")
                 }
 
         }
     }
 
     private fun requestPost(url: String, body: Any) {
-        tvFileList.text = "${tvFileList.text}\n\n request: POST path = $url"
+        show("\n\n request: POST path = $url \n param body:${GsonUtils.toJson(body)}")
 
         lifecycleScope.launch(Dispatchers.IO) {
             RxHttp.postBody(url)  //第一步，确定请求方式，可以选择postForm、postJson等方法
                 .setBody(body)
                 .toFlow<String>()       //第二步，调用toFlow方法并输入泛型类型，拿到Flow对象
                 .collect {
-                    withContext(Dispatchers.Main) {
-                        tvFileList.text =
-                            "${tvFileList.text}\n response: path = $url \n result: $it"
-
-                    }
+                    dismiss("\n response: path = $url \n result: $it")
 
                     //第三步，调用collect方法发起请求
                     LogUtils.d(it)
                 }
+
+        }
+    }
+
+    private fun show(str: String) {
+        progressDialog.show()
+        stringBuilder.append(str)
+        tvFileList.text = stringBuilder
+    }
+
+    private suspend fun dismiss(str: String) {
+        progressDialog.dismiss()
+        stringBuilder.append(str)
+        withContext(Dispatchers.Main) {
+            progressDialog.dismiss()
+
+            tvFileList.text = stringBuilder
+
+            tvFileList.viewTreeObserver.addOnPreDrawListener(object :
+                ViewTreeObserver.OnPreDrawListener {
+                override fun onPreDraw(): Boolean {
+                    tvFileList.viewTreeObserver.removeOnPreDrawListener(this) // 确保只触发一次
+
+                    tvFileList.post {
+                        scroll.fullScroll(ScrollView.FOCUS_DOWN)
+                    }
+
+                    return true
+                }
+            })
 
         }
     }
