@@ -2,8 +2,6 @@ package com.card.lp_server.utils
 
 import android.util.Log
 import com.blankj.utilcode.util.ConvertUtils
-import com.card.lp_server.base.BaseResponse
-import com.card.lp_server.card.HIDCommunicationUtil
 import com.card.lp_server.model.Types
 import fi.iki.elonen.NanoHTTPD
 import java.net.URLDecoder
@@ -11,21 +9,6 @@ import java.net.URLDecoder
 const val FILE_NAME = "fileName"
 const val TYPE_NUMBER = "typeNumber"
 
-
-fun<T> handleResponse(action: () -> T): NanoHTTPD.Response {
-    return try {
-        val findAndOpenHIDDevice =
-            HIDCommunicationUtil.instance.setDevice(6790, 58409).findAndOpenHIDDevice()
-        if (findAndOpenHIDDevice) {
-            val action1 = action()
-            responseJsonStringSuccess(action1)
-        } else {
-            responseJsonStringFail(null)
-        }
-    } catch (e: Exception) {
-        responseJsonStringFail(e.message)
-    }
-}
 
 fun stringConvertToList(listFiles: ByteArray?): List<String> {
     if (listFiles == null) {

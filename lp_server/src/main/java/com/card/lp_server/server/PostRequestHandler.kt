@@ -11,7 +11,6 @@ import com.card.lp_server.model.TagEntity
 import com.card.lp_server.utils.convertBitmapToBinary
 import com.card.lp_server.utils.generateBitMapForLl
 import com.card.lp_server.utils.getPostParams
-import com.card.lp_server.utils.handleResponse
 import com.card.lp_server.utils.responseJsonStringFail
 import com.card.lp_server.utils.responseJsonStringSuccess
 import fi.iki.elonen.NanoHTTPD
@@ -64,14 +63,22 @@ class PostRequestHandler : RequestHandlerStrategy {
         if (fromJson.dyNumber.isNullOrEmpty())
             return responseJsonStringFail("dyNumber is not empty")
         Log.d(TAG, "handleAddBaseInfo: $fromJson")
-        return handleResponse {
+
+
+        return try {
             val writeFile =
                 LonbestCard.getInstance()
                     .writeFile(Types.CODE_UP_REC.value, postParams.toByteArray())
-            if (writeFile)
+            if (writeFile) {
                 mAppContainer.mCodeUpRecRepository.insertItem(fromJson)
-            writeFile
+                responseJsonStringSuccess(true)
+            } else {
+                responseJsonStringSuccess(false, "操作失败")
+            }
+        } catch (e: Exception) {
+            responseJsonStringFail(e.message)
         }
+
     }
 
     private fun handleBaseInfo(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
@@ -82,7 +89,7 @@ class PostRequestHandler : RequestHandlerStrategy {
             return responseJsonStringFail("dyNumber is not empty")
         Log.d(TAG, "handleAddBaseInfo: $fromJson")
 
-        return handleResponse {
+        return try {
             val readFile = LonbestCard.getInstance()
                 .readFile(Types.BASE_INFO.value)
             var writeFile = false
@@ -91,7 +98,7 @@ class PostRequestHandler : RequestHandlerStrategy {
                     .writeFile(Types.BASE_INFO.value, postParams.toByteArray())
                 mAppContainer.mRecordRepository.insertItem(fromJson)
                 Log.d(TAG, "handleBaseInfo: writeFile $writeFile")
-                writeFile
+                responseJsonStringSuccess(writeFile)
             } else {
                 val recordBean = GsonUtils.fromJson(String(readFile), RecordBean::class.java)
                 if (recordBean.dyNumber == fromJson.dyNumber) {
@@ -103,19 +110,25 @@ class PostRequestHandler : RequestHandlerStrategy {
                         if (recordBean.isEink == true) {
                             val generateBitMapForLl = generateBitMapForLl(recordBean)
                             val convertBitmapToBinary = convertBitmapToBinary(generateBitMapForLl)
-                            LonbestCard.getInstance().updateEInk(convertBitmapToBinary)
+                            val updateEInk =
+                                LonbestCard.getInstance().updateEInk(convertBitmapToBinary)
+                            if (updateEInk) {
+                                responseJsonStringSuccess(true)
+                            } else {
+                                responseJsonStringSuccess(false, "更新屏幕失败,请重试")
+                            }
                         }
                     }
-                    return@handleResponse responseJsonStringFail(
-                        msg = "操作失败"
-                    )
+                    responseJsonStringSuccess(false)
                 } else {
-                    return@handleResponse responseJsonStringFail(
-                        msg = "要写入标签弹号与标签内不一致"
-                    )
+                    Log.d(TAG, "handleBaseInfo: 要写入标签弹号与标签内不一致")
+                    responseJsonStringSuccess(false, "要写入标签弹号与标签内不一致")
                 }
             }
+        } catch (e: Exception) {
+            responseJsonStringFail(e.message)
         }
+
     }
 
     private fun handleFindFileSize(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
@@ -124,10 +137,15 @@ class PostRequestHandler : RequestHandlerStrategy {
             ?: return responseJsonStringFail("屏幕数据不能为空!")
         Log.d(TAG, "handleUpdateDisplay: $fromJson")
         if (fromJson.fileName == null) return responseJsonStringFail("参数不能为空")
-        return handleResponse {
+        return try {
             val findFileSize = LonbestCard.getInstance().findFileSize(fromJson.fileName)
-            ByteBuffer.wrap(findFileSize).int
+
+            responseJsonStringSuccess(ByteBuffer.wrap(findFileSize).int)
+        } catch (e: Exception) {
+            responseJsonStringFail(e.message)
         }
+
+
     }
 
     private fun handleCommonWrite(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
@@ -136,9 +154,17 @@ class PostRequestHandler : RequestHandlerStrategy {
             ?: return responseJsonStringFail("屏幕数据不能为空!")
         Log.d(TAG, "handleUpdateDisplay: $fromJson")
         if (fromJson.fileName == null || fromJson.data == null) return responseJsonStringFail("参数不能为空")
-        return handleResponse {
-            LonbestCard.getInstance().writeFile(fromJson.fileName, fromJson.data)
+
+        return try {
+            val writeFile = LonbestCard.getInstance().writeFile(fromJson.fileName, fromJson.data)
+            if (writeFile)
+                responseJsonStringSuccess(true)
+            else
+                responseJsonStringSuccess(false, "操作失败")
+        } catch (e: Exception) {
+            responseJsonStringFail(e.message)
         }
+
     }
 
     private fun handleUpdateDisplay(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
@@ -146,17 +172,16 @@ class PostRequestHandler : RequestHandlerStrategy {
         val fromJson = GsonUtils.fromJson(postParams, TagEntity::class.java).data
             ?: return responseJsonStringFail("屏幕数据不能为空!")
         Log.d(TAG, "handleUpdateDisplay: $fromJson")
-        return handleResponse {
+        return try {
             val updateEInk = LonbestCard.getInstance().updateEInk(fromJson)
-            updateEInk
-
+            if (updateEInk)
+                responseJsonStringSuccess(true)
+            else
+                responseJsonStringSuccess(false, "更新屏幕失败")
+        } catch (e: Exception) {
+            responseJsonStringFail(e.message)
         }
     }
-
-    private fun handleAbout(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
-        return NanoHTTPD.newFixedLengthResponse("<html><body style=\"font-size:40px;\">这里是关于</body></html>")
-    }
-
     // Add more handler functions for other URLs if needed
 }
 

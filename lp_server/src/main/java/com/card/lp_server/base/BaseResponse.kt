@@ -1,5 +1,5 @@
 package com.card.lp_server.base
 
-data class BaseResponse<T>(var success: Boolean, var data: T?, var msg: String?)
+data class BaseResponse<T>(var code: Int, var data: T?, var msg: String?)
 
 

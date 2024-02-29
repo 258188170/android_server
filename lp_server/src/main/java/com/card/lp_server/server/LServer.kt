@@ -1,6 +1,7 @@
 package com.card.lp_server.server
 
 import android.util.Log
+import com.card.lp_server.card.HIDCommunicationUtil
 import com.card.lp_server.utils.responseJsonStringFail
 import fi.iki.elonen.NanoHTTPD
 
@@ -16,6 +17,13 @@ class LServer(port: Int = 9988) : NanoHTTPD(port) {
 
     override fun serve(session: IHTTPSession?): Response {
         Log.d(TAG, "线程 ${Thread.currentThread().name}")
+        val findAndOpenHIDDevice =
+            HIDCommunicationUtil.instance.setDevice(6790, 58409).findAndOpenHIDDevice()
+        if (!findAndOpenHIDDevice) {
+            return responseJsonStringFail(
+                msg = "session is null"
+            )
+        }
         return session?.let { dealWith(it) } ?: responseJsonStringFail(
             msg = "session is null"
         )

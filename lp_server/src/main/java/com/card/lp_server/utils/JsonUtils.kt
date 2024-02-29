@@ -12,16 +12,17 @@ fun <T> responseJsonStringSuccess(
     msg: String = "操作成功",
     success: Boolean = true,
 ): NanoHTTPD.Response {
-    val response = BaseResponse(success, data, msg)
+    val response = BaseResponse(200, data, msg)
     Log.d(TAG, "responseJsonStringSuccess: $data")
     return NanoHTTPD.newFixedLengthResponse(GsonUtils.toJson(response))//返回对应的响应体Response
 }
 
 fun responseJsonStringFail(
-    msg: String? = "设备未连接,请重试",
+    msg: String? = "操作失败,请重试",
+
     success: Boolean = false,
 ): NanoHTTPD.Response {
-    val response = BaseResponse(success, null, msg)
+    val response = BaseResponse(500,null, msg)
     Log.d(TAG, "responseJsonStringFail: ")
     return NanoHTTPD.newFixedLengthResponse(GsonUtils.toJson(response))//返回对应的响应体Response
 }

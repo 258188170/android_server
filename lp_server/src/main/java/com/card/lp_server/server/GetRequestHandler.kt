@@ -11,7 +11,6 @@ import com.card.lp_server.utils.convertBitmapToBinary
 import com.card.lp_server.utils.generateBitMapForLlFormat
 import com.card.lp_server.utils.getQueryParams
 import com.card.lp_server.utils.getType
-import com.card.lp_server.utils.handleResponse
 import com.card.lp_server.utils.responseJsonStringFail
 import com.card.lp_server.utils.responseJsonStringSuccess
 import com.card.lp_server.utils.stringConvertToList
@@ -39,74 +38,102 @@ class GetRequestHandler : RequestHandlerStrategy {
         val queryParams = session.getQueryParams()[TYPE_NUMBER]?.first()
         val type = queryParams.getType()
         if (type.isEmpty()) return responseJsonStringFail("请传入要读取类型")
-        return handleResponse {
+        return try {
             val readFile = LonbestCard.getInstance().readFile(type)
-            String(readFile)
+            responseJsonStringSuccess(readFile)
+        } catch (e: Exception) {
+            responseJsonStringFail(e.message)
         }
     }
 
     private fun handleBaseInfo(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
-        return handleResponse {
+        return try {
             val readFile = LonbestCard.getInstance().readFile(Types.BASE_INFO.value)
-            String(readFile)
+            responseJsonStringSuccess(String(readFile))
+        } catch (e: Exception) {
+            responseJsonStringFail(e.message)
         }
+
     }
 
     private fun handleListFile(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
-        return handleResponse {
+        return try {
             val listFiles = LonbestCard.getInstance().listFiles()
-            stringConvertToList(listFiles)
+            responseJsonStringSuccess(stringConvertToList(listFiles))
+        } catch (e: Exception) {
+            responseJsonStringFail(e.message)
         }
     }
 
     private fun handleTagVersion(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
-        return handleResponse {
+        return try {
             val version = LonbestCard.getInstance().version
-            version
+            responseJsonStringSuccess(version)
+        } catch (e: Exception) {
+            responseJsonStringFail(e.message)
         }
+
     }
 
     private fun handleTagInfo(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
-        return handleResponse {
+        return try {
             val info = LonbestCard.getInstance().info
-            ConvertUtils.bytes2String(info)
+            responseJsonStringSuccess(ConvertUtils.bytes2String(info))
+        } catch (e: Exception) {
+            responseJsonStringFail(e.message)
         }
     }
 
     private fun handleReadFile(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
         val queryParams = session.getQueryParams()[FILE_NAME]?.first()
             ?: return responseJsonStringFail("参数[FILE_NAME]不能为空")
-        return handleResponse {
+        return try {
             val readFile = LonbestCard.getInstance().readFile(queryParams)
-            readFile
+            responseJsonStringSuccess(readFile)
+        } catch (e: Exception) {
+            responseJsonStringFail(e.message)
         }
     }
 
     private fun handleDeleteFile(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
         val queryParams = session.getQueryParams()[FILE_NAME]?.first()
             ?: return responseJsonStringFail("参数[FILE_NAME]不能为空")
-        return handleResponse {
+        return try {
             val deleteFile = LonbestCard.getInstance().deleteFile(queryParams)
-            deleteFile
+            if (deleteFile) {
+                responseJsonStringSuccess(true)
+            } else {
+                responseJsonStringSuccess(false, "操作失败")
+            }
+        } catch (e: Exception) {
+            responseJsonStringFail(e.message)
         }
+
     }
 
     private fun handleClearTag(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
-        return handleResponse {
+
+
+        return try {
             val listFiles = LonbestCard.getInstance().listFiles()
             val stringConvertToList = stringConvertToList(listFiles)
 
             stringConvertToList.forEach {
                 val tag = LonbestCard.getInstance().deleteFile(it)
                 if (!tag) {
-                    return@handleResponse responseJsonStringFail(msg = "删除文件失败,请重试")
+                    return responseJsonStringFail()
                 }
             }
             val generateBitMapForLlFormat = generateBitMapForLlFormat()
             val convertBitmapToBinary = convertBitmapToBinary(generateBitMapForLlFormat)
             Log.d(TAG, "handleClearTag: ${convertBitmapToBinary.size}")
             val updateEInk = LonbestCard.getInstance().updateEInk(convertBitmapToBinary)
-            updateEInk
+            if (updateEInk)
+                responseJsonStringSuccess(true)
+            else
+                responseJsonStringSuccess(false)
+        } catch (e: Exception) {
+            responseJsonStringFail(e.message)
         }
     }
 }
