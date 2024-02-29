@@ -2,14 +2,16 @@ package com.card.lp_server.utils
 
 import android.util.Log
 import com.blankj.utilcode.util.ConvertUtils
+import com.card.lp_server.base.IBaseRepository
 import com.card.lp_server.card.HIDCommunicationUtil
+import com.card.lp_server.card.device.LonbestCard
+import com.card.lp_server.mAppContainer
+import com.card.lp_server.model.Types
 import fi.iki.elonen.NanoHTTPD
 import java.net.URLDecoder
 
 const val FILE_NAME = "fileName"
-
-const val __CODE_UP_REC = "__CodeUpRec"
-const val __BASE_INFO = "__BaseInfo"
+const val TYPE_NUMBER = "typeNumber"
 
 
 fun <T> handleResponse(action: () -> T): NanoHTTPD.Response {
@@ -50,6 +52,27 @@ fun NanoHTTPD.IHTTPSession.getQueryParams(): Map<String, List<String>> {
     return this.parameters
 }
 
+fun String?.getType(): String {
+    try {
+        return when (this?.toInt()) {
+            2 -> Types.CODE_UP_REC.value
+            3 -> Types.EQU_MATCH.value
+            4 -> Types.EQU_REPLACE_REC.value
+            5 -> Types.GASUP_REC.value
+            6 -> Types.GJZB_REC.value
+            7 -> Types.HANDOVER_REC.value
+            8 -> Types.MT_REC.value
+            9 -> Types.POWERON_REC.value
+            10 -> Types.REPAIR_REC.value
+            11 -> Types.SORFTWARE_REC.value
+            12 -> Types.TECREPORTIMP_REC.value
+            else -> ""
+        }
+    } catch (e: Exception) {
+        return ""
+    }
+}
+
 fun NanoHTTPD.IHTTPSession.getPostParams(): String? {
     // 获取POST参数
     val postParams = mutableMapOf<String, String>()
@@ -67,3 +90,5 @@ fun NanoHTTPD.IHTTPSession.getPostParams(): String? {
     }
     return null
 }
+
+

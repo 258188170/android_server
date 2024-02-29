@@ -3,12 +3,14 @@ package com.card.lp_server.server
 import com.blankj.utilcode.util.ConvertUtils
 import com.blankj.utilcode.util.GsonUtils
 import com.card.lp_server.card.device.LonbestCard
+import com.card.lp_server.model.Types
 import com.card.lp_server.room.entity.RecordBean
 import com.card.lp_server.utils.FILE_NAME
-import com.card.lp_server.utils.__BASE_INFO
+import com.card.lp_server.utils.TYPE_NUMBER
 import com.card.lp_server.utils.convertBitmapToBinary
 import com.card.lp_server.utils.generateBitMapForLlFormat
 import com.card.lp_server.utils.getQueryParams
+import com.card.lp_server.utils.getType
 import com.card.lp_server.utils.handleResponse
 import com.card.lp_server.utils.logD
 import com.card.lp_server.utils.responseJsonStringFail
@@ -24,7 +26,7 @@ class GetRequestHandler : RequestHandlerStrategy {
         "/api/tag_infos" to ::handleTagInfo,
         "/api/tag_version" to ::handleTagVersion,
         "/api/getBaseInfo" to ::handleBaseInfo,
-
+        "/api/getTypeList" to ::handleTypeList,
         )
 
     override fun handleRequest(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response? {
@@ -33,9 +35,17 @@ class GetRequestHandler : RequestHandlerStrategy {
         return handler?.invoke(session)
     }
 
-    private fun handleBaseInfo(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
+    private fun handleTypeList(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
+        val queryParams = session.getQueryParams()[TYPE_NUMBER]?.first()
+        val type = queryParams.getType()
+        if (type.isEmpty())return responseJsonStringFail("请传入要读取类型")
         return handleResponse {
-            val readFile = LonbestCard.getInstance().readFile(__BASE_INFO)
+            val readFile = LonbestCard.getInstance().readFile(type)
+            String(readFile)
+        }
+    } private fun handleBaseInfo(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
+        return handleResponse {
+            val readFile = LonbestCard.getInstance().readFile(Types.BASE_INFO.value)
             String(readFile)
         }
     }
@@ -90,7 +100,6 @@ class GetRequestHandler : RequestHandlerStrategy {
             val convertBitmapToBinary = convertBitmapToBinary(generateBitMapForLlFormat)
             logD(convertBitmapToBinary.size)
             LonbestCard.getInstance().updateEInk(convertBitmapToBinary)
-            true
         }
     }
 }
