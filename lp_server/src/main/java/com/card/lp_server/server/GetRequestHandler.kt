@@ -19,14 +19,14 @@ import fi.iki.elonen.NanoHTTPD
 
 class GetRequestHandler : RequestHandlerStrategy {
     private val handlers = mapOf(
-        "/api/list_files" to ::handleListFile,
-        "/api/read_file" to ::handleReadFile,
-        "/api/delete_file" to ::handleDeleteFile,
-        "/api/clear_tag" to ::handleClearTag,
-        "/api/tag_infos" to ::handleTagInfo,
-        "/api/tag_version" to ::handleTagVersion,
-        "/api/getBaseInfo" to ::handleBaseInfo,
-        "/api/getTypeList" to ::handleTypeList,
+        LIST_FILES to ::handleListFile,
+        READ_FILE to ::handleReadFile,
+        DELETE_FILE to ::handleDeleteFile,
+        CLEAR_TAG to ::handleClearTag,
+        TAG_INFO to ::handleTagInfo,
+        TAG_VERSION to ::handleTagVersion,
+        GET_BASE_INFO to ::handleBaseInfo,
+        GET_TYPE_LIST to ::handleTypeList,
     )
 
     override fun handleRequest(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response? {

@@ -24,7 +24,7 @@ class PostRequestHandler : RequestHandlerStrategy {
 
     private val handlers = mapOf(
         //common
-        "/api/update_display" to ::handleUpdateDisplay,
+        UPDATE_DISPLAY to ::handleUpdateDisplay,
         "/api/common_write" to ::handleCommonWrite,
         "/api/find_file_size" to ::handleFindFileSize,
         //dy
