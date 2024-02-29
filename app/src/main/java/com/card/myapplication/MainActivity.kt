@@ -41,6 +41,7 @@ import com.card.lp_server.utils.convertBitmapToBinary
 import com.card.lp_server.utils.generateBitMapForLl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import rxhttp.toFlow
 import rxhttp.wrapper.param.RxHttp
 import java.io.InputStream
@@ -57,17 +58,18 @@ class MainActivity : AppCompatActivity() {
         private const val TEST_NAME = "test_name"
     }
 
-    private val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
-        if (isGranted) {
-            // 用户授予了权限，可以执行相应操作，比如读取文件
-            // 在这里执行文件读取操作
-            pickFile()
-        } else {
-            // 用户拒绝了权限请求
-            // 在这里处理拒绝权限的情况
-            ToastUtils.showLong("拒绝了权限")
+    private val requestPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+            if (isGranted) {
+                // 用户授予了权限，可以执行相应操作，比如读取文件
+                // 在这里执行文件读取操作
+                pickFile()
+            } else {
+                // 用户拒绝了权限请求
+                // 在这里处理拒绝权限的情况
+                ToastUtils.showLong("拒绝了权限")
+            }
         }
-    }
 
     lateinit var tvFileList: AppCompatTextView
     lateinit var scroll: NestedScrollView
@@ -87,8 +89,12 @@ class MainActivity : AppCompatActivity() {
         // 检查是否有读取外部存储权限，如果没有则请求权限
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             // 对于 Android 11 及以上版本，需要请求 MANAGE_EXTERNAL_STORAGE 权限
-            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.MANAGE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    android.Manifest.permission.MANAGE_EXTERNAL_STORAGE
+                )
+                != PackageManager.PERMISSION_GRANTED
+            ) {
                 requestPermissionLauncher.launch(android.Manifest.permission.MANAGE_EXTERNAL_STORAGE)
             } else {
                 // 已经获得了权限，可以执行相应操作，比如读取文件
@@ -98,12 +104,18 @@ class MainActivity : AppCompatActivity() {
             }
         } else {
             // 对于 Android 10 及以下
-            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    android.Manifest.permission.READ_EXTERNAL_STORAGE
+                )
+                != PackageManager.PERMISSION_GRANTED
+            ) {
                 // 如果没有权限，请求权限
-                ActivityCompat.requestPermissions(this,
+                ActivityCompat.requestPermissions(
+                    this,
                     arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE),
-                    REQUEST_READ_EXTERNAL_STORAGE)
+                    REQUEST_READ_EXTERNAL_STORAGE
+                )
             } else {
                 // 如果已经有权限，执行文件读取操作
                 pickFile()
@@ -150,6 +162,7 @@ class MainActivity : AppCompatActivity() {
     fun testcon(view: View) {
         HIDCommunicationUtil.instance.findAndOpenHIDDevice()
     }
+
     fun add_base_info(view: View) {
         requestPost(ADD_BASE_INFO, RecordBean(dyNumber = "123"))
     }
@@ -173,18 +186,21 @@ class MainActivity : AppCompatActivity() {
                 .toFlow<String>()       //第二步，调用toFlow方法并输入泛型类型，拿到Flow对象
                 .collect {              //第三步，调用collect方法发起请求
                     LogUtils.d(it)
-                    tvFileList.text = "${tvFileList.text}\n response: path = $url \n result: $it"
-                    tvFileList.viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
-                        override fun onPreDraw(): Boolean {
-                            tvFileList.viewTreeObserver.removeOnPreDrawListener(this) // 确保只触发一次
+                    withContext(Dispatchers.Main){
+                        tvFileList.text = "${tvFileList.text}\n response: path = $url \n result: $it"
+                        tvFileList.viewTreeObserver.addOnPreDrawListener(object :
+                            ViewTreeObserver.OnPreDrawListener {
+                            override fun onPreDraw(): Boolean {
+                                tvFileList.viewTreeObserver.removeOnPreDrawListener(this) // 确保只触发一次
 
-                            tvFileList.post {
-                                scroll.fullScroll(ScrollView.FOCUS_DOWN)
+                                tvFileList.post {
+                                    scroll.fullScroll(ScrollView.FOCUS_DOWN)
+                                }
+
+                                return true
                             }
-
-                            return true
-                        }
-                    })
+                        })
+                    }
 
                 }
 
@@ -194,19 +210,23 @@ class MainActivity : AppCompatActivity() {
     private fun requestPost(url: String, body: Any) {
         tvFileList.text = "${tvFileList.text}\n\n request: POST path = $url"
 
-        lifecycleScope.launch(Dispatchers.IO){
+        lifecycleScope.launch(Dispatchers.IO) {
             RxHttp.postBody(url)  //第一步，确定请求方式，可以选择postForm、postJson等方法
                 .setBody(body)
                 .toFlow<String>()       //第二步，调用toFlow方法并输入泛型类型，拿到Flow对象
                 .collect {
-                    tvFileList.text = "${tvFileList.text}\n response: path = $url \n result: $it"
+                    withContext(Dispatchers.Main) {
+                        tvFileList.text =
+                            "${tvFileList.text}\n response: path = $url \n result: $it"
+
+                    }
+
                     //第三步，调用collect方法发起请求
                     LogUtils.d(it)
                 }
 
         }
     }
-
 
 
     // 在 Activity 或 Fragment 中重写 onActivityResult 方法，处理选择文件后的结果
@@ -226,7 +246,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     // 处理权限请求结果
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == REQUEST_READ_EXTERNAL_STORAGE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
