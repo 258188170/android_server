@@ -1,4 +1,4 @@
-package com.card.lp_server.room.entity
+package com.card.lp_server.model
 
  class TagEntity(
     var fileName: String?=null,

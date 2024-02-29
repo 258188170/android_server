@@ -15,3 +15,4 @@ const val GET_TYPE_LIST = "/api/getTypeList"
  */
 
 const val UPDATE_DISPLAY = "/api/update_display"
+const val COMMON_WRITE = "/api/common_write"

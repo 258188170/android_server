@@ -7,12 +7,11 @@ import com.card.lp_server.mAppContainer
 import com.card.lp_server.model.Types
 import com.card.lp_server.room.entity.CodeUpRec
 import com.card.lp_server.room.entity.RecordBean
-import com.card.lp_server.room.entity.TagEntity
+import com.card.lp_server.model.TagEntity
 import com.card.lp_server.utils.getPostParams
 import com.card.lp_server.utils.handleResponse
 import com.card.lp_server.utils.responseJsonStringFail
 import fi.iki.elonen.NanoHTTPD
-import org.json.JSONObject
 import java.nio.ByteBuffer
 
 
@@ -25,7 +24,7 @@ class PostRequestHandler : RequestHandlerStrategy {
     private val handlers = mapOf(
         //common
         UPDATE_DISPLAY to ::handleUpdateDisplay,
-        "/api/common_write" to ::handleCommonWrite,
+        COMMON_WRITE to ::handleCommonWrite,
         "/api/find_file_size" to ::handleFindFileSize,
         //dy
         "/api/addBaseInfo" to ::handleBaseInfo,
