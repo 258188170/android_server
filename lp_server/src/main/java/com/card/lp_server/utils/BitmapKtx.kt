@@ -31,7 +31,7 @@ fun generateBitMapForLl(): Bitmap {
     canvas.drawText("军检验收日期：$ccrq", 25f, (190 + 20).toFloat(), mCurrentPaint)
     val time = TimeUtils.getNowString()
     Log.d("TAG", "generateBitMapForLltest: 更新时间$time")
-    val qrImg = createQRCode("$zbxhmc#$dybh#$zldj#$ccrq#$time#", 180)
+    val qrImg = createQRCode("$zbxhmc#$dybh#$zldj#$ccrq#$time#")
     canvas.drawBitmap(qrImg, 230f, 20f, mCurrentPaint)
     canvas.save()
     canvas.rotate(90f)
@@ -40,43 +40,80 @@ fun generateBitMapForLl(): Bitmap {
 
 
 fun generateBitMapForLl(recordBean: RecordBean): Bitmap {
-    val mCurrentPaint = TextPaint()
-    mCurrentPaint.color = Color.BLACK
-    mCurrentPaint.textAlign = Paint.Align.LEFT
-    mCurrentPaint.textSize = 15f
-    val bitmap = Bitmap.createBitmap(480, 280, Bitmap.Config.ARGB_8888)
+    val paint = TextPaint().apply {
+        color = Color.BLACK
+        textAlign = Paint.Align.LEFT
+        textSize = 15f
+    }
+
+    val bitmapWidth = 480
+    val bitmapHeight = 280
+    val bitmap = Bitmap.createBitmap(bitmapWidth, bitmapHeight, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(bitmap)
-    val x = 25 // 文本的左边距
-    val canvasHeight = 280 // 画布的高度
-    val totalTextHeight = (6 * mCurrentPaint.fontSpacing).toInt() // 6 行文本的总高度
-    val availableHeight = canvasHeight - 25 * 2 // 可用的垂直高度，减去顶部和底部各 25 像素
-    val verticalPadding = (availableHeight - totalTextHeight) / 2 // 垂直内边距，使文本在可用的高度内上下居中
-    var y = 10 + verticalPadding // 加上顶部的 25 像素
-    val lineHeight = 30 // 每行文本之间的间距
-    canvas.drawText("导弹型号：${recordBean.dyvModel}", x.toFloat(), y.toFloat(), mCurrentPaint)
-    y += lineHeight
-    canvas.drawText("导弹弹号：${recordBean.dyNumber}", x.toFloat(), y.toFloat(), mCurrentPaint)
-    y += lineHeight
-    canvas.drawText("质量等级：${recordBean.qualityLevel}", x.toFloat(), y.toFloat(), mCurrentPaint)
-    y += lineHeight
-    canvas.drawText("军检验收日期：${recordBean.acpetDate}", x.toFloat(), y.toFloat(), mCurrentPaint)
-    y += lineHeight
-    canvas.drawText("总挂飞架次：${recordBean.upAndDowNum}", x.toFloat(), y.toFloat(), mCurrentPaint)
-    y += lineHeight
-    canvas.drawText("总通电时间：${recordBean.totPwTime}", x.toFloat(), y.toFloat(), mCurrentPaint)
-    val qrImg: Bitmap = createQRCode(
-        GsonUtils.toJson(recordBean),
-        180,
+
+    val canvasHeight = bitmapHeight
+    val totalTextHeight = (6 * paint.fontSpacing).toInt()
+    val availableHeight = canvasHeight - 25 * 2
+    val verticalPadding = (availableHeight - totalTextHeight) / 2
+    val lineHeight = 30
+
+    // Calculate the starting x-coordinate for drawText
+    val textX = 20
+
+    // Calculate the starting x-coordinate for drawBitmap
+    val bitmapX = bitmapWidth - 20 - createQRCode(GsonUtils.toJson(recordBean)).width
+
+    // Calculate the starting y-coordinate for both drawText and drawBitmap
+    var y = 10 + verticalPadding
+
+    val textArray = arrayOf(
+        "导弹型号：%s",
+        "导弹弹号：%s",
+        "质量等级：%s",
+        "军检验收日期：%s",
+        "总挂飞架次：%s",
+        "总通电时间：%s"
     )
-    canvas.drawBitmap(qrImg, 230f, 20f, mCurrentPaint)
+
+    textArray.forEachIndexed { index, format ->
+        // Draw text with left margin and vertically centered
+        canvas.drawText(
+            String.format(format, getValueAtIndex(recordBean, index)),
+            textX.toFloat(),
+            y.toFloat(),
+            paint
+        )
+        y += lineHeight
+    }
+
+    val qrImg: Bitmap = createQRCode(GsonUtils.toJson(recordBean))
+
+    // Calculate the vertical position to center the qrImg
+    val qrImgVerticalPosition = (bitmapHeight - qrImg.height) / 2.toFloat()
+
+    // Draw qrImg with right margin and vertically centered
+    canvas.drawBitmap(qrImg, bitmapX.toFloat(), qrImgVerticalPosition, paint)
+
     canvas.save()
     canvas.rotate(90f)
     return bitmap
 }
 
+private fun getValueAtIndex(recordBean: RecordBean, index: Int): String {
+    return when (index) {
+        0 -> recordBean.dyvModel ?: ""
+        1 -> recordBean.dyNumber ?: ""
+        2 -> recordBean.qualityLevel ?: ""
+        3 -> recordBean.acpetDate ?: ""
+        4 -> recordBean.upAndDowNum?.toString() ?: ""
+        5 -> recordBean.totPwTime?.toString() ?: ""
+        else -> ""
+    }
+}
 
-fun createQRCode(str: String?, widthAndHeight: Int): Bitmap {
-    val encode = LPEncodeUtil.getInstance().encode(str, 3, 5, 5)
+
+fun createQRCode(str: String?): Bitmap {
+    val encode = LPEncodeUtil.getInstance().encode(str, 3, 2, 3)
     return BitmapFactory.decodeByteArray(encode, 0, encode.size)
 }
 

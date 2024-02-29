@@ -164,18 +164,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun add_base_info(view: View) {
-        requestPost(ADD_BASE_INFO, RecordBean(dyNumber = "123"))
+        requestPost(ADD_BASE_INFO, RecordBean(dyNumber = "123", isEink = true))
     }
 
     fun testUpdateDisplay(view: View) {
-        lifecycleScope.launch(Dispatchers.IO) {
-            val generateBitMapForLl = generateBitMapForLl()
-            val convertBitmapToBinary =
-                convertBitmapToBinary(generateBitMapForLl)
-
-            requestPost(UPDATE_DISPLAY, TagEntity(data = convertBitmapToBinary))
-
-        }
+        val generateBitMapForLl = generateBitMapForLl(RecordBean(dyNumber = "123"))
+        val convertBitmapToBinary = convertBitmapToBinary(generateBitMapForLl)
+        requestPost(UPDATE_DISPLAY, TagEntity(data = convertBitmapToBinary))
 
     }
 
