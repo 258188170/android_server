@@ -1,11 +1,8 @@
 package com.card.lp_server.server
 
 import android.util.Log
-import com.blankj.utilcode.util.LogUtils
 import com.card.lp_server.utils.responseJsonStringFail
-import com.card.lp_server.utils.responseJsonStringSuccess
 import fi.iki.elonen.NanoHTTPD
-import java.net.URLDecoder
 
 
 class LServer(port: Int = 9988) : NanoHTTPD(port) {
@@ -26,8 +23,11 @@ class LServer(port: Int = 9988) : NanoHTTPD(port) {
     }
 
     private fun dealWith(session: IHTTPSession): Response {
-        LogUtils.d("请求头：${session.headers}")
-        LogUtils.d("请求路径 uri：${session.uri} -->> 请求方式 method：${session.method}")
+        Log.d(TAG, "dealWith: \"请求头：${session.headers}\"")
+        Log.d(
+            TAG,
+            "dealWith: \"请求路径 uri：${session.uri} -->> 请求方式 method：${session.method}\""
+        )
         // 使用工厂创建相应的策略
         val requestHandlerStrategy = requestHandlerFactory.createHandler(session.method)
 

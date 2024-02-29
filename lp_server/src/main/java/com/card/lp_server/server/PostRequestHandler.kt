@@ -11,6 +11,7 @@ import com.card.lp_server.model.TagEntity
 import com.card.lp_server.utils.getPostParams
 import com.card.lp_server.utils.handleResponse
 import com.card.lp_server.utils.responseJsonStringFail
+import com.card.lp_server.utils.responseJsonStringSuccess
 import fi.iki.elonen.NanoHTTPD
 import java.nio.ByteBuffer
 
@@ -73,24 +74,30 @@ class PostRequestHandler : RequestHandlerStrategy {
         if (fromJson.dyNumber.isNullOrEmpty())
             return responseJsonStringFail("dyNumber is not empty")
         Log.d(TAG, "handleAddBaseInfo: $fromJson")
-        return handleResponse {
-            val loadByNumber = mAppContainer.mRecordRepository.loadByNumber(fromJson.dyNumber!!)
 
+        return handleResponse {
             val readFile = LonbestCard.getInstance()
                 .readFile(Types.BASE_INFO.value)
-            val recordBean = GsonUtils.fromJson(String(readFile), RecordBean::class.java)
-            Log.d(TAG, "handleBaseInfo: loadByNumber: $recordBean")
-            if (loadByNumber?.dyNumber.isNullOrEmpty()) {
-                mAppContainer.mRecordRepository.insertItem(fromJson)
-                LonbestCard.getInstance()
+            var writeFile = false
+            if (readFile == null) {
+                writeFile = LonbestCard.getInstance()
                     .writeFile(Types.BASE_INFO.value, postParams.toByteArray())
+                mAppContainer.mRecordRepository.insertItem(fromJson)
+                Log.d(TAG, "handleBaseInfo: writeFile $writeFile")
+                writeFile
             } else {
-                if (loadByNumber!!.dyNumber == fromJson.dyNumber) {
-                    mAppContainer.mRecordRepository.updateItem(fromJson)
-                    LonbestCard.getInstance()
+                val recordBean = GsonUtils.fromJson(String(readFile), RecordBean::class.java)
+                if (recordBean.dyNumber == fromJson.dyNumber) {
+                    writeFile = LonbestCard.getInstance()
                         .writeFile(Types.BASE_INFO.value, postParams.toByteArray())
+                    mAppContainer.mRecordRepository.updateItem(fromJson)
+                    Log.d(TAG, "handleBaseInfo: writeFile $writeFile")
+                    writeFile
                 } else {
-                    responseJsonStringFail("与标签绑定弹号不一致!")
+                    return@handleResponse responseJsonStringFail(
+                        false,
+                        msg = "要写入标签弹号与标签内不一致"
+                    )
                 }
             }
         }
@@ -125,7 +132,9 @@ class PostRequestHandler : RequestHandlerStrategy {
             ?: return responseJsonStringFail("屏幕数据不能为空!")
         Log.d(TAG, "handleUpdateDisplay: $fromJson")
         return handleResponse {
-            LonbestCard.getInstance().updateEInk(fromJson)
+            val updateEInk = LonbestCard.getInstance().updateEInk(fromJson)
+            updateEInk
+
         }
     }
 

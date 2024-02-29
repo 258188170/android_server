@@ -14,8 +14,8 @@ import android.hardware.usb.UsbManager
 import android.util.Log
 import com.blankj.utilcode.util.AppUtils
 import com.blankj.utilcode.util.LogUtils
+import com.card.lp_server.card.device.UsbReceiver
 import com.card.lp_server.mAppContext
-import com.card.lp_server.utils.logD
 
 
 class HIDCommunicationUtil private constructor() {
@@ -23,35 +23,42 @@ class HIDCommunicationUtil private constructor() {
     private val usbManager: UsbManager =
         mAppContext.getSystemService(Context.USB_SERVICE) as UsbManager
 
-    private val permissionIntent: PendingIntent = PendingIntent.getBroadcast(
-        mAppContext,
-        0,
-        Intent(ACTION_USB_PERMISSION),
-        0
-    )
+    private val permissionIntent: PendingIntent by lazy {
+        PendingIntent.getBroadcast(
+            mAppContext,
+            0,
+            Intent(ACTION_USB_PERMISSION),
+            0
+        )
+    }
     private var usbDevice: UsbDevice? = null
     private var usbConnection: UsbDeviceConnection? = null
     private var connectionListener: ConnectionListener = DefaultConnectionListener()
     private var vendorId: Int = 6790
     private var productId: Int = 58409
-     var isConnect: Boolean = false
+    private var isConnect: Boolean = false
 
-    init {
-        registerUSBReceiver()
-    }
-
-    private fun registerUSBReceiver() {
-        val filter = IntentFilter(ACTION_USB_PERMISSION)
+    fun registerUSBReceiver() {
+        val filter = IntentFilter()
+        filter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED)
+        filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED)
+        filter.addAction(ACTION_USB_PERMISSION)
         mAppContext.registerReceiver(USBReceiver(), filter)
     }
 
-    fun setConnectionListener(listener: ConnectionListener) {
+    fun setConnectionListener(listener: ConnectionListener): HIDCommunicationUtil {
         connectionListener = listener
+        return this
     }
 
-    fun findAndOpenHIDDevice(vendorId: Int = 6790, productId: Int = 58409): Boolean {
+    fun setDevice(vendorId: Int, productId: Int): HIDCommunicationUtil {
         this.vendorId = vendorId
         this.productId = productId
+        return this
+    }
+
+    fun findAndOpenHIDDevice(): Boolean {
+        if (isConnect) return true
         usbDevice = findHIDDevice()
         if (usbDevice != null) {
             if (usbManager.hasPermission(usbDevice)) {
@@ -79,10 +86,39 @@ class HIDCommunicationUtil private constructor() {
         usbManager.requestPermission(usbDevice, permissionIntent)
     }
 
-    private inner class USBReceiver : BroadcastReceiver() {
+    inner class USBReceiver : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             val action = intent.action
-            if (ACTION_USB_PERMISSION == action) {
+            synchronized(this) {
+                when (action) {
+                    UsbManager.ACTION_USB_DEVICE_ATTACHED -> {
+                        Log.d(TAG, "onReceive: ACTION_USB_DEVICE_ATTACHED ")
+                        findAndOpenHIDDevice()
+                    }
+
+                    UsbManager.ACTION_USB_DEVICE_DETACHED -> {
+                        Log.d(TAG, "onReceive: ACTION_USB_DEVICE_DETACHED")
+                        closeUSBConnection()
+                    }
+
+                    ACTION_USB_PERMISSION -> {
+                        val device = intent.getParcelableExtra<UsbDevice>(UsbManager.EXTRA_DEVICE)
+                        if (device != null) {
+                            openUSBConnection(device)
+                        } else {
+                            connectionListener.onConnectionFailed("device is not found")
+                        }
+                    }
+
+                    else -> {
+                        Log.d(TAG, "onReceive: $action")
+                    }
+                }
+
+            }
+
+
+            /*if (ACTION_USB_PERMISSION == action) {
                 synchronized(this) {
                     val device = intent.getParcelableExtra<UsbDevice>(UsbManager.EXTRA_DEVICE)
                     LogUtils.d(device)
@@ -94,7 +130,7 @@ class HIDCommunicationUtil private constructor() {
                         connectionListener.onConnectionFailed("USB permission denied")
                     }
                 }
-            }
+            }*/
         }
     }
 
@@ -169,7 +205,7 @@ class HIDCommunicationUtil private constructor() {
 
     private fun reconnectToHID(): Boolean {
         closeUSBConnection()
-        val findAndOpenHIDDevice = findAndOpenHIDDevice(vendorId, productId)
+        val findAndOpenHIDDevice = findAndOpenHIDDevice()
         return usbConnection != null && findAndOpenHIDDevice
     }
 
@@ -182,7 +218,7 @@ class HIDCommunicationUtil private constructor() {
                     endpoint?.type == UsbConstants.USB_ENDPOINT_XFER_INT &&
                     endpoint.direction == direction
                 ) {
-                    logD(endpoint)
+                    Log.d(TAG, "findHIDEndpoint: $endpoint")
                     return endpoint
                 }
             }
@@ -192,6 +228,7 @@ class HIDCommunicationUtil private constructor() {
     }
 
     companion object {
+        private const val TAG = "HIDCommunicationUtil"
         val ACTION_USB_PERMISSION: String = "${AppUtils.getAppPackageName()}.USB_PERMISSION"
         private const val TIMEOUT = 1000 // 5 seconds timeout
         val instance: HIDCommunicationUtil by lazy {

@@ -6,6 +6,7 @@ import android.content.ContentValues
 import android.database.Cursor
 import android.net.Uri
 import com.blankj.utilcode.util.LogUtils
+import com.card.lp_server.card.HIDCommunicationUtil
 import com.card.lp_server.room.AppContainer
 import com.card.lp_server.room.AppDataContainer
 import com.card.lp_server.server.LServer
@@ -34,6 +35,7 @@ class Ktx : ContentProvider() {
         app = application
         try {
             mLpServer.start()
+            HIDCommunicationUtil.instance.registerUSBReceiver()
             LogUtils.i("启动成功!")
         } catch (e: Exception) {
             LogUtils.e("启动失败-->>${e.message}")

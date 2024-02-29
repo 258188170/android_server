@@ -2,10 +2,8 @@ package com.card.lp_server.utils
 
 import android.util.Log
 import com.blankj.utilcode.util.ConvertUtils
-import com.card.lp_server.base.IBaseRepository
+import com.card.lp_server.base.BaseResponse
 import com.card.lp_server.card.HIDCommunicationUtil
-import com.card.lp_server.card.device.LonbestCard
-import com.card.lp_server.mAppContainer
 import com.card.lp_server.model.Types
 import fi.iki.elonen.NanoHTTPD
 import java.net.URLDecoder
@@ -14,14 +12,15 @@ const val FILE_NAME = "fileName"
 const val TYPE_NUMBER = "typeNumber"
 
 
-fun <T> handleResponse(action: () -> T): NanoHTTPD.Response {
+fun<T> handleResponse(action: () -> T): NanoHTTPD.Response {
     return try {
-        val findAndOpenHIDDevice = HIDCommunicationUtil.instance.isConnect
+        val findAndOpenHIDDevice =
+            HIDCommunicationUtil.instance.setDevice(6790, 58409).findAndOpenHIDDevice()
         if (findAndOpenHIDDevice) {
             val action1 = action()
-            action1.responseJsonStringSuccess()
+            responseJsonStringSuccess(action1)
         } else {
-            responseJsonStringFail("设备未连接,请重试")
+            responseJsonStringFail(null)
         }
     } catch (e: Exception) {
         responseJsonStringFail(e.message)
@@ -78,11 +77,11 @@ fun NanoHTTPD.IHTTPSession.getPostParams(): String? {
     val postParams = mutableMapOf<String, String>()
     try {
         this.parseBody(postParams)
-        logD("POST 请求参数： $postParams")
+        Log.d(TAG, "getPostParams: ${"POST 请求参数： $postParams"}")
         val postData = postParams["postData"]?.takeIf { it.isNotEmpty() }?.let {
             URLDecoder.decode(it, "UTF-8")
         }
-        logD("请求的 JSON 数据:$postData")
+        Log.d(TAG, "getPostParams: 请求的 JSON 数据:$postData")
         return postData
     } catch (e: Exception) {
         // 处理解析异常
