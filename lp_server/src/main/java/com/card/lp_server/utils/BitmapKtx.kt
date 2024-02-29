@@ -1,5 +1,6 @@
 package com.card.lp_server.utils
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
@@ -8,7 +9,9 @@ import android.graphics.Matrix
 import android.graphics.Paint
 import android.text.TextPaint
 import android.util.Log
+import com.blankj.utilcode.util.GsonUtils
 import com.blankj.utilcode.util.TimeUtils
+import com.card.lp_server.room.entity.RecordBean
 
 
 fun generateBitMapForLl(): Bitmap {
@@ -34,6 +37,43 @@ fun generateBitMapForLl(): Bitmap {
     canvas.rotate(90f)
     return bitmap
 }
+
+
+fun generateBitMapForLl(recordBean: RecordBean): Bitmap {
+    val mCurrentPaint = TextPaint()
+    mCurrentPaint.color = Color.BLACK
+    mCurrentPaint.textAlign = Paint.Align.LEFT
+    mCurrentPaint.textSize = 15f
+    val bitmap = Bitmap.createBitmap(480, 280, Bitmap.Config.ARGB_8888)
+    val canvas = Canvas(bitmap)
+    val x = 25 // 文本的左边距
+    val canvasHeight = 280 // 画布的高度
+    val totalTextHeight = (6 * mCurrentPaint.fontSpacing).toInt() // 6 行文本的总高度
+    val availableHeight = canvasHeight - 25 * 2 // 可用的垂直高度，减去顶部和底部各 25 像素
+    val verticalPadding = (availableHeight - totalTextHeight) / 2 // 垂直内边距，使文本在可用的高度内上下居中
+    var y = 10 + verticalPadding // 加上顶部的 25 像素
+    val lineHeight = 30 // 每行文本之间的间距
+    canvas.drawText("导弹型号：${recordBean.dyvModel}", x.toFloat(), y.toFloat(), mCurrentPaint)
+    y += lineHeight
+    canvas.drawText("导弹弹号：${recordBean.dyNumber}", x.toFloat(), y.toFloat(), mCurrentPaint)
+    y += lineHeight
+    canvas.drawText("质量等级：${recordBean.qualityLevel}", x.toFloat(), y.toFloat(), mCurrentPaint)
+    y += lineHeight
+    canvas.drawText("军检验收日期：${recordBean.acpetDate}", x.toFloat(), y.toFloat(), mCurrentPaint)
+    y += lineHeight
+    canvas.drawText("总挂飞架次：${recordBean.upAndDowNum}", x.toFloat(), y.toFloat(), mCurrentPaint)
+    y += lineHeight
+    canvas.drawText("总通电时间：${recordBean.totPwTime}", x.toFloat(), y.toFloat(), mCurrentPaint)
+    val qrImg: Bitmap = createQRCode(
+        GsonUtils.toJson(recordBean),
+        180,
+    )
+    canvas.drawBitmap(qrImg, 230f, 20f, mCurrentPaint)
+    canvas.save()
+    canvas.rotate(90f)
+    return bitmap
+}
+
 
 fun createQRCode(str: String?, widthAndHeight: Int): Bitmap {
     val encode = LPEncodeUtil.getInstance().encode(str, 3, 5, 5)

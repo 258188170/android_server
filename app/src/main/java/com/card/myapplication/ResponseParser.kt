@@ -18,7 +18,7 @@ open class ResponseParser<T> : TypeParser<T> {
     override fun onParse(response: okhttp3.Response): T {
         val data: BaseResponse<T> = response.convertTo(BaseResponse::class, *types)
         val t = data.data     //获取data字段
-        if (data.success != 200 || t == null) { //code不等于200，说明数据不正确，抛出异常
+        if (data.success || t == null) { //code不等于200，说明数据不正确，抛出异常
             throw ParseException(data.success.toString(), data.msg, response)
         }
         return t  //最后返回data字段

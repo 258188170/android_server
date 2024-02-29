@@ -8,6 +8,8 @@ import com.card.lp_server.model.Types
 import com.card.lp_server.room.entity.CodeUpRec
 import com.card.lp_server.room.entity.RecordBean
 import com.card.lp_server.model.TagEntity
+import com.card.lp_server.utils.convertBitmapToBinary
+import com.card.lp_server.utils.generateBitMapForLl
 import com.card.lp_server.utils.getPostParams
 import com.card.lp_server.utils.handleResponse
 import com.card.lp_server.utils.responseJsonStringFail
@@ -46,7 +48,12 @@ class PostRequestHandler : RequestHandlerStrategy {
     }
 
     private fun handleEncode(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
-
+        val postParams = session.getPostParams() ?: return responseJsonStringFail("参数不能为空!")
+        val fromJson = GsonUtils.fromJson(postParams, RecordBean::class.java)
+            ?: return responseJsonStringFail("参数不能为空!")
+        if (fromJson.dyNumber.isNullOrEmpty())
+            return responseJsonStringFail("dyNumber is not empty")
+        Log.d(TAG, "handleAddBaseInfo: $fromJson")
         return NanoHTTPD.newFixedLengthResponse("<html><body style=\"font-size:40px;\">这里是首页</body></html>")
     }
 
@@ -92,10 +99,18 @@ class PostRequestHandler : RequestHandlerStrategy {
                         .writeFile(Types.BASE_INFO.value, postParams.toByteArray())
                     mAppContainer.mRecordRepository.updateItem(fromJson)
                     Log.d(TAG, "handleBaseInfo: writeFile $writeFile")
-                    writeFile
+                    if (writeFile) {
+                        if (recordBean.isEink == true) {
+                            val generateBitMapForLl = generateBitMapForLl(recordBean)
+                            val convertBitmapToBinary = convertBitmapToBinary(generateBitMapForLl)
+                            LonbestCard.getInstance().updateEInk(convertBitmapToBinary)
+                        }
+                    }
+                    return@handleResponse responseJsonStringFail(
+                        msg = "操作失败"
+                    )
                 } else {
                     return@handleResponse responseJsonStringFail(
-                        false,
                         msg = "要写入标签弹号与标签内不一致"
                     )
                 }

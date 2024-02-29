@@ -102,6 +102,7 @@ data class RecordBean(
     var updateDate: String? = null,
     // 文件版本号
     var fileVersion: String? = null,
+    var isEink: Boolean? = false,
     // 最后一次写入时间
     var lastWriteTime: Long? = System.currentTimeMillis(),
     //-------------------以下是经常变更的---------------------

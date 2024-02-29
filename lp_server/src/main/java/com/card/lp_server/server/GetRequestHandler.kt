@@ -101,7 +101,7 @@ class GetRequestHandler : RequestHandlerStrategy {
             stringConvertToList.forEach {
                 val tag = LonbestCard.getInstance().deleteFile(it)
                 if (!tag) {
-                    return@handleResponse responseJsonStringFail(false, msg = "删除文件失败,请重试")
+                    return@handleResponse responseJsonStringFail(msg = "删除文件失败,请重试")
                 }
             }
             val generateBitMapForLlFormat = generateBitMapForLlFormat()

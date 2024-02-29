@@ -17,7 +17,6 @@ class LServer(port: Int = 9988) : NanoHTTPD(port) {
     override fun serve(session: IHTTPSession?): Response {
         Log.d(TAG, "线程 ${Thread.currentThread().name}")
         return session?.let { dealWith(it) } ?: responseJsonStringFail(
-            null,
             msg = "session is null"
         )
     }
