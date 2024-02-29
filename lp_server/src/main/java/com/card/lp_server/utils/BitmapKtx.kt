@@ -1,10 +1,45 @@
 package com.card.lp_server.utils
 
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Matrix
+import android.graphics.Paint
+import android.text.TextPaint
 import android.util.Log
+import com.blankj.utilcode.util.TimeUtils
+
+
+fun generateBitMapForLl(): Bitmap {
+    val mCurrentPaint = TextPaint()
+    mCurrentPaint.color = Color.BLACK
+    mCurrentPaint.textAlign = Paint.Align.LEFT
+    mCurrentPaint.textSize = 15f
+    val bitmap = Bitmap.createBitmap(480, 280, Bitmap.Config.ARGB_8888)
+    val canvas = Canvas(bitmap)
+    val zbxhmc = "长剑-20导弹"
+    val dybh = "CJ2390007"
+    val zldj = "新品"
+    val ccrq = "2023-10-12"
+    canvas.drawText("弹药型号：$zbxhmc", 25f, (70 + 20).toFloat(), mCurrentPaint)
+    canvas.drawText("弹药编号：$dybh", 25f, (110 + 20).toFloat(), mCurrentPaint)
+    canvas.drawText("质量等级：$zldj", 25f, (150 + 20).toFloat(), mCurrentPaint)
+    canvas.drawText("军检验收日期：$ccrq", 25f, (190 + 20).toFloat(), mCurrentPaint)
+    val time = TimeUtils.getNowString()
+    Log.d("TAG", "generateBitMapForLltest: 更新时间$time")
+    val qrImg = createQRCode("$zbxhmc#$dybh#$zldj#$ccrq#$time#", 180)
+    canvas.drawBitmap(qrImg, 230f, 20f, mCurrentPaint)
+    canvas.save()
+    canvas.rotate(90f)
+    return bitmap
+}
+
+fun createQRCode(str: String?, widthAndHeight: Int): Bitmap {
+    val encode = LPEncodeUtil.getInstance().encode(str, 3, 5, 5)
+    return BitmapFactory.decodeByteArray(encode, 0, encode.size)
+}
+
 
 fun generateBitMapForLlFormat(): Bitmap {
     val bitmap = Bitmap.createBitmap(480, 280, Bitmap.Config.ARGB_8888)

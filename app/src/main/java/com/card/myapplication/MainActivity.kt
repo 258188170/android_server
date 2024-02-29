@@ -10,6 +10,8 @@ import com.card.lp_server.card.HIDCommunicationUtil
 import com.card.lp_server.mAppContainer
 import com.card.lp_server.room.entity.TagEntity
 import com.card.lp_server.room.entity.RecordBean
+import com.card.lp_server.utils.convertBitmapToBinary
+import com.card.lp_server.utils.generateBitMapForLl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import rxhttp.toFlow
@@ -74,6 +76,22 @@ class MainActivity : AppCompatActivity() {
                 }
 
         }
+    }
+
+    fun testUpdateDisplay(view: View) {
+        lifecycleScope.launchWhenCreated {
+            val generateBitMapForLl = generateBitMapForLl()
+            val convertBitmapToBinary =
+                convertBitmapToBinary(generateBitMapForLl)
+            RxHttp.postBody("/api/update_display")  //第一步，确定请求方式，可以选择postForm、postJson等方法
+                .setBody(TagEntity(data = convertBitmapToBinary))
+                .toFlow<String>()       //第二步，调用toFlow方法并输入泛型类型，拿到Flow对象
+                .collect {              //第三步，调用collect方法发起请求
+                    LogUtils.d(it)
+                }
+
+        }
+
     }
 
 }

@@ -35,6 +35,7 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+
 }
 
 dependencies {
@@ -45,6 +46,8 @@ dependencies {
     api("org.nanohttpd:nanohttpd:2.3.1")
     api("com.blankj:utilcodex:1.31.1")
     implementation("androidx.lifecycle:lifecycle-process:2.7.0")
+    api(files("libs/LPEncode.jar"))
+    implementation(files("libs/core-3.0.1.jar"))
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
