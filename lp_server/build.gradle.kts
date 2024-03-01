@@ -1,3 +1,9 @@
+import com.android.build.gradle.internal.api.BaseVariantOutputImpl
+import com.android.build.gradle.internal.scope.ProjectInfo.Companion.getBaseName
+import com.android.tools.r8.internal.LI
+import org.jetbrains.kotlin.cli.jvm.main
+import org.jetbrains.kotlin.utils.addToStdlib.safeAs
+
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
@@ -12,7 +18,7 @@ android {
 
     defaultConfig {
 //        applicationId = "com.card.lp_server"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 34
 //        versionCode = 1
 //        versionName = "1.0"
@@ -42,8 +48,28 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+    libraryVariants.all {
+        outputs.all {
+            val output = this as BaseVariantOutputImpl
+            output.outputFileName = output.outputFileName
+        }
+    }
 
+
+//    sourceSets.getByName("main") {
+//        // Changes the directory for Java sources. The default directory is
+//        // 'src/main/java'.
+//        java.setSrcDirs(listOf("other/java"))
+//        jniLibs.srcDirs("libs")
+//        // If you list multiple directories, Gradle uses all of them to collect
+//        // sources. Because Gradle gives these directories equal priority, if
+//        // you define the same resource in more than one directory, you receive an
+//        // error when merging resources. The default directory is 'src/main/res'.
+//        res.setSrcDirs(listOf("other/res1", "other/res2"))
+//
+//    }
 }
+
 
 dependencies {
 

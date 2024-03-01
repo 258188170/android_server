@@ -29,14 +29,6 @@
 -keepattributes SourceFile,LineNumberTable
 -verbose
 -optimizations !code/simplification/arithmetic,!field/*,!class/merging/*
-
--libraryjars libs/httpmime-4.1.3.jar
--libraryjars libs/libammsdk.jar
--libraryjars libs/fastjson-1.1.34.android.jar
--libraryjars libs/commons-lang.jar
--libraryjars libs/weibosdkcore.jar
-
-
 # keep 使用 webview 的类的所有的内部类
 -keepclassmembers   class com.goldnet.mobile.activity.InfoDetailActivity$*{
     *;
