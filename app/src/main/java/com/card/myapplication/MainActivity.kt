@@ -190,15 +190,7 @@ class MainActivity : AppCompatActivity() {
         requestGet("$READ_FILE?fileName=$TEST_NAME")
     }
 
-    fun testroom(view: View) {
-        lifecycleScope.launch(Dispatchers.IO) {
-            mAppContainer.mRecordRepository.insertItem(RecordBean())
-        }
-    }
 
-    fun testcon(view: View) {
-        HIDCommunicationUtil.instance.findAndOpenHIDDevice()
-    }
 
     fun add_base_info(view: View) {
 
@@ -238,16 +230,13 @@ class MainActivity : AppCompatActivity() {
 
         lifecycleScope.launch(Dispatchers.IO) {
             RxHttp.postBody(url)  //第一步，确定请求方式，可以选择postForm、postJson等方法
-                .setBody(body)
+                .setBody(MtRec(dyNumber = "555"))
                 .toFlow<String>()
                 .catch {
                     it.printStackTrace()
                 }//第二步，调用toFlow方法并输入泛型类型，拿到Flow对象
                 .collect {
                     dismiss("\n response: path = $url \n result: $it")
-
-                    //第三步，调用collect方法发起请求
-                    LogUtils.d(it)
                 }
 
         }
