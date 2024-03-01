@@ -19,7 +19,7 @@ fun <T> responseJsonStringSuccess(
 fun responseJsonStringFail(
     msg: String? = "操作失败,请重试",
 ): NanoHTTPD.Response {
-    val response = BaseResponse(500,null, msg)
-    Log.d(TAG, "responseJsonStringFail: ")
+    val response = BaseResponse(500, null, msg)
+    Log.d(TAG, "responseJsonStringFail:$response ")
     return NanoHTTPD.newFixedLengthResponse(GsonUtils.toJson(response))//返回对应的响应体Response
 }
