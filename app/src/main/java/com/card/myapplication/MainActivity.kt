@@ -312,7 +312,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     // 将文件转换成二进制数据的函数
-    fun convertFileToByteArray(uri: Uri): ByteArray? {
+    private fun convertFileToByteArray(uri: Uri): ByteArray? {
         val inputStream: InputStream? = contentResolver.openInputStream(uri)
         val byteBuffer = ByteArrayOutputStream()
 
