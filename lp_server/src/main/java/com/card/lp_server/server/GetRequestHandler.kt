@@ -26,6 +26,7 @@ class GetRequestHandler : RequestHandlerStrategy {
         TAG_VERSION to ::handleTagVersion,
         GET_BASE_INFO to ::handleBaseInfo,
         GET_TYPE_LIST to ::handleTypeList,
+        GET_TYPE_LIST to ::handleTypeList,
     )
 
     override fun handleRequest(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response? {

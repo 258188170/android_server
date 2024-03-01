@@ -332,6 +332,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun getBaseInfo(view: View) {
+        Log.d(TAG, "getBaseInfo: ${Thread.currentThread().name}")
         requestGet(GET_BASE_INFO)
     }
 

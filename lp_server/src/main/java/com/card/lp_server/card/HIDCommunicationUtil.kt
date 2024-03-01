@@ -16,6 +16,7 @@ import com.blankj.utilcode.util.AppUtils
 import com.blankj.utilcode.util.LogUtils
 import com.card.lp_server.card.device.UsbReceiver
 import com.card.lp_server.mAppContext
+import com.card.lp_server.model.DeviceType
 
 
 class HIDCommunicationUtil private constructor() {
@@ -34,9 +35,10 @@ class HIDCommunicationUtil private constructor() {
     private var usbDevice: UsbDevice? = null
     private var usbConnection: UsbDeviceConnection? = null
     private var connectionListener: ConnectionListener = DefaultConnectionListener()
-    private var vendorId: Int = 6790
-    private var productId: Int = 58409
+//    private var vendorId: Int = 6790
+//    private var productId: Int = 58409
     private var isConnect: Boolean = false
+    var deviceType: DeviceType = DeviceType.LON_BEI
 
     fun registerUSBReceiver() {
         val filter = IntentFilter()
@@ -52,8 +54,8 @@ class HIDCommunicationUtil private constructor() {
     }
 
     fun setDevice(vendorId: Int, productId: Int): HIDCommunicationUtil {
-        this.vendorId = vendorId
-        this.productId = productId
+//        this.vendorId = vendorId
+//        this.productId = productId
         return this
     }
 
@@ -72,12 +74,12 @@ class HIDCommunicationUtil private constructor() {
         return false
     }
 
+
     private fun findHIDDevice(): UsbDevice? {
         val deviceList: HashMap<String, UsbDevice> = usbManager.deviceList
         for (device in deviceList.values) {
-            if (device.vendorId == vendorId && device.productId == productId) {
+            if (VID_PID.contains("${device.vendorId}-${device.productId}"))
                 return device
-            }
         }
         return null
     }
@@ -230,6 +232,8 @@ class HIDCommunicationUtil private constructor() {
     companion object {
         private const val TAG = "HIDCommunicationUtil"
         val ACTION_USB_PERMISSION: String = "${AppUtils.getAppPackageName()}.USB_PERMISSION"
+        val VID_PID = arrayListOf("1155-22352", "1155-22336", "1155-22320", "6790-58409")
+
         private const val TIMEOUT = 1000 // 5 seconds timeout
         val instance: HIDCommunicationUtil by lazy {
             val hidCommunicationUtil = HIDCommunicationUtil()
