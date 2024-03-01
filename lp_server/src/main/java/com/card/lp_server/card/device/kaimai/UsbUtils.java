@@ -14,14 +14,15 @@ import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbManager;
 import android.util.Log;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.blankj.utilcode.util.ActivityUtils;
 import com.card.lp_server.card.device.kaimai.cama.AESOperation;
 import com.card.lp_server.card.device.kaimai.cama.Constants;
 import com.card.lp_server.card.device.kaimai.cama.DetectResultStore;
 import com.card.lp_server.card.device.kaimai.cama.ResultTable;
 import com.card.lp_server.card.device.model.Pair;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
@@ -69,12 +70,12 @@ public class UsbUtils {
                                 Log.d(TAG, "共读取到" + results.length + "型弹药检测数据");
                                 for (ResultTable result : results) {
                                     msg.append(result.toString());
-                                    jSONArray.add(result);
+                                    jSONArray.put(result);
                                 }
                                 josonObject.put("datas", results);
-                                Log.d(TAG, "读取完毕: \n " + josonObject.toJSONString());
+                                Log.d(TAG, "读取完毕: \n " + josonObject);
                                 mDeviceConnection.close();
-                                return new Pair<>(true, josonObject.toJSONString());
+                                return new Pair<>(true, josonObject.toString());
                             } catch (Exception e) {
                                 e.printStackTrace();
                                 return new Pair<>(false, "Data parsing failed");
@@ -224,10 +225,10 @@ public class UsbUtils {
                                 jo.put("tdcs", nums[2]);
 
                                 msg.setLength(0);
-                                msg.append(jo.toJSONString());
-                                Constants.addDebugMsg(jo.toJSONString());
+                                msg.append(jo);
+                                Constants.addDebugMsg(jo.toString());
                                 mDeviceConnection.close();
-                                return new Pair<>(true, jo.toJSONString());
+                                return new Pair<>(true, jo.toString());
                             } catch (Exception e) {
                                 e.printStackTrace();
                                 Log.d(TAG, "get014Response: " + e.getMessage());
@@ -398,11 +399,11 @@ public class UsbUtils {
                                 jo.put("zjdtdcs", nums2[2]);
                                 Constants.addDebugMsg("msg:" + msg.toString());
                                 msg.setLength(0);
-                                msg.append(jo.toJSONString());
-                                Log.d(TAG, "get014JsQ2Response: \n" + jo.toJSONString());
-                                Constants.addDebugMsg(jo.toJSONString());
+                                msg.append(jo);
+                                Log.d(TAG, "get014JsQ2Response: \n" + jo);
+                                Constants.addDebugMsg(jo.toString());
                                 mDeviceConnection.close();
-                                return new Pair<>(true, jo.toJSONString());
+                                return new Pair<>(true, jo.toString());
                             } catch (Exception e) {
                                 e.printStackTrace();
                                 msg.append("jiex fail " + e.getMessage());
@@ -561,11 +562,11 @@ public class UsbUtils {
                                 jo.put("bctdsjm", nums[1] % 60);
                                 Constants.addDebugMsg("msg:" + msg.toString());
                                 msg.setLength(0);
-                                msg.append(jo.toJSONString());
-                                Log.d(TAG, "get014JsQ3Response: jo:\n" + jo.toJSONString());
-                                Constants.addDebugMsg(jo.toJSONString());
+                                msg.append(jo.toString());
+                                Log.d(TAG, "get014JsQ3Response: jo:\n" + jo.toString());
+                                Constants.addDebugMsg(jo.toString());
                                 mDeviceConnection.close();
-                                return new Pair<>(true, jo.toJSONString());
+                                return new Pair<>(true, jo.toString());
                             } catch (Exception e) {
                                 e.printStackTrace();
                                 Constants.addDebugMsg(Constants.printError(e, "数据解析失败！"));

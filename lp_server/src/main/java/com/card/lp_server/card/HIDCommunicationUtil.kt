@@ -35,11 +35,9 @@ class HIDCommunicationUtil private constructor() {
     private var usbDevice: UsbDevice? = null
     private var usbConnection: UsbDeviceConnection? = null
     private var connectionListener: ConnectionListener = DefaultConnectionListener()
-//    private var vendorId: Int = 6790
-//    private var productId: Int = 58409
+    private var vendorId: Int = 6790
+    private var productId: Int = 58409
     private var isConnect: Boolean = false
-    var deviceType: DeviceType = DeviceType.LON_BEI
-
     fun registerUSBReceiver() {
         val filter = IntentFilter()
         filter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED)
@@ -54,14 +52,15 @@ class HIDCommunicationUtil private constructor() {
     }
 
     fun setDevice(vendorId: Int, productId: Int): HIDCommunicationUtil {
-//        this.vendorId = vendorId
-//        this.productId = productId
+        this.vendorId = vendorId
+        this.productId = productId
         return this
     }
 
+
     fun findAndOpenHIDDevice(): Boolean {
         if (isConnect) return true
-        usbDevice = findHIDDevice()
+        usbDevice = switchHIDDevice()
         if (usbDevice != null) {
             if (usbManager.hasPermission(usbDevice)) {
                 return openUSBConnection(usbDevice!!)
@@ -74,8 +73,16 @@ class HIDCommunicationUtil private constructor() {
         return false
     }
 
+    private fun switchHIDDevice(): UsbDevice? {
+        val deviceList: HashMap<String, UsbDevice> = usbManager.deviceList
+        for (device in deviceList.values) {
+            if (device.vendorId == vendorId && device.productId == productId)
+                return device
+        }
+        return null
+    }
 
-    private fun findHIDDevice(): UsbDevice? {
+    fun findHIDDevice(): UsbDevice? {
         val deviceList: HashMap<String, UsbDevice> = usbManager.deviceList
         for (device in deviceList.values) {
             if (VID_PID.contains("${device.vendorId}-${device.productId}"))
@@ -157,6 +164,7 @@ class HIDCommunicationUtil private constructor() {
     }
 
     fun readFromHID(buffer: ByteArray): Boolean {
+        Log.d(TAG, "readFromHID: vid:$vendorId  ->> pid:$vendorId")
         if (ensureHIDConnection()) {
             val endpoint = findHIDEndpoint(UsbConstants.USB_DIR_IN)
             if (endpoint != null) {
@@ -175,6 +183,7 @@ class HIDCommunicationUtil private constructor() {
     }
 
     fun writeToHID(buffer: ByteArray): Boolean {
+        Log.d(TAG, "writeToHID: vid:$vendorId  ->> pid:$vendorId")
         if (ensureHIDConnection()) {
             val endpoint = findHIDEndpoint(UsbConstants.USB_DIR_OUT)
             if (endpoint != null) {
@@ -237,7 +246,6 @@ class HIDCommunicationUtil private constructor() {
         private const val TIMEOUT = 1000 // 5 seconds timeout
         val instance: HIDCommunicationUtil by lazy {
             val hidCommunicationUtil = HIDCommunicationUtil()
-            hidCommunicationUtil.findAndOpenHIDDevice()
             hidCommunicationUtil
         }
     }

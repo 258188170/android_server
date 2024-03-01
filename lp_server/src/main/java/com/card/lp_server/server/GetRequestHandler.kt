@@ -8,6 +8,9 @@ import com.card.lp_server.card.device.jsq.Jd014Jjsq2Device
 import com.card.lp_server.card.device.jsq.Jd014Jjsq3Device
 import com.card.lp_server.model.Types
 import com.card.lp_server.utils.FILE_NAME
+import com.card.lp_server.utils.JSQ1
+import com.card.lp_server.utils.JSQ2
+import com.card.lp_server.utils.JSQ3
 import com.card.lp_server.utils.TAG
 import com.card.lp_server.utils.TYPE_NUMBER
 import com.card.lp_server.utils.convertBitmapToBinary
@@ -31,53 +34,71 @@ class GetRequestHandler : RequestHandlerStrategy {
         GET_TYPE_LIST to ::handleTypeList,
         GET_TYPE_LIST to ::handleTypeList,
         //014设备接口
-        "api/jsq1_read" to ::handleJSQ1Read,
-        "api/jsq1_list" to ::handleJSQ1List,
-        "api/jsq2_read" to ::handleJSQ2Read,
-        "api/jsq3_read" to ::handleJSQ3Read,
-
-
+        "/api/jsq_read" to ::handleJSQRead,
+        "/api/jsq_list" to ::handleJSQList,
         )
-
     override fun handleRequest(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response? {
         val uri = session.uri
         val handler = handlers[uri]
         return handler?.invoke(session)
     }
 
-    private fun handleJSQ2Read(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
-        return try {
-            val readFile = Jd014Jjsq2Device.getInstance().readFile()
-            responseJsonStringSuccess(readFile)
+
+    private fun handleJSQList(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
+        val queryParams = session.getQueryParams()["jsq"]?.first()
+        if (queryParams.isNullOrEmpty()) return responseJsonStringFail("请传入要读取类型")
+        try {
+            when (queryParams) {
+                JSQ1 -> {
+                    val readFile = Jd014Jjsq1Device.getInstance().jwdList
+                    return responseJsonStringSuccess(readFile)
+                }
+                JSQ2 -> {
+                    val readFile = Jd014Jjsq2Device.getInstance().jwdList
+                    return responseJsonStringSuccess(readFile)
+                }
+
+                JSQ3 -> {
+                    val readFile = Jd014Jjsq3Device.getInstance().jwdList
+                    return responseJsonStringSuccess(readFile)
+                }
+
+                else -> {
+                    return responseJsonStringFail("参数不正确")
+                }
+            }
         } catch (e: Exception) {
-            responseJsonStringFail(e.message)
+            return responseJsonStringFail(e.message)
         }
     }
 
-    private fun handleJSQ3Read(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
-        return try {
-            val readFile = Jd014Jjsq3Device.getInstance().readFile()
-            responseJsonStringSuccess(readFile)
-        } catch (e: Exception) {
-            responseJsonStringFail(e.message)
-        }
-    }
+    private fun handleJSQRead(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
+        val queryParams = session.getQueryParams()["jsq"]?.first()
+        if (queryParams.isNullOrEmpty()) return responseJsonStringFail("请传入要读取类型")
+        try {
+            when (queryParams) {
+                JSQ1 -> {
+                    val readFile = Jd014Jjsq1Device.getInstance().readFile()
+                    return responseJsonStringSuccess(readFile)
+                }
+                JSQ2 -> {
+                    val readFile = Jd014Jjsq2Device.getInstance().readFile()
+                    return responseJsonStringSuccess(readFile)
+                }
 
-    private fun handleJSQ1List(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
-        return try {
-            val readFile = Jd014Jjsq1Device.getInstance().jwdList
-            responseJsonStringSuccess(readFile)
-        } catch (e: Exception) {
-            responseJsonStringFail(e.message)
-        }
-    }
+                JSQ3 -> {
+                    val readFile = Jd014Jjsq3Device.getInstance().readFile()
+                    return responseJsonStringSuccess(readFile)
+                }
 
-    private fun handleJSQ1Read(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
-        return try {
-            val readFile = Jd014Jjsq1Device.getInstance().readFile()
-            responseJsonStringSuccess(readFile)
+                else -> {
+                    return responseJsonStringFail("参数不正确")
+                }
+            }
         } catch (e: Exception) {
-            responseJsonStringFail(e.message)
+            e.printStackTrace()
+            Log.d(TAG, "handleJSQRead: ")
+            return responseJsonStringFail(e.message)
         }
     }
 

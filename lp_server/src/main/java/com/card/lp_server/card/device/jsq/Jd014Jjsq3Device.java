@@ -2,16 +2,16 @@ package com.card.lp_server.card.device.jsq;
 
 import android.util.Log;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.blankj.utilcode.util.ConvertUtils;
 import com.blankj.utilcode.util.LogUtils;
 import com.card.lp_server.card.HIDCommunicationUtil;
-import com.card.lp_server.card.device.LonbestException;
 import com.card.lp_server.card.device.call.VendorDevice;
 import com.card.lp_server.card.device.model.Pair;
 import com.card.lp_server.card.device.util.ByteUtil;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
@@ -47,8 +47,11 @@ public class Jd014Jjsq3Device extends VendorDevice {
     private static class SingletonHelper {
         private static final Jd014Jjsq3Device INSTANCE = new Jd014Jjsq3Device();
     }
-
+    private boolean checkConnect() {
+        return HIDCommunicationUtil.Companion.getInstance().setDevice(1155, 22336).findAndOpenHIDDevice();
+    }
     public static Jd014Jjsq3Device getInstance() {
+        HIDCommunicationUtil.Companion.getInstance().setDevice(1155, 22320);
         return SingletonHelper.INSTANCE;
     }
 
@@ -59,7 +62,8 @@ public class Jd014Jjsq3Device extends VendorDevice {
      * @return 文件数据
      */
 //	@DevService("<p>上电获取加电检测模块记录</p><ul><li>文件名</li></ul><b>返回读取到的数据</b>")
-    public String readFile() throws UnsupportedEncodingException, InterruptedException {
+    public String readFile() throws UnsupportedEncodingException, InterruptedException, JSONException {
+        if (!checkConnect()) throw new RuntimeException("设备连接失败,请重试");
 
         byte[] req = new byte[64];
         Arrays.fill(req, (byte) 0);
@@ -105,8 +109,8 @@ public class Jd014Jjsq3Device extends VendorDevice {
         jsonObject.put("zbdztdsj", zbdztdsj);
         jsonObject.put("zbdtdsj", zbdtdsj);
         jsonObject.put("zbdztdcs", zbdztdcs);
-        Log.d(TAG, "readFile: " + jsonObject.toJSONString());
-        return jsonObject.toJSONString();
+        Log.d(TAG, "readFile: " + jsonObject.toString());
+        return jsonObject.toString();
     }
 
     //	@DevService("<p>读取第N次准备电信息</p><ul><li>文件名</li></ul><b>返回读取到的数据</b>")
@@ -115,7 +119,9 @@ public class Jd014Jjsq3Device extends VendorDevice {
      * num 第N次加温电内
      * prepare 第N次准备电（每条加温电最多容纳31次准备电，编号1~31）
      */
-    public JSONObject readNZBD(int num, int prepare) throws UnsupportedEncodingException, InterruptedException {
+    public JSONObject readNZBD(int num, int prepare) throws UnsupportedEncodingException, InterruptedException, JSONException {
+        if (!checkConnect()) throw new RuntimeException("设备连接失败,请重试");
+
         byte[] req = new byte[64];
 
         Arrays.fill(req, (byte) 0);
@@ -161,7 +167,9 @@ public class Jd014Jjsq3Device extends VendorDevice {
 
     //	@DevService("<p>读取第N次加温电信息</p><ul><li>文件名</li></ul><b>返回读取到的数据</b>")
 //    获取第N次加温电加电信息
-    public JSONObject readNJWD(int num) throws UnsupportedEncodingException, InterruptedException {
+    public JSONObject readNJWD(int num) throws UnsupportedEncodingException, InterruptedException, JSONException {
+        if (!checkConnect()) throw new RuntimeException("设备连接失败,请重试");
+
         Thread.sleep(20);
         byte[] req = new byte[64];
         JSONObject jsonObject = new JSONObject();
@@ -207,7 +215,9 @@ public class Jd014Jjsq3Device extends VendorDevice {
 
 
     //	@DevService("<p>读取加温电总次数</p><ul><li>文件名</li></ul><b>返回读取到的数据</b>")
-    public JSONObject readJwdzcs() throws UnsupportedEncodingException, InterruptedException {
+    public JSONObject readJwdzcs() throws UnsupportedEncodingException, InterruptedException, JSONException {
+        if (!checkConnect()) throw new RuntimeException("设备连接失败,请重试");
+
         Thread.sleep(20);
         byte[] req = new byte[64];
 
@@ -247,6 +257,8 @@ public class Jd014Jjsq3Device extends VendorDevice {
      */
     //设置导弹编号指令
     public boolean writeDdbh(String ddbh) throws InterruptedException, UnsupportedEncodingException {
+        if (!checkConnect()) throw new RuntimeException("设备连接失败,请重试");
+
         Thread.sleep(20);
         byte[] req = new byte[64];
         Arrays.fill(req, (byte) 0);
@@ -275,6 +287,8 @@ public class Jd014Jjsq3Device extends VendorDevice {
 
     //	@DevService("<p>写导弹引头号，可传递1个参数</p><ul><li>文件名</li><li>要写入的数据</li></ul><b>返回写入是否成功</b>")
     public boolean writeDyt(String dybh) throws InterruptedException, UnsupportedEncodingException {
+        if (!checkConnect()) throw new RuntimeException("设备连接失败,请重试");
+
         Thread.sleep(20);
         byte[] req = new byte[64];
 
@@ -301,6 +315,8 @@ public class Jd014Jjsq3Device extends VendorDevice {
 
 
     public boolean writeJD(int jwdztdsj, int jwdbcsj, int jwdztdcs, int zbdztdsj, int zbdbcsj, int zbdztdcs) throws UnsupportedEncodingException, InterruptedException {
+        if (!checkConnect()) throw new RuntimeException("设备连接失败,请重试");
+
         Thread.sleep(20);
         byte[] req = new byte[64];
         Arrays.fill(req, (byte) 0);
@@ -337,10 +353,12 @@ public class Jd014Jjsq3Device extends VendorDevice {
         return true;
     }
 
-    public String getJWDList() throws UnsupportedEncodingException, InterruptedException {
+    public String getJWDList() throws UnsupportedEncodingException, InterruptedException, JSONException {
+        if (!checkConnect()) throw new RuntimeException("设备连接失败,请重试");
+
         //获取加温电总次数
         JSONObject jsonObject = readJwdzcs();
-        int jwdztdcs = jsonObject.getInteger("jwdztdcs");
+        int jwdztdcs = jsonObject.getInt("jwdztdcs");
         assert (jwdztdcs > 0);
         JSONObject jsonObjectResult = new JSONObject();
         jsonObjectResult.put("dybh", jsonObject.getString("dybh"));
@@ -349,11 +367,11 @@ public class Jd014Jjsq3Device extends VendorDevice {
         for (int i = 0; i < jwdztdcs; i++) {
             Thread.sleep(10);
             JSONObject jsonObject1 = readNJWD(i);
-            jsonArray.add(jsonObject1);
+            jsonArray.put(jsonObject1);
         }
         jsonObjectResult.put("data", jsonArray);
-        Log.d(TAG, "getJWDList: " + jsonObjectResult.toJSONString());
-        return jsonObjectResult.toJSONString();
+        Log.d(TAG, "getJWDList: " + jsonObjectResult.toString());
+        return jsonObjectResult.toString();
     }
 
     public static void generateFrames(byte[] inputData) {

@@ -8,6 +8,9 @@ import java.net.URLDecoder
 
 const val FILE_NAME = "fileName"
 const val TYPE_NUMBER = "typeNumber"
+const val JSQ1 = "jsq1"
+const val JSQ2 = "jsq2"
+const val JSQ3 = "jsq3"
 
 
 fun stringConvertToList(listFiles: ByteArray?): List<String> {

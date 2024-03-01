@@ -51,10 +51,10 @@ android {
         }
     }
 
-    sourceSets.getByName("main") {
-        jniLibs.setSrcDirs(listOf("libs"))
-
-    }
+//    sourceSets.getByName("main") {
+//        jniLibs.setSrcDirs(listOf("libs"))
+//
+//    }
 }
 
 
@@ -88,5 +88,5 @@ dependencies {
     // optional - Paging 3 Integration
     implementation("androidx.room:room-paging:$room_version")
 
-    api("com.alibaba:fastjson:2.0.28")
+//    api("com.alibaba:fastjson:2.0.28")
 }

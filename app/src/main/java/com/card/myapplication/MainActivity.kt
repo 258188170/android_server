@@ -61,6 +61,7 @@ import com.card.lp_server.server.READ_FILE
 import com.card.lp_server.server.TAG_INFO
 import com.card.lp_server.server.TAG_VERSION
 import com.card.lp_server.server.UPDATE_DISPLAY
+import com.card.lp_server.utils.JSQ1
 import com.card.lp_server.utils.convertBitmapToBinary
 import com.card.lp_server.utils.generateBitMapForLl
 import kotlinx.coroutines.Dispatchers
@@ -400,5 +401,23 @@ class MainActivity : AppCompatActivity() {
 
     fun addGJZBRec(view: View) {
         requestPost(ADD_GJZB_REC, GJZBRec(dyNumber = "555"))
+    }
+
+    fun jsq(view: View) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            RxHttp.get("/api/jsq_read")
+                .add("jsq", JSQ1)//第一步，确定请求方式，可以选择postForm、postJson等方法
+                .toFlow<String>()
+                .catch {
+                    it.printStackTrace()
+                }//第二步，调用toFlow方法并输入泛型类型，拿到Flow对象
+                .collect {              //第三步，调用collect方法发起请求
+                  withContext(Dispatchers.Main){
+                      LogUtils.d(it)
+                      dismiss("\n response: path = api/jsq_read \n result: $it")
+                  }
+                }
+
+        }
     }
 }
