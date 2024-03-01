@@ -16,17 +16,24 @@ class LServer(port: Int = 9988) : NanoHTTPD(port) {
     }
 
     override fun serve(session: IHTTPSession?): Response {
-        Log.d(TAG, "线程 ${Thread.currentThread().name}")
-        val findAndOpenHIDDevice =
-            HIDCommunicationUtil.instance.findAndOpenHIDDevice()
-        if (!findAndOpenHIDDevice) {
-            return responseJsonStringFail(
-                msg = "设备未连接,请重试"
-            )
+        try {
+            Log.d(TAG, "线程 ${Thread.currentThread().name}")
+            val findAndOpenHIDDevice =
+                HIDCommunicationUtil.instance.findAndOpenHIDDevice()
+            return if (!findAndOpenHIDDevice) {
+                responseJsonStringFail(
+                    msg = "设备未连接,请重试"
+                )
+            }else{
+                session?.let { dealWith(it) } ?: responseJsonStringFail(
+                    msg = "session is null"
+                )
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
-        return session?.let { dealWith(it) } ?: responseJsonStringFail(
-            msg = "session is null"
-        )
+        return  responseJsonStringFail()
+
     }
 
     private fun dealWith(session: IHTTPSession): Response {

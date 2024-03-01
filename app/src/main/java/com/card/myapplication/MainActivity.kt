@@ -64,6 +64,7 @@ import com.card.lp_server.server.UPDATE_DISPLAY
 import com.card.lp_server.utils.convertBitmapToBinary
 import com.card.lp_server.utils.generateBitMapForLl
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import rxhttp.toFlow
@@ -220,7 +221,10 @@ class MainActivity : AppCompatActivity() {
         show("\n\n request: GET path = $url")
         lifecycleScope.launch(Dispatchers.IO) {
             RxHttp.get(url)  //第一步，确定请求方式，可以选择postForm、postJson等方法
-                .toFlow<String>()       //第二步，调用toFlow方法并输入泛型类型，拿到Flow对象
+                .toFlow<String>()
+                .catch {
+                    it.printStackTrace()
+                }//第二步，调用toFlow方法并输入泛型类型，拿到Flow对象
                 .collect {              //第三步，调用collect方法发起请求
                     LogUtils.d(it)
                     dismiss("\n response: path = $url \n result: $it")
@@ -235,7 +239,10 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch(Dispatchers.IO) {
             RxHttp.postBody(url)  //第一步，确定请求方式，可以选择postForm、postJson等方法
                 .setBody(body)
-                .toFlow<String>()       //第二步，调用toFlow方法并输入泛型类型，拿到Flow对象
+                .toFlow<String>()
+                .catch {
+                    it.printStackTrace()
+                }//第二步，调用toFlow方法并输入泛型类型，拿到Flow对象
                 .collect {
                     dismiss("\n response: path = $url \n result: $it")
 

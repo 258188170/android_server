@@ -41,7 +41,6 @@ class PostRequestHandler : RequestHandlerStrategy {
         //dy
         ADD_BASE_INFO to ::handleBaseInfo,
         ADD_CODE_UP_REC to ::handleCodeUpRec,
-        ENCODE_AND_UPDATE_EINK to ::handleEncode,
         ADD_EQU_MATCH to ::handleAddEquMatch,
         ADD_EQU_REPLACE_REC to ::handleAddEquReplaceRec,
         ADD_GAS_UP_REC to ::handleAddGasUpRec,
@@ -238,15 +237,6 @@ class PostRequestHandler : RequestHandlerStrategy {
         }
     }
 
-    private fun handleEncode(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
-        val postParams = session.getPostParams() ?: return responseJsonStringFail("参数不能为空!")
-        val fromJson = GsonUtils.fromJson(postParams, RecordBean::class.java)
-            ?: return responseJsonStringFail("参数不能为空!")
-        if (fromJson.dyNumber.isNullOrEmpty())
-            return responseJsonStringFail("dyNumber is not empty")
-        Log.d(TAG, "handleAddBaseInfo: $fromJson")
-        return NanoHTTPD.newFixedLengthResponse("<html><body style=\"font-size:40px;\">这里是首页</body></html>")
-    }
 
     private fun handleCodeUpRec(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
         val postParams = session.getPostParams() ?: return responseJsonStringFail("参数不能为空!")
