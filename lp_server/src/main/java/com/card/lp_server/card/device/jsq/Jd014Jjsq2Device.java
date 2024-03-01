@@ -5,11 +5,11 @@ import android.util.Log;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.blankj.utilcode.util.LogUtils;
+import com.card.lp_server.card.HIDCommunicationUtil;
 import com.card.lp_server.card.device.LonbestException;
 import com.card.lp_server.card.device.call.VendorDevice;
 import com.card.lp_server.card.device.model.Pair;
 import com.card.lp_server.card.device.util.ByteUtil;
-import com.card.lp_server.card.device.util.HidUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
@@ -36,10 +36,10 @@ public class Jd014Jjsq2Device extends VendorDevice {
 
     @Override
     public Pair<Boolean, String> connect() {
-        Pair<Boolean, String> connect = HidUtils.connect(1155, 22336);
-        isOpen = connect.getFirst();
+//        Pair<Boolean, String> connect = HidUtils.connect(1155, 22336);
+//        isOpen = connect.getFirst();
 //        isOpen = HidUtils.connect(23112, 22352);
-        return connect;
+        return null;
     }
 
     private static class SingletonHelper {
@@ -57,9 +57,7 @@ public class Jd014Jjsq2Device extends VendorDevice {
      */
 //	@DevService("<p>上电获取加电检测模块记录</p><ul><li>文件名</li></ul><b>返回读取到的数据</b>")
     public String readFile() throws UnsupportedEncodingException, InterruptedException {
-        if (!HidUtils.isConnet) {
-            throw new LonbestException("请检查连接");
-        }
+
         // dev.read(null, 0, 0)
         // dev.write(null, 0, 0)
         byte[] req = new byte[64];
@@ -70,15 +68,16 @@ public class Jd014Jjsq2Device extends VendorDevice {
         req[3] = 0x10;
         req[14] = 0x55;
         req[15] = (byte) 0xaa;
-        int res1 = HidUtils.write(req);
-        assert res1 > 0;
+        boolean res1 = HIDCommunicationUtil.Companion.getInstance().writeToHID(req);
+        assert res1;
         Log.d(TAG, "readFile: res1:" + res1);
         Thread.sleep(20);
         byte[] res = new byte[64];
         Arrays.fill(res, (byte) 0);
 //        int res2 = dev.read(res, 0, res.length);
-        int res2 = HidUtils.read(res);
-        assert res2 > 0;
+        boolean res2 = HIDCommunicationUtil.Companion.getInstance().readFromHID(res);
+
+        assert res2;
         LogUtils.file(res);
         Log.d(TAG, "readFile: res2:" + res2);
         String dybh = new String(Arrays.copyOfRange(res, 28, 44), "GBK").trim();
@@ -129,14 +128,15 @@ public class Jd014Jjsq2Device extends VendorDevice {
         byte[] bytes1 = ByteUtil.intToByteArray(prepare);
         System.arraycopy(bytes, 0, req, 4, bytes.length);
         System.arraycopy(bytes1, 0, req, 8, bytes.length);
-        int res1 = HidUtils.write(req);
-        assert res1 > 0;
+        boolean res1 = HIDCommunicationUtil.Companion.getInstance().writeToHID(req);
+        ;
+        assert res1;
         Log.d(TAG, "readNZBD: res1:" + res1);
         Thread.sleep(20);
         byte[] res = new byte[64];
         Arrays.fill(res, (byte) 0);
-        int res2 = HidUtils.read(res);
-        assert res2 > 0;
+        boolean res2 = HIDCommunicationUtil.Companion.getInstance().readFromHID(res);
+        assert res2;
         Log.d(TAG, "readNZBD: res2:" + res2);
         LogUtils.file("--------读取第N次准备电信息-------");
         LogUtils.file(res);
@@ -174,16 +174,17 @@ public class Jd014Jjsq2Device extends VendorDevice {
         byte[] bytes = ByteUtil.intToByteArray(num);
         System.arraycopy(bytes, 0, req, 4, bytes.length);
 
-        int res1 = HidUtils.write(req);
-        assert res1 > 0;
+        boolean res1 = HIDCommunicationUtil.Companion.getInstance().writeToHID(req);
+        ;
+        assert res1;
 
         Log.d(TAG, "readNJWD: res1:" + res1);
         System.out.println(res1);
         Thread.sleep(20);
         byte[] res = new byte[64];
         Arrays.fill(res, (byte) 0);
-        int res2 = HidUtils.read(res);
-        assert res2 > 0;
+        boolean res2 = HIDCommunicationUtil.Companion.getInstance().readFromHID(res);
+        assert res2;
         LogUtils.file("--------读取第N次加温电信息-------");
         LogUtils.file(res);
         String dybh = new String(Arrays.copyOfRange(res, 28, 44), "GBK").trim();
@@ -223,16 +224,17 @@ public class Jd014Jjsq2Device extends VendorDevice {
         req[3] = 0x10;
         req[14] = 0x55;
         req[15] = (byte) 0xaa;
-        int res1 = HidUtils.write(req);
-        assert res1 > 0;
+        boolean res1 = HIDCommunicationUtil.Companion.getInstance().writeToHID(req);
+        ;
+        assert res1;
         Log.d(TAG, "readJwdzcs: res1:" + res1);
         System.out.println(res1);
         Thread.sleep(20);
         byte[] res = new byte[64];
         Arrays.fill(res, (byte) 0);
 //        int res2 = dev.read(res, 0, res.length);
-        int res2 = HidUtils.read(res);
-        assert res2 > 0;
+        boolean res2 = HIDCommunicationUtil.Companion.getInstance().readFromHID(res);
+        assert res2;
         Log.d(TAG, "readJwdzcs: res2:" + res2);
         JSONObject jsonObject = new JSONObject();
         String dybh = new String(Arrays.copyOfRange(res, 12, 28), "GBK").trim();
@@ -253,11 +255,7 @@ public class Jd014Jjsq2Device extends VendorDevice {
      */
 //	@DevService("<p>写导弹编号，可传递1个参数</p><ul><li>文件名</li><li>要写入的数据</li></ul><b>返回写入是否成功</b>")
     public boolean writeDdbh(String ddbh) throws InterruptedException {
-        if (!HidUtils.isConnet) {
-            throw new LonbestException("请检查连接");
-        }
-        // dev.read(null, 0, 0)
-        // dev.write(null, 0, 0)
+
         byte[] req = new byte[64];
         Arrays.fill(req, (byte) 0);
         req[0] = (byte) 0xaa;
@@ -270,15 +268,16 @@ public class Jd014Jjsq2Device extends VendorDevice {
         req[21 - 1] = 0x55;
         req[22 - 1] = (byte) 0xaa;
 //		        int res1 = dev.write(req, 0, req.length);
-        int res1 = HidUtils.write(req);
-        assert res1 > 0;
+        boolean res1 = HIDCommunicationUtil.Companion.getInstance().writeToHID(req);
+        ;
+        assert res1;
         Log.d(TAG, "writeDdbh: res1:" + res1);
         System.out.println(res1);
         Thread.sleep(20);
         byte[] res = new byte[64];
         Arrays.fill(res, (byte) 0);
-        int res2 = HidUtils.read(res);
-        assert res2 > 0;
+        boolean res2 = HIDCommunicationUtil.Companion.getInstance().readFromHID(res);
+        assert res2;
         Log.d(TAG, "writeDdbh: res2:" + res2);
         return true;
     }
@@ -301,8 +300,9 @@ public class Jd014Jjsq2Device extends VendorDevice {
         req[21 - 1] = 0x55;
         req[22 - 1] = (byte) 0xaa;
 //		        int res1 = dev.write(req, 0, req.length);
-        int res1 = HidUtils.write(req);
-        assert res1 > 0;
+        boolean res1 = HIDCommunicationUtil.Companion.getInstance().writeToHID(req);
+        ;
+        assert res1;
         Log.d(TAG, "writeDyt: res1:" + res1);
         System.out.println(res1);
         try {
@@ -313,8 +313,8 @@ public class Jd014Jjsq2Device extends VendorDevice {
         byte[] res = new byte[64];
         Arrays.fill(res, (byte) 0);
 //		        int res2 = dev.read(res, 0, res.length);
-        int res2 = HidUtils.read(res);
-        assert res2 > 0;
+        boolean res2 = HIDCommunicationUtil.Companion.getInstance().readFromHID(res);
+        assert res2;
         Log.d(TAG, "writeDyt: res2:" + res2);
         return true;
     }
@@ -335,14 +335,15 @@ public class Jd014Jjsq2Device extends VendorDevice {
         System.arraycopy(ByteUtil.intToByteArray(zbdztdcs), 0, req, 24, 4);
         req[28] = 0x55;
         req[29] = (byte) 0xaa;
-        int res1 = HidUtils.write(req);
+        boolean res1 = HIDCommunicationUtil.Companion.getInstance().writeToHID(req);
+        ;
 
-        assert res1 > 0;
+        assert res1;
         Log.d(TAG, "writeDyt: res1:" + res1);
         byte[] res = new byte[64];
         Arrays.fill(res, (byte) 0);
-        int res2 = HidUtils.read(res);
-        assert res2 > 0;
+        boolean res2 = HIDCommunicationUtil.Companion.getInstance().readFromHID(res);
+        assert res2;
         String dybh = new String(Arrays.copyOfRange(res, 28, 44), "GBK").trim();
         String dytbh = new String(Arrays.copyOfRange(res, 44, 60), "GBK").trim();
         Log.d(TAG, "readFile: 导弹编号:" + dybh);

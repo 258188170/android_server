@@ -3,6 +3,9 @@ package com.card.lp_server.server
 import android.util.Log
 import com.blankj.utilcode.util.ConvertUtils
 import com.card.lp_server.card.device.LonbestCard
+import com.card.lp_server.card.device.jsq.Jd014Jjsq1Device
+import com.card.lp_server.card.device.jsq.Jd014Jjsq2Device
+import com.card.lp_server.card.device.jsq.Jd014Jjsq3Device
 import com.card.lp_server.model.Types
 import com.card.lp_server.utils.FILE_NAME
 import com.card.lp_server.utils.TAG
@@ -27,12 +30,55 @@ class GetRequestHandler : RequestHandlerStrategy {
         GET_BASE_INFO to ::handleBaseInfo,
         GET_TYPE_LIST to ::handleTypeList,
         GET_TYPE_LIST to ::handleTypeList,
-    )
+        //014设备接口
+        "api/jsq1_read" to ::handleJSQ1Read,
+        "api/jsq1_list" to ::handleJSQ1List,
+        "api/jsq2_read" to ::handleJSQ2Read,
+        "api/jsq3_read" to ::handleJSQ3Read,
+
+
+        )
 
     override fun handleRequest(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response? {
         val uri = session.uri
         val handler = handlers[uri]
         return handler?.invoke(session)
+    }
+
+    private fun handleJSQ2Read(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
+        return try {
+            val readFile = Jd014Jjsq2Device.getInstance().readFile()
+            responseJsonStringSuccess(readFile)
+        } catch (e: Exception) {
+            responseJsonStringFail(e.message)
+        }
+    }
+
+    private fun handleJSQ3Read(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
+        return try {
+            val readFile = Jd014Jjsq3Device.getInstance().readFile()
+            responseJsonStringSuccess(readFile)
+        } catch (e: Exception) {
+            responseJsonStringFail(e.message)
+        }
+    }
+
+    private fun handleJSQ1List(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
+        return try {
+            val readFile = Jd014Jjsq1Device.getInstance().jwdList
+            responseJsonStringSuccess(readFile)
+        } catch (e: Exception) {
+            responseJsonStringFail(e.message)
+        }
+    }
+
+    private fun handleJSQ1Read(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
+        return try {
+            val readFile = Jd014Jjsq1Device.getInstance().readFile()
+            responseJsonStringSuccess(readFile)
+        } catch (e: Exception) {
+            responseJsonStringFail(e.message)
+        }
     }
 
     private fun handleTypeList(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
