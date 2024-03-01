@@ -74,6 +74,7 @@ class GetRequestHandler : RequestHandlerStrategy {
 
     private fun handleJSQRead(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
         val queryParams = session.getQueryParams()["jsq"]?.first()
+        Log.d(TAG, "handleJSQRead: $queryParams")
         if (queryParams.isNullOrEmpty()) return responseJsonStringFail("请传入要读取类型")
         try {
             when (queryParams) {
