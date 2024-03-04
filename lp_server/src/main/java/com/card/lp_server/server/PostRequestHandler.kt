@@ -222,7 +222,7 @@ class PostRequestHandler : RequestHandlerStrategy {
                 return if (writeFile) {
                     responseJsonStringSuccess(true)
                 } else {
-                    responseJsonStringSuccess(false, "操作失败!")
+                    responseJsonStringFail()
                 }
             } else {
                 val string = String(readFile)
@@ -243,11 +243,11 @@ class PostRequestHandler : RequestHandlerStrategy {
                         responseJsonStringSuccess(true)
                     } else {
                         Log.d(TAG, "handleAddGasUpRec: 写入 equMatch 失败")
-                        responseJsonStringSuccess(false, "操作失败!")
+                        responseJsonStringFail()
                     }
                 } else {
                     Log.d(TAG, "handleAddGasUpRec: 要写入标签弹号与标签内不一致")
-                    responseJsonStringSuccess(false, "要写入标签弹号与当前标签内不一致!")
+                    responseJsonStringFail( "要写入标签弹号与当前标签内不一致!")
                 }
             }
         } catch (e: Exception) {
@@ -279,7 +279,7 @@ class PostRequestHandler : RequestHandlerStrategy {
                 return if (writeFile) {
                     responseJsonStringSuccess(true)
                 } else {
-                    responseJsonStringSuccess(false, "操作失败!")
+                    responseJsonStringFail()
                 }
             } else {
                 val string = String(readFile)
@@ -300,11 +300,12 @@ class PostRequestHandler : RequestHandlerStrategy {
                         responseJsonStringSuccess(true)
                     } else {
                         Log.d(TAG, "handleAddEquReplaceRec: 写入 equMatch 失败")
-                        responseJsonStringSuccess(false, "操作失败!")
+
+                        responseJsonStringFail()
                     }
                 } else {
                     Log.d(TAG, "handleAddEquReplaceRec: 要写入标签弹号与标签内不一致")
-                    responseJsonStringSuccess(false, "要写入标签弹号与当前标签内不一致!")
+                    responseJsonStringFail( "要写入标签弹号与当前标签内不一致!")
                 }
             }
         } catch (e: Exception) {
@@ -336,7 +337,7 @@ class PostRequestHandler : RequestHandlerStrategy {
                 return if (writeFile) {
                     responseJsonStringSuccess(true)
                 } else {
-                    responseJsonStringSuccess(false, "操作失败!")
+                    responseJsonStringFail()
                 }
             } else {
                 val string = String(readFile)
@@ -357,11 +358,11 @@ class PostRequestHandler : RequestHandlerStrategy {
                         responseJsonStringSuccess(true)
                     } else {
                         Log.d(TAG, "handleAddEquMatch: 写入 equMatch 失败")
-                        responseJsonStringSuccess(false, "操作失败!")
+                        responseJsonStringFail()
                     }
                 } else {
                     Log.d(TAG, "handleAddEquMatch: 要写入标签弹号与标签内不一致")
-                    responseJsonStringSuccess(false, "要写入标签弹号与当前标签内不一致!")
+                    responseJsonStringFail( "要写入标签弹号与当前标签内不一致!")
                 }
             }
         } catch (e: Exception) {
@@ -394,7 +395,7 @@ class PostRequestHandler : RequestHandlerStrategy {
                 return if (writeFile) {
                     responseJsonStringSuccess(true)
                 } else {
-                    responseJsonStringSuccess(false, "操作失败!")
+                    responseJsonStringFail()
                 }
             } else {
                 val string = String(readFile)
@@ -415,11 +416,11 @@ class PostRequestHandler : RequestHandlerStrategy {
                         responseJsonStringSuccess(true)
                     } else {
                         Log.d(TAG, "handleCodeUpRec: 写入 CodeUpRec 失败")
-                        responseJsonStringSuccess(false, "操作失败!")
+                        responseJsonStringFail()
                     }
                 } else {
                     Log.d(TAG, "handleCodeUpRec: 要写入标签弹号与标签内不一致")
-                    responseJsonStringSuccess(false, "要写入标签弹号与当前标签内不一致!")
+                    responseJsonStringFail( "要写入标签弹号与当前标签内不一致!")
                 }
             }
         } catch (e: Exception) {
@@ -451,7 +452,7 @@ class PostRequestHandler : RequestHandlerStrategy {
                 return if (writeFile) {
                     responseJsonStringSuccess(true)
                 } else {
-                    responseJsonStringSuccess(false, "操作失败!")
+                    responseJsonStringFail()
                 }
             } else {
                 val string = String(readFile)
@@ -472,11 +473,11 @@ class PostRequestHandler : RequestHandlerStrategy {
                         responseJsonStringSuccess(true)
                     } else {
                         Log.d(TAG, "handleTecReportImpRec: 写入 TecReportImpRec 失败")
-                        responseJsonStringSuccess(false, "操作失败!")
+                        responseJsonStringFail()
                     }
                 } else {
                     Log.d(TAG, "handleTecReportImpRec: 要写入标签弹号与标签内不一致")
-                    responseJsonStringSuccess(false, "要写入标签弹号与当前标签内不一致!")
+                    responseJsonStringFail( "要写入标签弹号与当前标签内不一致!")
                 }
             }
         } catch (e: Exception) {
@@ -508,7 +509,7 @@ class PostRequestHandler : RequestHandlerStrategy {
                 return if (writeFile) {
                     responseJsonStringSuccess(true)
                 } else {
-                    responseJsonStringSuccess(false, "操作失败!")
+                    responseJsonStringFail()
                 }
             } else {
                 val string = String(readFile)
@@ -529,11 +530,11 @@ class PostRequestHandler : RequestHandlerStrategy {
                         responseJsonStringSuccess(true)
                     } else {
                         Log.d(TAG, "handleSorftwareReplaceRec: 写入 SorftwareReplaceRec 失败")
-                        responseJsonStringSuccess(false, "操作失败!")
+                        responseJsonStringFail()
                     }
                 } else {
                     Log.d(TAG, "handleSorftwareReplaceRec: 要写入标签弹号与标签内不一致")
-                    responseJsonStringSuccess(false, "要写入标签弹号与当前标签内不一致!")
+                    responseJsonStringFail( "要写入标签弹号与当前标签内不一致!")
                 }
             }
         } catch (e: Exception) {
@@ -565,7 +566,7 @@ class PostRequestHandler : RequestHandlerStrategy {
                 return if (writeFile) {
                     responseJsonStringSuccess(true)
                 } else {
-                    responseJsonStringSuccess(false, "操作失败!")
+                    responseJsonStringFail()
                 }
             } else {
                 val string = String(readFile)
@@ -586,11 +587,11 @@ class PostRequestHandler : RequestHandlerStrategy {
                         responseJsonStringSuccess(true)
                     } else {
                         Log.d(TAG, "handleRepairRec: 写入 RepairRec 失败")
-                        responseJsonStringSuccess(false, "操作失败!")
+                        responseJsonStringFail()
                     }
                 } else {
                     Log.d(TAG, "handleRepairRec: 要写入标签弹号与标签内不一致")
-                    responseJsonStringSuccess(false, "要写入标签弹号与当前标签内不一致!")
+                    responseJsonStringFail( "要写入标签弹号与当前标签内不一致!")
                 }
             }
         } catch (e: Exception) {
@@ -622,7 +623,7 @@ class PostRequestHandler : RequestHandlerStrategy {
                 return if (writeFile) {
                     responseJsonStringSuccess(true)
                 } else {
-                    responseJsonStringSuccess(false, "操作失败!")
+                    responseJsonStringFail()
                 }
             } else {
                 val string = String(readFile)
@@ -643,11 +644,11 @@ class PostRequestHandler : RequestHandlerStrategy {
                         responseJsonStringSuccess(true)
                     } else {
                         Log.d(TAG, "handlePoweronRec: 写入 PoweronRec 失败")
-                        responseJsonStringSuccess(false, "操作失败!")
+                        responseJsonStringFail()
                     }
                 } else {
                     Log.d(TAG, "handlePoweronRec: 要写入标签弹号与标签内不一致")
-                    responseJsonStringSuccess(false, "要写入标签弹号与当前标签内不一致!")
+                    responseJsonStringFail( "要写入标签弹号与当前标签内不一致!")
                 }
             }
         } catch (e: Exception) {
@@ -679,7 +680,7 @@ class PostRequestHandler : RequestHandlerStrategy {
                 return if (writeFile) {
                     responseJsonStringSuccess(true)
                 } else {
-                    responseJsonStringSuccess(false, "操作失败!")
+                    responseJsonStringFail()
                 }
             } else {
                 val string = String(readFile)
@@ -700,11 +701,11 @@ class PostRequestHandler : RequestHandlerStrategy {
                         responseJsonStringSuccess(true)
                     } else {
                         Log.d(TAG, "handleMtRec: 写入 MtRec 失败")
-                        responseJsonStringSuccess(false, "操作失败!")
+                        responseJsonStringFail()
                     }
                 } else {
                     Log.d(TAG, "handleMtRec: 要写入标签弹号与标签内不一致")
-                    responseJsonStringSuccess(false, "要写入标签弹号与当前标签内不一致!")
+                    responseJsonStringFail("要写入标签弹号与当前标签内不一致!")
                 }
             }
         } catch (e: Exception) {
@@ -736,7 +737,7 @@ class PostRequestHandler : RequestHandlerStrategy {
                 return if (writeFile) {
                     responseJsonStringSuccess(true)
                 } else {
-                    responseJsonStringSuccess(false, "操作失败!")
+                    responseJsonStringFail()
                 }
             } else {
                 val string = String(readFile)
@@ -757,11 +758,11 @@ class PostRequestHandler : RequestHandlerStrategy {
                         responseJsonStringSuccess(true)
                     } else {
                         Log.d(TAG, "handleImportantNote: 写入 ImportantNote 失败")
-                        responseJsonStringSuccess(false, "操作失败!")
+                        responseJsonStringFail()
                     }
                 } else {
                     Log.d(TAG, "handleImportantNote: 要写入标签弹号与标签内不一致")
-                    responseJsonStringSuccess(false, "要写入标签弹号与当前标签内不一致!")
+                    responseJsonStringFail( "要写入标签弹号与当前标签内不一致!")
                 }
             }
         } catch (e: Exception) {
@@ -793,7 +794,7 @@ class PostRequestHandler : RequestHandlerStrategy {
                 return if (writeFile) {
                     responseJsonStringSuccess(true)
                 } else {
-                    responseJsonStringSuccess(false, "操作失败!")
+                    responseJsonStringFail()
                 }
             } else {
                 val string = String(readFile)
@@ -814,11 +815,11 @@ class PostRequestHandler : RequestHandlerStrategy {
                         responseJsonStringSuccess(true)
                     } else {
                         Log.d(TAG, "handleHandoverRec: 写入 HandoverRec 失败")
-                        responseJsonStringSuccess(false, "操作失败!")
+                        responseJsonStringFail("操作失败!")
                     }
                 } else {
                     Log.d(TAG, "handleHandoverRec: 要写入标签弹号与标签内不一致")
-                    responseJsonStringSuccess(false, "要写入标签弹号与当前标签内不一致!")
+                    responseJsonStringFail("要写入标签弹号与当前标签内不一致!")
                 }
             }
         } catch (e: Exception) {
@@ -850,7 +851,7 @@ class PostRequestHandler : RequestHandlerStrategy {
                 return if (writeFile) {
                     responseJsonStringSuccess(true)
                 } else {
-                    responseJsonStringSuccess(false, "操作失败!")
+                    responseJsonStringFail("操作失败!")
                 }
             } else {
                 val string = String(readFile)
@@ -871,11 +872,11 @@ class PostRequestHandler : RequestHandlerStrategy {
                         responseJsonStringSuccess(true)
                     } else {
                         Log.d(TAG, "handleGJZBRec: 写入 GJZBRec 失败")
-                        responseJsonStringSuccess(false, "操作失败!")
+                        responseJsonStringFail("操作失败!")
                     }
                 } else {
                     Log.d(TAG, "handleGJZBRec: 要写入标签弹号与标签内不一致")
-                    responseJsonStringSuccess(false, "要写入标签弹号与当前标签内不一致!")
+                    responseJsonStringFail("要写入标签弹号与当前标签内不一致!")
                 }
             }
         } catch (e: Exception) {
@@ -904,7 +905,7 @@ class PostRequestHandler : RequestHandlerStrategy {
                 return if (writeFile) {
                     response(fromJson)
                 } else {
-                    responseJsonStringSuccess(false, "操作失败!")
+                    responseJsonStringFail("操作失败!")
                 }
             } else {
                 val recordBean = GsonUtils.fromJson(String(readFile), RecordBean::class.java)
@@ -920,7 +921,7 @@ class PostRequestHandler : RequestHandlerStrategy {
                     }
                 } else {
                     Log.d(TAG, "handleBaseInfo: 要写入标签弹号与标签内不一致")
-                    responseJsonStringSuccess(false, "要写入标签弹号与当前标签内不一致!")
+                    responseJsonStringFail("要写入标签弹号与当前标签内不一致!")
                 }
             }
         } catch (e: Exception) {
@@ -940,7 +941,7 @@ class PostRequestHandler : RequestHandlerStrategy {
                 responseJsonStringSuccess(true)
             } else {
                 Log.d(TAG, "handleBaseInfo: 更新屏幕失败")
-                responseJsonStringSuccess(false, "更新屏幕失败,请重试!")
+                responseJsonStringFail("更新屏幕失败,请重试!")
             }
         } else {
             Log.d(TAG, "handleBaseInfo: 不需要刷屏")
@@ -956,8 +957,10 @@ class PostRequestHandler : RequestHandlerStrategy {
         if (fromJson.fileName == null) return responseJsonStringFail("参数不能为空")
         return try {
             val findFileSize = LonbestCard.getInstance().findFileSize(fromJson.fileName)
-
-            responseJsonStringSuccess(ByteBuffer.wrap(findFileSize).int)
+            if (findFileSize != null)
+                responseJsonStringSuccess(ByteBuffer.wrap(findFileSize).int)
+            else
+                responseJsonStringFail("操作失败!")
         } catch (e: Exception) {
             e.printStackTrace()
             responseJsonStringFail(e.message)
@@ -978,7 +981,7 @@ class PostRequestHandler : RequestHandlerStrategy {
             if (writeFile)
                 responseJsonStringSuccess(true)
             else
-                responseJsonStringSuccess(false, "操作失败")
+                responseJsonStringFail("操作失败")
         } catch (e: Exception) {
             e.printStackTrace()
             responseJsonStringFail(e.message)
@@ -996,7 +999,7 @@ class PostRequestHandler : RequestHandlerStrategy {
             if (updateEInk)
                 responseJsonStringSuccess(true)
             else
-                responseJsonStringSuccess(false, "更新屏幕失败")
+                responseJsonStringFail("更新屏幕失败")
         } catch (e: Exception) {
             e.printStackTrace()
             responseJsonStringFail(e.message)
