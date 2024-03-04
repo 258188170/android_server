@@ -7,6 +7,14 @@ import com.card.lp_server.card.device.jsq.Jd014Jjsq1Device
 import com.card.lp_server.card.device.jsq.Jd014Jjsq2Device
 import com.card.lp_server.card.device.jsq.Jd014Jjsq3Device
 import com.card.lp_server.model.Types
+import com.card.lp_server.server.ConstantsPath.CLEAR_TAG
+import com.card.lp_server.server.ConstantsPath.DELETE_FILE
+import com.card.lp_server.server.ConstantsPath.GET_BASE_INFO
+import com.card.lp_server.server.ConstantsPath.GET_TYPE_LIST
+import com.card.lp_server.server.ConstantsPath.LIST_FILES
+import com.card.lp_server.server.ConstantsPath.READ_FILE
+import com.card.lp_server.server.ConstantsPath.TAG_INFO
+import com.card.lp_server.server.ConstantsPath.TAG_VERSION
 import com.card.lp_server.utils.FILE_NAME
 import com.card.lp_server.utils.JSQ1
 import com.card.lp_server.utils.JSQ2
