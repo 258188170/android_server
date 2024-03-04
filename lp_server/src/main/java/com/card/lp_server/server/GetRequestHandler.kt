@@ -32,7 +32,6 @@ class GetRequestHandler : RequestHandlerStrategy {
         TAG_VERSION to ::handleTagVersion,
         GET_BASE_INFO to ::handleBaseInfo,
         GET_TYPE_LIST to ::handleTypeList,
-        GET_TYPE_LIST to ::handleTypeList,
         //014设备接口
         "/api/jsq_read" to ::handleJSQRead,
         "/api/jsq_list" to ::handleJSQList,

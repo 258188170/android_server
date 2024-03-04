@@ -3,6 +3,10 @@ package com.card.lp_server.server
 import android.util.Log
 import com.blankj.utilcode.util.GsonUtils
 import com.card.lp_server.card.device.LonbestCard
+import com.card.lp_server.card.device.jsq.Jd014Jjsq1Device
+import com.card.lp_server.card.device.jsq.Jd014Jjsq2Device
+import com.card.lp_server.card.device.jsq.Jd014Jjsq3Device
+import com.card.lp_server.model.PostParams
 import com.card.lp_server.model.Types
 import com.card.lp_server.room.entity.CodeUpRec
 import com.card.lp_server.room.entity.RecordBean
@@ -18,9 +22,13 @@ import com.card.lp_server.room.entity.PoweronRec
 import com.card.lp_server.room.entity.RepairRec
 import com.card.lp_server.room.entity.SorftwareReplaceRec
 import com.card.lp_server.room.entity.TecReportImpRec
+import com.card.lp_server.utils.JSQ1
+import com.card.lp_server.utils.JSQ2
+import com.card.lp_server.utils.JSQ3
 import com.card.lp_server.utils.convertBitmapToBinary
 import com.card.lp_server.utils.generateBitMapForLl
 import com.card.lp_server.utils.getPostParams
+import com.card.lp_server.utils.getQueryParams
 import com.card.lp_server.utils.responseJsonStringFail
 import com.card.lp_server.utils.responseJsonStringSuccess
 import fi.iki.elonen.NanoHTTPD
@@ -52,6 +60,8 @@ class PostRequestHandler : RequestHandlerStrategy {
         ADD_IMPORTANT_NOTE to ::handleAddImportantNote,
         ADD_HANDOVER_REC to ::handleAddHandoverRec,
         ADD_GJZB_REC to ::handleAddGJZBRec,
+        WRITE_DD_NUMBER to ::handleWriteDDNumber,
+        WRITE_DYT_NUMBER to ::handleWriteDYDNumber,
 
         // Add more URL mappings as needed
     )
@@ -64,6 +74,70 @@ class PostRequestHandler : RequestHandlerStrategy {
 
     private fun handleHome(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
         return NanoHTTPD.newFixedLengthResponse("<html><body style=\"font-size:40px;\">这里是首页</body></html>")
+    }
+
+    private fun handleWriteDYDNumber(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
+        val postParams = session.getPostParams()
+        if (postParams.isNullOrEmpty()) return responseJsonStringFail("Params is null or empty!")
+        val par = GsonUtils.fromJson(postParams, PostParams::class.java)
+        if (par.number.isNullOrEmpty()) return responseJsonStringFail("Params number is null or empty!")
+        try {
+
+            when (par.jsq) {
+                JSQ1 -> {
+                    val readFile = Jd014Jjsq1Device.getInstance().writeDyt(par.number)
+                    return responseJsonStringSuccess(readFile)
+                }
+
+                JSQ2 -> {
+                    val readFile = Jd014Jjsq2Device.getInstance().writeDyt(par.number)
+                    return responseJsonStringSuccess(readFile)
+                }
+
+                JSQ3 -> {
+                    val readFile = Jd014Jjsq3Device.getInstance().writeDyt(par.number)
+                    return responseJsonStringSuccess(readFile)
+                }
+
+                else -> {
+                    return responseJsonStringFail("Params jsq is null or empty")
+                }
+            }
+        } catch (e: Exception) {
+            return responseJsonStringFail(e.message)
+        }
+    }
+
+    private fun handleWriteDDNumber(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
+        val postParams = session.getPostParams()
+        if (postParams.isNullOrEmpty()) return responseJsonStringFail("Params is null or empty!")
+        val par = GsonUtils.fromJson(postParams, PostParams::class.java)
+        if (par.number.isNullOrEmpty()) return responseJsonStringFail("Params number is null or empty!")
+        try {
+
+            when (par.jsq) {
+                JSQ1 -> {
+                    val readFile = Jd014Jjsq1Device.getInstance().writeDdbh(par.number)
+                    return responseJsonStringSuccess(readFile)
+                }
+
+                JSQ2 -> {
+                    val readFile = Jd014Jjsq2Device.getInstance().writeDdbh(par.number)
+                    return responseJsonStringSuccess(readFile)
+                }
+
+                JSQ3 -> {
+                    val readFile = Jd014Jjsq3Device.getInstance().writeDdbh(par.number)
+                    return responseJsonStringSuccess(readFile)
+                }
+
+                else -> {
+                    return responseJsonStringFail("Params jsq is null or empty")
+                }
+            }
+        } catch (e: Exception) {
+            return responseJsonStringFail(e.message)
+        }
     }
 
     private fun handleAddGasUpRec(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
