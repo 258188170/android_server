@@ -59,15 +59,15 @@ android {
 
 
 dependencies {
-
+    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar","*.aar",))))
     implementation("androidx.core:core-ktx:1.10.1")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.9.0")
     api("org.nanohttpd:nanohttpd:2.3.1")
     api("com.blankj:utilcodex:1.31.1")
     implementation("androidx.lifecycle:lifecycle-process:2.7.0")
-    api(files("libs/LPEncode.jar"))
-    implementation(files("libs/core-3.0.1.jar"))
+//    api(files("libs/LPEncode.jar"))
+//    implementation(files("libs/core-3.0.1.jar"))
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
