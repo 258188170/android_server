@@ -43,7 +43,8 @@ class GetRequestHandler : RequestHandlerStrategy {
         //014设备接口
         "/api/jsq_read" to ::handleJSQRead,
         "/api/jsq_list" to ::handleJSQList,
-        )
+    )
+
     override fun handleRequest(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response? {
         val uri = session.uri
         val handler = handlers[uri]
@@ -60,6 +61,7 @@ class GetRequestHandler : RequestHandlerStrategy {
                     val readFile = Jd014Jjsq1Device.getInstance().jwdList
                     return responseJsonStringSuccess(readFile)
                 }
+
                 JSQ2 -> {
                     val readFile = Jd014Jjsq2Device.getInstance().jwdList
                     return responseJsonStringSuccess(readFile)
@@ -89,6 +91,7 @@ class GetRequestHandler : RequestHandlerStrategy {
                     val readFile = Jd014Jjsq1Device.getInstance().readFile()
                     return responseJsonStringSuccess(readFile)
                 }
+
                 JSQ2 -> {
                     val readFile = Jd014Jjsq2Device.getInstance().readFile()
                     return responseJsonStringSuccess(readFile)
@@ -116,7 +119,10 @@ class GetRequestHandler : RequestHandlerStrategy {
         if (type.isEmpty()) return responseJsonStringFail("请传入要读取类型")
         return try {
             val readFile = LonbestCard.getInstance().readFile(type)
-            responseJsonStringSuccess(String(readFile))
+            if (readFile != null)
+                responseJsonStringSuccess(String(readFile))
+            else
+                responseJsonStringFail("操作失败!")
         } catch (e: Exception) {
             responseJsonStringFail(e.message)
         }
@@ -125,7 +131,10 @@ class GetRequestHandler : RequestHandlerStrategy {
     private fun handleBaseInfo(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
         return try {
             val readFile = LonbestCard.getInstance().readFile(Types.BASE_INFO.value)
-            responseJsonStringSuccess(String(readFile))
+            if (readFile != null)
+                responseJsonStringSuccess(String(readFile))
+            else
+                responseJsonStringFail("操作失败!")
         } catch (e: Exception) {
             responseJsonStringFail(e.message)
         }
@@ -135,7 +144,10 @@ class GetRequestHandler : RequestHandlerStrategy {
     private fun handleListFile(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
         return try {
             val listFiles = LonbestCard.getInstance().listFiles()
-            responseJsonStringSuccess(stringConvertToList(listFiles))
+            if (listFiles != null)
+                responseJsonStringSuccess(stringConvertToList(listFiles))
+            else
+                responseJsonStringFail("获取文件列表失败!")
         } catch (e: Exception) {
             responseJsonStringFail(e.message)
         }
@@ -144,7 +156,10 @@ class GetRequestHandler : RequestHandlerStrategy {
     private fun handleTagVersion(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
         return try {
             val version = LonbestCard.getInstance().version
-            responseJsonStringSuccess(version)
+            if (version != null)
+                responseJsonStringSuccess(version)
+            else
+                responseJsonStringFail("获取版本信息失败!")
         } catch (e: Exception) {
             responseJsonStringFail(e.message)
         }
@@ -154,7 +169,10 @@ class GetRequestHandler : RequestHandlerStrategy {
     private fun handleTagInfo(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
         return try {
             val info = LonbestCard.getInstance().info
-            responseJsonStringSuccess(ConvertUtils.bytes2String(info))
+            if (info == null)
+                responseJsonStringFail("获取设备信息失败")
+            else
+                responseJsonStringSuccess(ConvertUtils.bytes2String(info))
         } catch (e: Exception) {
             responseJsonStringFail(e.message)
         }
@@ -165,7 +183,10 @@ class GetRequestHandler : RequestHandlerStrategy {
             ?: return responseJsonStringFail("参数[FILE_NAME]不能为空")
         return try {
             val readFile = LonbestCard.getInstance().readFile(queryParams)
-            responseJsonStringSuccess(readFile)
+            if (readFile == null)
+                responseJsonStringFail("未找到[$queryParams]文件")
+            else
+                responseJsonStringSuccess(readFile)
         } catch (e: Exception) {
             responseJsonStringFail(e.message)
         }
@@ -179,7 +200,7 @@ class GetRequestHandler : RequestHandlerStrategy {
             if (deleteFile) {
                 responseJsonStringSuccess(true)
             } else {
-                responseJsonStringSuccess(false, "操作失败")
+                responseJsonStringFail("删除失败!")
             }
         } catch (e: Exception) {
             responseJsonStringFail(e.message)
@@ -207,7 +228,7 @@ class GetRequestHandler : RequestHandlerStrategy {
             if (updateEInk)
                 responseJsonStringSuccess(true)
             else
-                responseJsonStringSuccess(false)
+                responseJsonStringFail("更新失败!")
         } catch (e: Exception) {
             responseJsonStringFail(e.message)
         }
