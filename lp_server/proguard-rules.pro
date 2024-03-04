@@ -112,6 +112,7 @@
 -keep class com.goldnet.mobile.entity.**{*;}
 -keep class com.card.lp_server.base.**{*;}
 -keep class com.card.lp_server.room.entity.**{*;}
+-keep class com.card.lp_server.card.device.model.**{*;}
 # keep 泛型
 -keepattributes Signature
 

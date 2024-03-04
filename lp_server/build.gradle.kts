@@ -14,7 +14,7 @@ android {
 
     defaultConfig {
 //        applicationId = "com.card.lp_server"
-        minSdk = 26
+        minSdk = 24
         targetSdk = 34
 //        versionCode = 1
 //        versionName = "1.0"
@@ -47,7 +47,7 @@ android {
     libraryVariants.all {
         outputs.all {
             val output = this as BaseVariantOutputImpl
-            output.outputFileName = output.outputFileName
+            output.outputFileName = "lp_server_v1.aar"
         }
     }
 

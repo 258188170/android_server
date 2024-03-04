@@ -20,6 +20,17 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        create("releaseConfig") {
+            storeFile =
+                file("/Users/wp/AndroidStudioFlutterProjects/android_server/app/longbei.jks")
+            storePassword = "longbei"
+            keyAlias = "longbei"
+            keyPassword = "longbei"
+        }
+
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = true
@@ -27,6 +38,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs["releaseConfig"]
         }
         debug {
             isMinifyEnabled = true
@@ -34,6 +46,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs["releaseConfig"]
         }
     }
     compileOptions {
@@ -46,6 +59,7 @@ android {
 }
 
 dependencies {
+    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar","*.aar",))))
 
     implementation("androidx.core:core-ktx:1.10.1")
     implementation("androidx.appcompat:appcompat:1.6.1")
