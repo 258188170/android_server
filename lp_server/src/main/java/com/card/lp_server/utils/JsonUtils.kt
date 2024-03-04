@@ -2,8 +2,7 @@ package com.card.lp_server.utils
 
 import android.util.Log
 import com.blankj.utilcode.util.GsonUtils
-import com.blankj.utilcode.util.LogUtils
-import com.card.lp_server.base.BaseResponse
+import com.card.lp_server.model.BaseResponse
 import fi.iki.elonen.NanoHTTPD
 
 
