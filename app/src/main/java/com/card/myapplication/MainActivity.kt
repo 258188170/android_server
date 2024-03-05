@@ -191,7 +191,6 @@ class MainActivity : AppCompatActivity() {
 
 
     fun add_base_info(view: View) {
-
         requestPost(ADD_BASE_INFO, RecordBean(dyNumber = "555", isEink = true))
     }
 

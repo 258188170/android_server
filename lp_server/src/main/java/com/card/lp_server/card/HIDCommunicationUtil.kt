@@ -25,12 +25,16 @@ class HIDCommunicationUtil private constructor() {
         mAppContext.getSystemService(Context.USB_SERVICE) as UsbManager
 
     private val permissionIntent: PendingIntent by lazy {
-        PendingIntent.getBroadcast(
-            mAppContext,
-            0,
-            Intent(ACTION_USB_PERMISSION),
-            0
-        )
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            PendingIntent.getBroadcast(
+                mAppContext,
+                0,
+                Intent(ACTION_USB_PERMISSION),
+                PendingIntent.FLAG_IMMUTABLE
+            )
+        } else {
+            PendingIntent.getBroadcast(mAppContext, 0, Intent(ACTION_USB_PERMISSION), 0);
+        }
     }
     private var usbDevice: UsbDevice? = null
     private var usbConnection: UsbDeviceConnection? = null
