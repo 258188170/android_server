@@ -101,23 +101,17 @@
 -keepclassmembers class **.R$* {
     public static <fields>;
 }
-
-# http client
--keep class org.apache.http.** {*; }
-
-
-# fastjson
--keep class com.alibaba.fastjson.**{*;}
+-keep class androidx.room.** { *; }
+-keep interface androidx.room.** { *; }
+-keep enum androidx.room.** { *; }
 # keep 所有的 javabean
--keep class com.goldnet.mobile.entity.**{*;}
--keep class com.card.lp_server.base.**{*;}
+-keep class com.card.lp_server.model.**{*;}
 -keep class com.card.lp_server.room.entity.**{*;}
 -keep class com.card.lp_server.card.device.model.**{*;}
 # keep 泛型
 -keepattributes Signature
 
 
--keep class org.apache.commons.lang.**{*;}
 
 
 

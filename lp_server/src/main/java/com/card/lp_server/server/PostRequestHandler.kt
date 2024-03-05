@@ -65,6 +65,7 @@ class PostRequestHandler : RequestHandlerStrategy {
         //common
         UPDATE_DISPLAY to ::handleUpdateDisplay,
         COMMON_WRITE to ::handleCommonWrite,
+        COMMON_WRITE to ::handleCommonWrite,
         FIND_FILE_SIZE to ::handleFindFileSize,
         //dy
         ADD_BASE_INFO to ::handleBaseInfo,

@@ -50,7 +50,6 @@ import com.card.lp_server.server.ConstantsPath.ADD_TEC_REPORT_IMP_REC
 import com.card.lp_server.server.ConstantsPath.CLEAR_TAG
 import com.card.lp_server.server.ConstantsPath.COMMON_WRITE
 import com.card.lp_server.server.ConstantsPath.DELETE_FILE
-import com.card.lp_server.server.ConstantsPath.ENCODE_AND_UPDATE_EINK
 import com.card.lp_server.server.ConstantsPath.FIND_FILE_SIZE
 import com.card.lp_server.server.ConstantsPath.GET_BASE_INFO
 import com.card.lp_server.server.ConstantsPath.GET_TYPE_LIST
@@ -191,7 +190,6 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-
     fun add_base_info(view: View) {
 
         requestPost(ADD_BASE_INFO, RecordBean(dyNumber = "555", isEink = true))
@@ -200,10 +198,8 @@ class MainActivity : AppCompatActivity() {
     fun testUpdateDisplay(view: View) {
         val generateBitMapForLl = generateBitMapForLl(RecordBean(dyNumber = "123"))
         val convertBitmapToBinary = convertBitmapToBinary(generateBitMapForLl)
-        runOnUiThread {
-            requestPost(UPDATE_DISPLAY, TagEntity(data = convertBitmapToBinary))
+        requestPost(UPDATE_DISPLAY, TagEntity(data = convertBitmapToBinary))
 
-        }
 
 
     }
@@ -230,7 +226,7 @@ class MainActivity : AppCompatActivity() {
 
         lifecycleScope.launch(Dispatchers.IO) {
             RxHttp.postBody(url)  //第一步，确定请求方式，可以选择postForm、postJson等方法
-                .setBody(MtRec(dyNumber = "555"))
+                .setBody(body)
                 .toFlow<String>()
                 .catch {
                     it.printStackTrace()
@@ -346,9 +342,6 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    fun encodeAndUpdateEink(view: View) {
-        requestPost(ENCODE_AND_UPDATE_EINK, CodeUpRec(dyNumber = "555"))
-    }
 
     fun addEquMatch(view: View) {
         requestPost(ADD_EQU_MATCH, EquMatch(dyNumber = "555"))
@@ -411,10 +404,10 @@ class MainActivity : AppCompatActivity() {
                     it.printStackTrace()
                 }//第二步，调用toFlow方法并输入泛型类型，拿到Flow对象
                 .collect {              //第三步，调用collect方法发起请求
-                  withContext(Dispatchers.Main){
-                      LogUtils.d(it)
-                      dismiss("\n response: path = api/jsq_read \n result: $it")
-                  }
+                    withContext(Dispatchers.Main) {
+                        LogUtils.d(it)
+                        dismiss("\n response: path = api/jsq_read \n result: $it")
+                    }
                 }
 
         }

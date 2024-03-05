@@ -19,7 +19,6 @@ object ConstantsPath{
     const val FIND_FILE_SIZE = "/api/find_file_size"
     const val ADD_BASE_INFO = "/api/addBaseInfo"
     const val ADD_CODE_UP_REC = "/api/addCodeUpRec"
-    const val ENCODE_AND_UPDATE_EINK = "/api/encodeAndUpdateEink"
     const val ADD_EQU_MATCH = "/api/addEquMatch"
     const val ADD_EQU_REPLACE_REC = "/api/addEquReplaceRec"
     const val ADD_GAS_UP_REC = "/api/addGasUpRec"
