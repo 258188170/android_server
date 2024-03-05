@@ -1,9 +1,11 @@
 package com.card.lp_server.room.entity
 
+import androidx.annotation.Keep
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 //交接记录
 @Entity
+@Keep
 data class HandoverRec(
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0,

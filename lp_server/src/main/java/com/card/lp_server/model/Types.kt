@@ -1,5 +1,8 @@
 package com.card.lp_server.model
 
+import androidx.annotation.Keep
+
+@Keep
 enum class Types(val key:Int,val value:String,) {
     BASE_INFO(1,"__BaseInfo"),
     CODE_UP_REC(2,"__CodeUpRec"),

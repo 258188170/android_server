@@ -1,8 +1,10 @@
 package com.card.lp_server.room.entity
 
+import androidx.annotation.Keep
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 @Entity
+@Keep
 data class MtRec(
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0,

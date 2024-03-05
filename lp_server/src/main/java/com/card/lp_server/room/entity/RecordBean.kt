@@ -1,5 +1,6 @@
 package com.card.lp_server.room.entity
 
+import androidx.annotation.Keep
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Entity
@@ -12,6 +13,7 @@ import androidx.room.Query
 履历信息
  */
 @Entity()
+@Keep
 data class RecordBean(
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0,

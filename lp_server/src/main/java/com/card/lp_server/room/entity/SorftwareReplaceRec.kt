@@ -1,10 +1,12 @@
 package com.card.lp_server.room.entity
 
+import androidx.annotation.Keep
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 //软件变更记录
 @Entity
+@Keep
 data class SorftwareReplaceRec(
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0,

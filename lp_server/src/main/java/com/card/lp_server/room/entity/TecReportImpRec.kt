@@ -1,15 +1,17 @@
 package com.card.lp_server.room.entity
 
+import androidx.annotation.Keep
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 //技术通报
 @Entity
+@Keep
 data class TecReportImpRec(
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0,
     // 编号
-    var dyNumber: String?=null,
+    var dyNumber: String? = null,
     // 完成日期
     var finishDate: String? = null,
 
