@@ -26,6 +26,8 @@ import com.blankj.utilcode.util.ToastUtils
 import com.card.lp_server.model.TagEntity
 import com.card.lp_server.nfc.NFCManager
 import com.card.lp_server.nfc.nfcAuthIsSuccess
+import com.card.lp_server.nfc.nfcReadData
+import com.card.lp_server.nfc.nfcWrite
 import com.card.lp_server.room.entity.CodeUpRec
 import com.card.lp_server.room.entity.EquMatch
 import com.card.lp_server.room.entity.EquReplaceRec
@@ -425,11 +427,22 @@ class MainActivity : AppCompatActivity() {
         super.onPause()
         NFCManager.onPause(this)
     }
+
     fun testnfc(view: View) {
         Log.d(TAG, "nfc: 开始")
         NFCManager.startSession {
             val nfcAuthIsSuccess = it.nfcAuthIsSuccess()
             Log.d(TAG, "nfc: $nfcAuthIsSuccess")
+            if (nfcAuthIsSuccess) {
+                val toJson = GsonUtils.toJson(RecordBean())
+                val nfcWrite = it.nfcWrite(toJson.toByteArray())
+
+                Log.d(TAG, "testnfc: nfcWrite-->$nfcWrite")
+                val nfcReadData = it.nfcReadData(0, toJson.toByteArray().size)
+                if (nfcReadData != null) {
+                    Log.d(TAG, "testnfc: ${ConvertUtils.bytes2String(nfcReadData)}")
+                }
+            }
 //            NFCManager.stopSession()
         }
     }

@@ -200,7 +200,6 @@ fun intToByteArray(value: Int): ByteArray {
     // Split the integer value into two bytes
     val byte1 = ((clampedValue shr 8) and 0x7F).toByte() // Limit the highest bit to 0x7F
     val byte2 = (clampedValue and 0xFF).toByte()
-
     // Create a ByteArray containing two bytes
     return byteArrayOf(byte1, byte2)
 }
@@ -221,8 +220,8 @@ fun IsoDep.nfcReadData(
         val responseApdu = nfcTransceive(
             RequestApdu(
                 INS = 0xb0,
-                P1 = intToByteArray(index + 12)[0].toInt(),
-                P2 = intToByteArray(index + 12)[1].toInt(),
+                P1 = intToByteArray(index)[0].toInt(),
+                P2 = intToByteArray(index)[1].toInt(),
                 LC = bytesToRead
             )
         )
