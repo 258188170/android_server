@@ -1,11 +1,9 @@
 package com.card.myapplication
 
-import android.app.PendingIntent
 import android.app.ProgressDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.nfc.NfcAdapter
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -18,6 +16,7 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.widget.NestedScrollView
+import androidx.recyclerview.widget.RecyclerView
 import com.blankj.utilcode.util.ConvertUtils
 import com.blankj.utilcode.util.GsonUtils
 import com.blankj.utilcode.util.LogUtils
@@ -69,6 +68,11 @@ import com.card.lp_server.server.ConstantsPath.UPDATE_DISPLAY
 import com.card.lp_server.utils.JSQ1
 import com.card.lp_server.utils.convertBitmapToBinary
 import com.card.lp_server.utils.generateBitMapForLl
+import com.drake.brv.annotaion.DividerOrientation
+import com.drake.brv.utils.divider
+import com.drake.brv.utils.grid
+import com.drake.brv.utils.linear
+import com.drake.brv.utils.setup
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
@@ -122,12 +126,49 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         tvFileList = findViewById(R.id.tvFileList)
         scroll = findViewById(R.id.scroll)
+        val rv = findViewById<RecyclerView>(R.id.rv)
+        rv.grid(spanCount = 2).divider{
+            setDrawable(R.drawable.diver)
+            orientation = DividerOrientation.GRID
+        }.setup {
+            addType<Items>(R.layout.item)
+            onClick(R.id.item) {
+                when (modelPosition) {
+                    0 -> writeFile()
+                    1 -> listFiles()
+                    2 -> readFile()
+                    3 -> deleteFile()
+                    4 -> tagInfo()
+                    5 -> tagVersion()
+                    6 -> clearTag()
+                    7 -> testUpdateDisplay()
+                    8 -> addBaseInfo()
+                    9 -> getBaseInfo()
+                    10 -> getTypeList()
+                    11 -> findFileSize()
+                    12 -> addCodeUpRec()
+                    13 -> addEquMatch()
+                    14 -> addEquReplaceRec()
+                    15 -> addGasUpRec()
+                    16 -> addTecReportImpRec()
+                    17 -> addSorftwareReplaceRec()
+                    18 -> addRepairRec()
+                    19 -> addPoweronRec()
+                    20 -> addMtRec()
+                    21 -> addImportantNote()
+                    22 -> addHandoverRec()
+                    23 -> addGJZBRec()
+                    24 -> jsq()
+                    25 -> testnfc()
+                }
+            }
+        }.models = listItems
 
         val ipAddress = NetworkUtils.getIPAddress(true)
         Log.d(TAG, "onCreate: $ipAddress")
     }
 
-    fun writeFile(view: View) {
+    private fun writeFile() {
 //        requestPost()
         // 检查是否有读取外部存储权限，如果没有则请求权限
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -176,32 +217,32 @@ class MainActivity : AppCompatActivity() {
         startActivityForResult(intent, PICK_FILE_REQUEST_CODE)
     }
 
-    fun testHttp(view: View) {
+    fun clearTag() {
         requestGet(CLEAR_TAG)
     }
 
-    fun listFiles(view: View) {
+    fun listFiles() {
         requestGet(LIST_FILES)
     }
 
-    fun deleteFile(view: View) {
+    fun deleteFile() {
         requestGet("$DELETE_FILE?fileName=$TEST_NAME")
     }
 
-    fun tagInfo(view: View) {
+    fun tagInfo() {
         requestGet(TAG_INFO)
     }
 
-    fun readFile(view: View) {
+    fun readFile() {
         requestGet("$READ_FILE?fileName=$TEST_NAME")
     }
 
 
-    fun add_base_info(view: View) {
+    fun addBaseInfo() {
         requestPost(ADD_BASE_INFO, RecordBean(dyNumber = "555", isEink = true))
     }
 
-    fun testUpdateDisplay(view: View) {
+    fun testUpdateDisplay() {
         val generateBitMapForLl = generateBitMapForLl(RecordBean(dyNumber = "123"))
         val convertBitmapToBinary = convertBitmapToBinary(generateBitMapForLl)
         requestPost(UPDATE_DISPLAY, TagEntity(data = convertBitmapToBinary))
@@ -324,83 +365,83 @@ class MainActivity : AppCompatActivity() {
         return byteBuffer.toByteArray()
     }
 
-    fun tagVersion(view: View) {
+    fun tagVersion() {
         requestGet(TAG_VERSION)
     }
 
-    fun getBaseInfo(view: View) {
+    fun getBaseInfo() {
         Log.d(TAG, "getBaseInfo: ${Thread.currentThread().name}")
         requestGet(GET_BASE_INFO)
     }
 
-    fun getTypeList(view: View) {
+    fun getTypeList() {
         val randomNumber = Random.nextInt(2, 13) // 生成一个范围在 2 到 12 之间的随机数
         requestGet("$GET_TYPE_LIST?typeNumber=$randomNumber")
     }
 
-    fun findFileSize(view: View) {
+    fun findFileSize() {
         requestPost(FIND_FILE_SIZE, TagEntity(TEST_NAME))
     }
 
-    fun addCodeUpRec(view: View) {
+    fun addCodeUpRec() {
         requestPost(ADD_CODE_UP_REC, CodeUpRec(dyNumber = "555"))
 
     }
 
 
-    fun addEquMatch(view: View) {
+    fun addEquMatch() {
         requestPost(ADD_EQU_MATCH, EquMatch(dyNumber = "555"))
     }
 
-    fun addEquReplaceRec(view: View) {
+    fun addEquReplaceRec() {
         requestPost(ADD_EQU_REPLACE_REC, EquReplaceRec(dyNumber = "555"))
 
     }
 
-    fun addGasUpRec(view: View) {
+    fun addGasUpRec() {
         requestPost(ADD_GAS_UP_REC, GasUpRec(dyNumber = "555"))
 
     }
 
-    fun addTecReportImpRec(view: View) {
+    fun addTecReportImpRec() {
         requestPost(ADD_TEC_REPORT_IMP_REC, TecReportImpRec(dyNumber = "555"))
     }
 
-    fun addSorftwareReplaceRec(view: View) {
+    fun addSorftwareReplaceRec() {
         requestPost(ADD_SORFTWARE_REPLACE_REC, SorftwareReplaceRec(dyNumber = "555"))
 
     }
 
-    fun addRepairRec(view: View) {
+    fun addRepairRec() {
         requestPost(ADD_REPAIR_REC, RepairRec(dyNumber = "555"))
 
     }
 
-    fun addPoweronRec(view: View) {
+    fun addPoweronRec() {
         requestPost(ADD_POWERON_REC, PoweronRec(dyNumber = "555"))
 
     }
 
-    fun addMtRec(view: View) {
+    fun addMtRec() {
         requestPost(ADD_MT_REC, MtRec(dyNumber = "555"))
 
     }
 
-    fun addImportantNote(view: View) {
+    fun addImportantNote() {
         requestPost(ADD_IMPORTANT_NOTE, ImportantNote(dyNumber = "555"))
 
     }
 
-    fun addHandoverRec(view: View) {
+    fun addHandoverRec() {
         requestPost(ADD_HANDOVER_REC, HandoverRec(dyNumber = "555"))
 
     }
 
-    fun addGJZBRec(view: View) {
+    fun addGJZBRec() {
         requestPost(ADD_GJZB_REC, GJZBRec(dyNumber = "555"))
     }
 
-    fun jsq(view: View) {
+    fun jsq() {
         lifecycleScope.launch(Dispatchers.IO) {
             RxHttp.get("/api/jsq_read")
                 .add("jsq", JSQ1)//第一步，确定请求方式，可以选择postForm、postJson等方法
@@ -428,7 +469,7 @@ class MainActivity : AppCompatActivity() {
         NFCManager.onPause(this)
     }
 
-    fun testnfc(view: View) {
+    fun testnfc() {
         Log.d(TAG, "nfc: 开始")
         NFCManager.startSession {
             val nfcAuthIsSuccess = it.nfcAuthIsSuccess()
