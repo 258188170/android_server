@@ -1,9 +1,11 @@
 package com.card.myapplication
 
+import android.app.PendingIntent
 import android.app.ProgressDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.nfc.NfcAdapter
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -16,11 +18,14 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.widget.NestedScrollView
+import com.blankj.utilcode.util.ConvertUtils
 import com.blankj.utilcode.util.GsonUtils
 import com.blankj.utilcode.util.LogUtils
 import com.blankj.utilcode.util.NetworkUtils
 import com.blankj.utilcode.util.ToastUtils
 import com.card.lp_server.model.TagEntity
+import com.card.lp_server.nfc.NFCManager
+import com.card.lp_server.nfc.nfcAuthIsSuccess
 import com.card.lp_server.room.entity.CodeUpRec
 import com.card.lp_server.room.entity.EquMatch
 import com.card.lp_server.room.entity.EquReplaceRec
@@ -198,7 +203,6 @@ class MainActivity : AppCompatActivity() {
         val generateBitMapForLl = generateBitMapForLl(RecordBean(dyNumber = "123"))
         val convertBitmapToBinary = convertBitmapToBinary(generateBitMapForLl)
         requestPost(UPDATE_DISPLAY, TagEntity(data = convertBitmapToBinary))
-
 
 
     }
@@ -409,6 +413,24 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
 
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        NFCManager.onResume(this)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        NFCManager.onPause(this)
+    }
+    fun testnfc(view: View) {
+        Log.d(TAG, "nfc: 开始")
+        NFCManager.startSession {
+            val nfcAuthIsSuccess = it.nfcAuthIsSuccess()
+            Log.d(TAG, "nfc: $nfcAuthIsSuccess")
+//            NFCManager.stopSession()
         }
     }
 }
