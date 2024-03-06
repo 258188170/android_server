@@ -443,7 +443,7 @@ class MainActivity : AppCompatActivity() {
                     Log.d(TAG, "testnfc: ${ConvertUtils.bytes2String(nfcReadData)}")
                 }
             }
-//            NFCManager.stopSession()
+            NFCManager.stopSession()
         }
     }
 }

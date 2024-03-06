@@ -13,9 +13,9 @@ import com.card.lp_server.model.RequestApdu
 import com.card.lp_server.model.ResponseApdu
 import com.card.lp_server.utils.encrypt3DES
 
-object NFCManager {
+private const val TAG = "NFCManager"
 
-    private const val TAG = "com.card.lp_server.nfc.NFCUtil"
+object NFCManager {
 
     private val nfcAdapter: NfcAdapter by lazy {
         NfcAdapter.getDefaultAdapter(mAppContext)
@@ -89,24 +89,27 @@ fun ByteArray.analyze(): ResponseApdu {
     return responseApdu
 }
 
-private const val TAG = "NFCManager"
 fun IsoDep.nfcAuthIsSuccess(
     dir: String = "df4c",
     file: String = "ef31",
     key: String = "4C010101010101010101010101010143"
 ): Boolean {
+
+    ///获取 8 字卡号
     val nfcTransceive = nfcTransceive(RequestApdu(INS = 0xb0, P1 = 0x81, P2 = 0x02, LE = 0x08))
 
     if (!nfcTransceive.checkSW()) {
         Log.d(TAG, "nfcAuthIsSuccess: 获取卡号失败")
         return false
     }
+    //选择目录 df05
     val nfcTransceive1 =
         nfcTransceive(RequestApdu(INS = 0xa4, LC = 0x02, DATA = ConvertUtils.hexString2Bytes(dir)))
     if (!nfcTransceive1.checkSW()) {
         Log.d(TAG, "nfcAuthIsSuccess: 选择目录 $dir 失败!")
         return false
     }
+    //选择文件 ef31
     val nfcTransceive2 =
         nfcTransceive(RequestApdu(INS = 0xa4, LC = 0x02, DATA = ConvertUtils.hexString2Bytes(file)))
     if (!nfcTransceive2.checkSW()) {
@@ -123,11 +126,13 @@ fun IsoDep.nfcAuthIsSuccess(
     }
     if (nfcTransceive3.body == null || nfcTransceive.body == null)
         return false
-
+    //3DES加密
     val tagA =
         encrypt3DES(nfcTransceive.body!!, key, nfcTransceive3.body!!)
+    ///拼接密钥和随机数
     val toMutableList = tagA.toMutableList()
     toMutableList.addAll(nfcTransceive3.body!!.toMutableList())
+    ///认证
     val nfcTransceive4 = nfcTransceive(
         RequestApdu(
             CLA = 0x00,
@@ -141,15 +146,6 @@ fun IsoDep.nfcAuthIsSuccess(
         TAG, "认证是否成功 ${nfcTransceive4.checkSW()}"
     )
     return nfcTransceive4.checkSW()
-}
-
-fun ResponseApdu.checkSW(): Boolean {
-    if (this.SW?.isNotEmpty() == true) {
-        val bytes2String = ConvertUtils.bytes2HexString(this.SW)
-        Log.d(TAG, "checkSW: [$bytes2String]")
-        return bytes2String == "9000"
-    }
-    return false
 }
 
 fun IsoDep.nfcWrite(data: ByteArray): Boolean {
@@ -187,23 +183,6 @@ fun IsoDep.nfcWrite(data: ByteArray): Boolean {
     }
     return true
 }
-
-
-fun intToByteArray(value: Int): ByteArray {
-    // Ensure the value is in the range of 0x0000 to 0x7FFF
-    val clampedValue = when {
-        value < 0 -> 0
-        value > 0x7FFF -> 0x7FFF
-        else -> value
-    }
-
-    // Split the integer value into two bytes
-    val byte1 = ((clampedValue shr 8) and 0x7F).toByte() // Limit the highest bit to 0x7F
-    val byte2 = (clampedValue and 0xFF).toByte()
-    // Create a ByteArray containing two bytes
-    return byteArrayOf(byte1, byte2)
-}
-
 
 fun IsoDep.nfcReadData(
     offset: Int = 0,
@@ -245,5 +224,31 @@ fun IsoDep.nfcReadData(
 
     Log.d("NFCReadData", "responseData ${responseData.size}")
     return responseData.toByteArray()
+}
+
+
+private fun intToByteArray(value: Int): ByteArray {
+    // Ensure the value is in the range of 0x0000 to 0x7FFF
+    val clampedValue = when {
+        value < 0 -> 0
+        value > 0x7FFF -> 0x7FFF
+        else -> value
+    }
+
+    // Split the integer value into two bytes
+    val byte1 = ((clampedValue shr 8) and 0x7F).toByte() // Limit the highest bit to 0x7F
+    val byte2 = (clampedValue and 0xFF).toByte()
+    // Create a ByteArray containing two bytes
+    return byteArrayOf(byte1, byte2)
+}
+
+
+fun ResponseApdu.checkSW(): Boolean {
+    if (this.SW?.isNotEmpty() == true) {
+        val bytes2String = ConvertUtils.bytes2HexString(this.SW)
+        Log.d(TAG, "checkSW: [$bytes2String]")
+        return bytes2String == "9000"
+    }
+    return false
 }
 
