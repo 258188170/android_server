@@ -23,7 +23,7 @@ android {
     signingConfigs {
         create("releaseConfig") {
             storeFile =
-                file("/Users/wp/AndroidStudioFlutterProjects/android_server/app/longbei.jks")
+                file("../app/longbei.jks")
             storePassword = "longbei"
             keyAlias = "longbei"
             keyPassword = "longbei"
