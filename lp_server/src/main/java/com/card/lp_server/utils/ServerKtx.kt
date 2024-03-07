@@ -23,7 +23,7 @@ fun stringConvertToList(listFiles: ByteArray?): List<String> {
             .substringBeforeLast("0A00")
 
         val byteData = ConvertUtils.hexString2Bytes(hexString)
-        val stringData = String(byteData)
+        val stringData = String(byteData,Charsets.UTF_8)
         val resultList = stringData.split("\n")
         resultList
     } catch (e: Exception) {
