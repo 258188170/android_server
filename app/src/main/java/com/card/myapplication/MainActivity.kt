@@ -22,6 +22,7 @@ import com.blankj.utilcode.util.GsonUtils
 import com.blankj.utilcode.util.LogUtils
 import com.blankj.utilcode.util.NetworkUtils
 import com.blankj.utilcode.util.ToastUtils
+import com.card.lp_server.card.device.LonbestCard
 import com.card.lp_server.model.TagEntity
 import com.card.lp_server.nfc.NFCManager
 import com.card.lp_server.nfc.nfcAuthIsSuccess
@@ -90,7 +91,7 @@ class MainActivity : AppCompatActivity() {
         private const val TAG = "MainActivity"
         private const val PICK_FILE_REQUEST_CODE = 1
         private const val REQUEST_READ_EXTERNAL_STORAGE = 2
-        private const val TEST_NAME = "test_name"
+        private  var TEST_NAME = "履历信息"
     }
 
     private val progressDialog by lazy {
@@ -239,7 +240,7 @@ class MainActivity : AppCompatActivity() {
 
 
     fun addBaseInfo() {
-        requestPost(ADD_BASE_INFO, RecordBean(dyNumber = "555", isEink = true))
+        requestPost(ADD_BASE_INFO, RecordBean(dyNumber = "555", display = true))
     }
 
     fun testUpdateDisplay() {
@@ -323,6 +324,8 @@ class MainActivity : AppCompatActivity() {
                 val uri = data.data
                 if (uri != null) {
                     requestPost(COMMON_WRITE, TagEntity(TEST_NAME, convertFileToByteArray(uri)))
+
+//                    LonbestCard.getInstance().writeFile(TEST_NAME,convertFileToByteArray(uri))
                 } else {
                     ToastUtils.showLong("获取文件失败")
                 }

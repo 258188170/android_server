@@ -4,7 +4,7 @@ import androidx.annotation.Keep
 
 @Keep
 enum class Types(val key:Int,val value:String,) {
-    BASE_INFO(1,"__BaseInfo"),
+    BASE_INFO(1,"履历信息"),
     CODE_UP_REC(2,"__CodeUpRec"),
     EQU_MATCH(3,"__EquMatch"),
     EQU_REPLACE_REC(4,"__EquReplaceRec"),

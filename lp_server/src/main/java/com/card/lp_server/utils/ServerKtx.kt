@@ -1,5 +1,6 @@
 package com.card.lp_server.utils
 
+import android.content.ContentValues.TAG
 import android.util.Log
 import com.blankj.utilcode.util.ConvertUtils
 import com.card.lp_server.model.Types
@@ -23,7 +24,7 @@ fun stringConvertToList(listFiles: ByteArray?): List<String> {
             .substringBeforeLast("0A00")
 
         val byteData = ConvertUtils.hexString2Bytes(hexString)
-        val stringData = String(byteData,Charsets.UTF_8)
+        val stringData = String(byteData, Charsets.UTF_8)
         val resultList = stringData.split("\n")
         resultList
     } catch (e: Exception) {
@@ -32,9 +33,10 @@ fun stringConvertToList(listFiles: ByteArray?): List<String> {
 }
 
 
-fun NanoHTTPD.IHTTPSession.getQueryParams(): Map<String, List<String>> {
+fun NanoHTTPD.IHTTPSession.getQueryParams(string: String): String? {
     // 获取GET参数
-    return this.parameters
+    Log.d(TAG, "getQueryParams: ${this.parms}")
+    return URLDecoder.decode(this.parms[string], "UTF-8")
 }
 
 fun String?.getType(): String {
@@ -64,11 +66,11 @@ fun NanoHTTPD.IHTTPSession.getPostParams(): String? {
     try {
         this.parseBody(postParams)
         Log.d(TAG, "getPostParams: ${"POST 请求参数： $postParams"}")
-        val postData = postParams["postData"]?.takeIf { it.isNotEmpty() }?.let {
-            URLDecoder.decode(it, "UTF-8")
-        }
+        val postData = postParams["postData"]
         Log.d(TAG, "getPostParams: 请求的 JSON 数据:$postData")
-        return postData
+
+
+        return URLDecoder.decode(postData, "UTF-8")
     } catch (e: Exception) {
         // 处理解析异常
         e.printStackTrace()

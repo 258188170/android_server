@@ -1,13 +1,9 @@
 package com.card.lp_server.room.entity
 
 import androidx.annotation.Keep
-import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Entity
 import androidx.room.Ignore
-import androidx.room.Insert
 import androidx.room.PrimaryKey
-import androidx.room.Query
 
 /*
 履历信息
@@ -104,7 +100,7 @@ data class RecordBean(
     var updateDate: String? = null,
     // 文件版本号
     var fileVersion: String? = null,
-    var isEink: Boolean? = false,
+    var display: Boolean? = false,
     // 最后一次写入时间
     var lastWriteTime: Long? = System.currentTimeMillis(),
     //-------------------以下是经常变更的---------------------

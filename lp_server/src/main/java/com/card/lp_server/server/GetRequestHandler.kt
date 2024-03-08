@@ -1,5 +1,6 @@
 package com.card.lp_server.server
 
+import android.content.ContentValues.TAG
 import android.util.Log
 import com.blankj.utilcode.util.ConvertUtils
 import com.card.lp_server.card.device.LonbestCard
@@ -19,7 +20,6 @@ import com.card.lp_server.utils.FILE_NAME
 import com.card.lp_server.utils.JSQ1
 import com.card.lp_server.utils.JSQ2
 import com.card.lp_server.utils.JSQ3
-import com.card.lp_server.utils.TAG
 import com.card.lp_server.utils.TYPE_NUMBER
 import com.card.lp_server.utils.convertBitmapToBinary
 import com.card.lp_server.utils.generateBitMapForLlFormat
@@ -53,7 +53,7 @@ class GetRequestHandler : RequestHandlerStrategy {
 
 
     private fun handleJSQList(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
-        val queryParams = session.getQueryParams()["jsq"]?.first()
+        val queryParams = session.getQueryParams("jsq")
         if (queryParams.isNullOrEmpty()) return responseJsonStringFail("请传入要读取类型")
         try {
             when (queryParams) {
@@ -82,7 +82,7 @@ class GetRequestHandler : RequestHandlerStrategy {
     }
 
     private fun handleJSQRead(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
-        val queryParams = session.getQueryParams()["jsq"]?.first()
+        val queryParams = session.getQueryParams("jsq")
         Log.d(TAG, "handleJSQRead: $queryParams")
         if (queryParams.isNullOrEmpty()) return responseJsonStringFail("请传入要读取类型")
         try {
@@ -114,7 +114,7 @@ class GetRequestHandler : RequestHandlerStrategy {
     }
 
     private fun handleTypeList(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
-        val queryParams = session.getQueryParams()[TYPE_NUMBER]?.first()
+        val queryParams = session.getQueryParams(TYPE_NUMBER)
         val type = queryParams.getType()
         if (type.isEmpty()) return responseJsonStringFail("请传入要读取类型")
         return try {
@@ -144,10 +144,7 @@ class GetRequestHandler : RequestHandlerStrategy {
     private fun handleListFile(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
         return try {
             val listFiles = LonbestCard.getInstance().listFiles()
-            if (listFiles != null)
-                responseJsonStringSuccess(stringConvertToList(listFiles))
-            else
-                responseJsonStringFail("获取文件列表失败!")
+            responseJsonStringSuccess(stringConvertToList(listFiles))
         } catch (e: Exception) {
             responseJsonStringFail(e.message)
         }
@@ -179,7 +176,7 @@ class GetRequestHandler : RequestHandlerStrategy {
     }
 
     private fun handleReadFile(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
-        val queryParams = session.getQueryParams()[FILE_NAME]?.first()
+        val queryParams = session.getQueryParams(FILE_NAME)
             ?: return responseJsonStringFail("参数[FILE_NAME]不能为空")
         return try {
             val readFile = LonbestCard.getInstance().readFile(queryParams)
@@ -193,7 +190,7 @@ class GetRequestHandler : RequestHandlerStrategy {
     }
 
     private fun handleDeleteFile(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
-        val queryParams = session.getQueryParams()[FILE_NAME]?.first()
+        val queryParams = session.getQueryParams(FILE_NAME)
             ?: return responseJsonStringFail("参数[FILE_NAME]不能为空")
         return try {
             val deleteFile = LonbestCard.getInstance().deleteFile(queryParams)

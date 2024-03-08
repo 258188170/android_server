@@ -8,10 +8,9 @@ import com.card.lp_server.card.device.jsq.Jd014Jjsq2Device
 import com.card.lp_server.card.device.jsq.Jd014Jjsq3Device
 import com.card.lp_server.model.PostParams
 import com.card.lp_server.model.PostParamsJD
+import com.card.lp_server.model.TagEntity
 import com.card.lp_server.model.Types
 import com.card.lp_server.room.entity.CodeUpRec
-import com.card.lp_server.room.entity.RecordBean
-import com.card.lp_server.model.TagEntity
 import com.card.lp_server.room.entity.EquMatch
 import com.card.lp_server.room.entity.EquReplaceRec
 import com.card.lp_server.room.entity.GJZBRec
@@ -20,6 +19,7 @@ import com.card.lp_server.room.entity.HandoverRec
 import com.card.lp_server.room.entity.ImportantNote
 import com.card.lp_server.room.entity.MtRec
 import com.card.lp_server.room.entity.PoweronRec
+import com.card.lp_server.room.entity.RecordBean
 import com.card.lp_server.room.entity.RepairRec
 import com.card.lp_server.room.entity.SorftwareReplaceRec
 import com.card.lp_server.room.entity.TecReportImpRec
@@ -48,7 +48,6 @@ import com.card.lp_server.utils.JSQ3
 import com.card.lp_server.utils.convertBitmapToBinary
 import com.card.lp_server.utils.generateBitMapForLl
 import com.card.lp_server.utils.getPostParams
-import com.card.lp_server.utils.getQueryParams
 import com.card.lp_server.utils.responseJsonStringFail
 import com.card.lp_server.utils.responseJsonStringSuccess
 import fi.iki.elonen.NanoHTTPD
@@ -64,7 +63,6 @@ class PostRequestHandler : RequestHandlerStrategy {
     private val handlers = mapOf(
         //common
         UPDATE_DISPLAY to ::handleUpdateDisplay,
-        COMMON_WRITE to ::handleCommonWrite,
         COMMON_WRITE to ::handleCommonWrite,
         FIND_FILE_SIZE to ::handleFindFileSize,
         //dy
@@ -933,7 +931,7 @@ class PostRequestHandler : RequestHandlerStrategy {
     }
 
     private fun response(fromJson: RecordBean): NanoHTTPD.Response {
-        return if (fromJson.isEink == true) {
+        return if (fromJson.display == true) {
             val generateBitMapForLl = generateBitMapForLl(fromJson)
             val convertBitmapToBinary = convertBitmapToBinary(generateBitMapForLl)
             val updateEInk =
@@ -975,12 +973,11 @@ class PostRequestHandler : RequestHandlerStrategy {
         val fromJson = GsonUtils.fromJson(postParams, TagEntity::class.java)
             ?: return responseJsonStringFail("屏幕数据不能为空!")
         Log.d(TAG, "handleUpdateDisplay: $fromJson")
-        if (fromJson.fileName == null || fromJson.data == null) return responseJsonStringFail("参数不能为空")
-
         return try {
             val writeFile = LonbestCard.getInstance().writeFile(fromJson.fileName, fromJson.data)
-            if (writeFile)
+            if (writeFile){
                 responseJsonStringSuccess(true)
+            }
             else
                 responseJsonStringFail("操作失败")
         } catch (e: Exception) {

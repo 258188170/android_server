@@ -15,6 +15,7 @@ class LServer(port: Int = 9988) : NanoHTTPD(port) {
         RequestHandlerFactory()
     }
 
+
     override fun serve(session: IHTTPSession?): Response {
         Log.d(TAG, "线程 ${Thread.currentThread().name}")
         /*val findAndOpenHIDDevice =
