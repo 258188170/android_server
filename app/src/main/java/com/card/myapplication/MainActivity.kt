@@ -351,13 +351,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun testUpdateDisplay() {
-        val generateBitMapForLl = generateBitMapForLl(RecordBean(dyNumber = "123"))
-        val convertBitmapToBinary = convertBitmapToBinary(generateBitMapForLl)
+        lifecycleScope.launch(Dispatchers.IO) {
+            val generateBitMapForLl = generateBitMapForLl(RecordBean(dyNumber = "123"))
+            val convertBitmapToBinary = convertBitmapToBinary(generateBitMapForLl)
 //        requestPost(UPDATE_DISPLAY, TagEntity(data = convertBitmapToBinary))
 
-        val updateEInk =
-            LonbestCard.getInstance().updateEInk(convertBitmapToBinary)
-        Log.d(TAG, "testUpdateDisplay: updateEInk:$updateEInk")
+            val updateEInk =
+                LonbestCard.getInstance().updateEInk(convertBitmapToBinary)
+            Log.d(TAG, "testUpdateDisplay: updateEInk:$updateEInk")
+        }
 
     }
 
@@ -433,9 +435,23 @@ class MainActivity : AppCompatActivity() {
             if (data != null) {
                 val uri = data.data
                 if (uri != null) {
-                    requestPost(COMMON_WRITE, TagEntity(TEST_NAME, convertFileToByteArray(uri)))
+//                    requestPost(COMMON_WRITE, TagEntity(TEST_NAME, convertFileToByteArray(uri)))
+                    lifecycleScope.launch(Dispatchers.IO) {
+                        try {
+                            val writeFile = LonbestCard.getInstance()
+                                .writeFile(TEST_NAME, convertFileToByteArray(uri))
 
-//                    LonbestCard.getInstance().writeFile(TEST_NAME,convertFileToByteArray(uri))
+                            stringBuilder.append("是否写入成功: $writeFile \n")
+
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                            stringBuilder.append("异常: ${e.message} \n")
+                        } finally {
+                            dismiss("\n")
+                        }
+
+
+                    }
                 } else {
                     ToastUtils.showLong("获取文件失败")
                 }

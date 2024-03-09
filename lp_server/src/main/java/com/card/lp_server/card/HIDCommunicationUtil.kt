@@ -168,6 +168,7 @@ class HIDCommunicationUtil private constructor() {
     }
 
     fun readFromHID(buffer: ByteArray): Boolean {
+        Log.d(TAG, "readFromHID: vid:$vendorId  ->> pid:$vendorId")
         if (ensureHIDConnection()) {
             val endpoint = findHIDEndpoint(UsbConstants.USB_DIR_IN)
             if (endpoint != null) {
@@ -186,6 +187,7 @@ class HIDCommunicationUtil private constructor() {
     }
 
     fun writeToHID(buffer: ByteArray): Boolean {
+        Log.d(TAG, "writeToHID: vid:$vendorId  ->> pid:$vendorId")
         if (ensureHIDConnection()) {
             val endpoint = findHIDEndpoint(UsbConstants.USB_DIR_OUT)
             if (endpoint != null) {
@@ -231,6 +233,7 @@ class HIDCommunicationUtil private constructor() {
                     endpoint?.type == UsbConstants.USB_ENDPOINT_XFER_INT &&
                     endpoint.direction == direction
                 ) {
+                    Log.d(TAG, "findHIDEndpoint: $endpoint")
                     return endpoint
                 }
             }
