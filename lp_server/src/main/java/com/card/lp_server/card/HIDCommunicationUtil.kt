@@ -168,12 +168,14 @@ class HIDCommunicationUtil private constructor() {
     }
 
     fun readFromHID(buffer: ByteArray): Boolean {
-        Log.d(TAG, "readFromHID: vid:$vendorId  ->> pid:$vendorId")
+        Log.d(TAG, "readFromHID: vid:$vendorId  ->> pid:$productId")
         if (ensureHIDConnection()) {
             val endpoint = findHIDEndpoint(UsbConstants.USB_DIR_IN)
             if (endpoint != null) {
                 val bytesRead =
                     usbConnection?.bulkTransfer(endpoint, buffer, buffer.size, TIMEOUT) ?: 0
+                Log.d(TAG, "readFromHID: endpoint-->$endpoint")
+                Log.d(TAG, "readFromHID:bytesRead--> $bytesRead")
                 if (bytesRead > 0) {
                     return true
                 } else {
@@ -187,12 +189,14 @@ class HIDCommunicationUtil private constructor() {
     }
 
     fun writeToHID(buffer: ByteArray): Boolean {
-        Log.d(TAG, "writeToHID: vid:$vendorId  ->> pid:$vendorId")
+        Log.d(TAG, "writeToHID: vid:$vendorId  ->> pid:$productId")
         if (ensureHIDConnection()) {
             val endpoint = findHIDEndpoint(UsbConstants.USB_DIR_OUT)
             if (endpoint != null) {
                 val bytesWritten =
                     usbConnection?.bulkTransfer(endpoint, buffer, buffer.size, TIMEOUT) ?: 0
+                Log.d(TAG, "readFromHID: endpoint-->$endpoint")
+                Log.d(TAG, "readFromHID:bytesWritten--> $bytesWritten")
                 if (bytesWritten > 0) {
                     return true
                 } else {
@@ -247,7 +251,7 @@ class HIDCommunicationUtil private constructor() {
         val ACTION_USB_PERMISSION: String = "${AppUtils.getAppPackageName()}.USB_PERMISSION"
         val VID_PID = arrayListOf("1155-22352", "1155-22336", "1155-22320", "6790-58409")
 
-        private const val TIMEOUT = 1000 // 5 seconds timeout
+        private const val TIMEOUT = 3000 // 5 seconds timeout
         val instance: HIDCommunicationUtil by lazy {
             val hidCommunicationUtil = HIDCommunicationUtil()
             hidCommunicationUtil
