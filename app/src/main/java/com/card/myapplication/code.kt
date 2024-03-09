@@ -15,6 +15,7 @@ import rxhttp.wrapper.ssl.HttpsUtils
 import java.net.ConnectException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
+import java.time.Duration
 import java.util.concurrent.TimeoutException
 import javax.net.ssl.HostnameVerifier
 import javax.net.ssl.SSLSession
@@ -28,10 +29,14 @@ val LifecycleOwner.lifecycleScope: LifecycleCoroutineScope
 fun init() {
     val sslParams = HttpsUtils.getSslSocketFactory()
     val client: OkHttpClient = OkHttpClient.Builder()
+        .connectTimeout(duration = Duration.ofSeconds(5))
+        .readTimeout(duration = Duration.ofSeconds(120))
+        .writeTimeout(duration = Duration.ofSeconds(300))
         .sslSocketFactory(sslParams.sSLSocketFactory, sslParams.trustManager) //添加信任证书
         .hostnameVerifier(HostnameVerifier { _: String?, _: SSLSession? -> true }) //忽略host验证
         .build()
     RxHttpPlugins.init(client) //自定义OkHttpClient对象
+
         .setDebug(BuildConfig.DEBUG, false, 2) //调试模式/分段打印/json数据格式化输出
         .setOnParamAssembly { }
 }
