@@ -1,6 +1,7 @@
 package com.card.myapplication
 
 import android.app.ProgressDialog
+import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -24,6 +25,7 @@ import com.blankj.utilcode.util.NetworkUtils
 import com.blankj.utilcode.util.ToastUtils
 import com.card.lp_server.card.device.LonbestCard
 import com.card.lp_server.model.TagEntity
+import com.card.lp_server.model.Types
 import com.card.lp_server.nfc.NFCManager
 import com.card.lp_server.nfc.nfcAuthIsSuccess
 import com.card.lp_server.nfc.nfcReadData
@@ -65,10 +67,15 @@ import com.card.lp_server.server.ConstantsPath.READ_FILE
 import com.card.lp_server.server.ConstantsPath.TAG_INFO
 import com.card.lp_server.server.ConstantsPath.TAG_VERSION
 import com.card.lp_server.server.ConstantsPath.UPDATE_DISPLAY
+import com.card.lp_server.server.PostRequestHandler
 
 import com.card.lp_server.utils.JSQ1
 import com.card.lp_server.utils.convertBitmapToBinary
 import com.card.lp_server.utils.generateBitMapForLl
+import com.card.lp_server.utils.generateBitMapForLlFormat
+import com.card.lp_server.utils.responseJsonStringFail
+import com.card.lp_server.utils.responseJsonStringSuccess
+import com.card.lp_server.utils.stringConvertToList
 import com.drake.brv.annotaion.DividerOrientation
 import com.drake.brv.utils.divider
 import com.drake.brv.utils.grid
@@ -91,7 +98,7 @@ class MainActivity : AppCompatActivity() {
         private const val TAG = "MainActivity"
         private const val PICK_FILE_REQUEST_CODE = 1
         private const val REQUEST_READ_EXTERNAL_STORAGE = 2
-        private  var TEST_NAME = "履历信息"
+        private var TEST_NAME = "履历信息"
     }
 
     private val progressDialog by lazy {
@@ -128,7 +135,7 @@ class MainActivity : AppCompatActivity() {
         tvFileList = findViewById(R.id.tvFileList)
         scroll = findViewById(R.id.scroll)
         val rv = findViewById<RecyclerView>(R.id.rv)
-        rv.grid(spanCount = 2).divider{
+        rv.grid(spanCount = 2).divider {
             setDrawable(R.drawable.diver)
             orientation = DividerOrientation.GRID
         }.setup {
@@ -219,15 +226,77 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun clearTag() {
-        requestGet(CLEAR_TAG)
+//        requestGet(CLEAR_TAG)
+        show("")
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val listFiles = LonbestCard.getInstance().listFiles()
+                val stringConvertToList = stringConvertToList(listFiles)
+                stringConvertToList.forEach {
+                    val tag = LonbestCard.getInstance().deleteFile(it)
+                    if (!tag) {
+                        stringBuilder.append("删除文件失败\n")
+                        return@launch
+                    }
+                }
+                val generateBitMapForLlFormat = generateBitMapForLlFormat()
+                val convertBitmapToBinary = convertBitmapToBinary(generateBitMapForLlFormat)
+                Log.d(ContentValues.TAG, "handleClearTag: ${convertBitmapToBinary.size}")
+                val updateEInk = LonbestCard.getInstance().updateEInk(convertBitmapToBinary)
+                stringBuilder.append("是否清除成功: $updateEInk \n")
+            } catch (e: Exception) {
+                e.printStackTrace()
+                stringBuilder.append("异常: ${e.message} \n")
+            } finally {
+                dismiss("\n")
+            }
+
+        }
+
     }
 
     fun listFiles() {
-        requestGet(LIST_FILES)
+        show("\n")
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val writeFile1 = LonbestCard.getInstance()
+                    .listFiles()
+                stringBuilder.append("文件列表: ${stringConvertToList(writeFile1)} \n")
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+                stringBuilder.append("异常: ${e.message} \n")
+            } finally {
+                dismiss("\n")
+            }
+
+
+        }
+
+
+//        requestGet(LIST_FILES)
     }
 
     fun deleteFile() {
-        requestGet("$DELETE_FILE?fileName=$TEST_NAME")
+//        requestGet("$DELETE_FILE?fileName=$TEST_NAME")
+        show("")
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val deleteFile = LonbestCard.getInstance()
+                    .deleteFile(TEST_NAME)
+                stringBuilder.append("删除文件是否成功: $deleteFile \n")
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+                stringBuilder.append("异常: ${e.message} \n")
+            } finally {
+                dismiss("\n")
+            }
+
+        }
+
+
     }
 
     fun tagInfo() {
@@ -235,19 +304,60 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun readFile() {
-        requestGet("$READ_FILE?fileName=$TEST_NAME")
+//        requestGet("$READ_FILE?fileName=$TEST_NAME")
+        show("")
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val readFile = LonbestCard.getInstance()
+                    .readFile(TEST_NAME)
+                stringBuilder.append("读取到的文件长度: ${readFile.size} \n")
+            } catch (e: Exception) {
+                e.printStackTrace()
+                stringBuilder.append("异常: ${e.message} \n")
+            } finally {
+                dismiss("\n")
+            }
+
+        }
+
     }
 
 
     fun addBaseInfo() {
-        requestPost(ADD_BASE_INFO, RecordBean(dyNumber = "555", display = true))
+        show("\n")
+        lifecycleScope.launch(Dispatchers.IO) {
+            val recordBean = RecordBean()
+            try {
+                val toByteArray = GsonUtils.toJson(RecordBean()).toByteArray()
+                val writeFile1 = LonbestCard.getInstance()
+                    .writeFile(Types.BASE_INFO.value, toByteArray)
+                stringBuilder.append("写入文件是否成功: $writeFile1 \n")
+                val generateBitMapForLl = generateBitMapForLl(recordBean)
+                val convertBitmapToBinary = convertBitmapToBinary(generateBitMapForLl)
+                val updateEInk =
+                    LonbestCard.getInstance().updateEInk(convertBitmapToBinary)
+                stringBuilder.append("刷屏是否成功: $updateEInk \n")
+            } catch (e: Exception) {
+                e.printStackTrace()
+                stringBuilder.append("异常: ${e.message} \n")
+            } finally {
+                dismiss("\n")
+            }
+
+
+        }
+
+//        requestPost(ADD_BASE_INFO, RecordBean(dyNumber = "555", display = true))
     }
 
     fun testUpdateDisplay() {
         val generateBitMapForLl = generateBitMapForLl(RecordBean(dyNumber = "123"))
         val convertBitmapToBinary = convertBitmapToBinary(generateBitMapForLl)
-        requestPost(UPDATE_DISPLAY, TagEntity(data = convertBitmapToBinary))
+//        requestPost(UPDATE_DISPLAY, TagEntity(data = convertBitmapToBinary))
 
+        val updateEInk =
+            LonbestCard.getInstance().updateEInk(convertBitmapToBinary)
+        Log.d(TAG, "testUpdateDisplay: updateEInk:$updateEInk")
 
     }
 
@@ -285,7 +395,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun show(str: String) {
+    private fun show(str: String?) {
         progressDialog.show()
         stringBuilder.append(str)
         tvFileList.text = stringBuilder

@@ -80,5 +80,6 @@ dependencies {
 
     implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.3.1")
     implementation("com.github.liangjingkanji:BRV:1.5.8")
+    implementation("com.github.getActivity:Logcat:11.85")
 
 }
