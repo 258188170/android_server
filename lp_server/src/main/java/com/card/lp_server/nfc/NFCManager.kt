@@ -103,37 +103,37 @@ fun IsoDep.nfcAuthIsSuccess(
         return false
     }
     //选择目录 df05
-    val nfcTransceive1 =
+    val dirResponse =
         nfcTransceive(RequestApdu(INS = 0xa4, LC = 0x02, DATA = ConvertUtils.hexString2Bytes(dir)))
-    if (!nfcTransceive1.checkSW()) {
+    if (!dirResponse.checkSW()) {
         Log.d(TAG, "nfcAuthIsSuccess: 选择目录 $dir 失败!")
         return false
     }
     //选择文件 ef31
-    val nfcTransceive2 =
+    val fileResponse =
         nfcTransceive(RequestApdu(INS = 0xa4, LC = 0x02, DATA = ConvertUtils.hexString2Bytes(file)))
-    if (!nfcTransceive2.checkSW()) {
+    if (!fileResponse.checkSW()) {
         Log.d(TAG, "nfcAuthIsSuccess: 选择文件 $file 失败!")
         return false
     }
     //获取 8 字节随机数
-    val nfcTransceive3 = nfcTransceive(
+    val randomResponse = nfcTransceive(
         RequestApdu(INS = 0x84, LC = 0x08)
     )
-    if (!nfcTransceive3.checkSW()) {
+    if (!randomResponse.checkSW()) {
         Log.d(TAG, "nfcAuthIsSuccess: 获取 8 字节随机数失败!")
         return false
     }
-    if (nfcTransceive3.body == null || nfcTransceive.body == null)
+    if (randomResponse.body == null || nfcTransceive.body == null)
         return false
     //3DES加密
     val tagA =
-        encrypt3DES(nfcTransceive.body!!, key, nfcTransceive3.body!!)
+        encrypt3DES(nfcTransceive.body!!, key, randomResponse.body!!)
     ///拼接密钥和随机数
     val toMutableList = tagA.toMutableList()
-    toMutableList.addAll(nfcTransceive3.body!!.toMutableList())
+    toMutableList.addAll(randomResponse.body!!.toMutableList())
     ///认证
-    val nfcTransceive4 = nfcTransceive(
+    val auth = nfcTransceive(
         RequestApdu(
             CLA = 0x00,
             INS = 0x82,
@@ -143,9 +143,9 @@ fun IsoDep.nfcAuthIsSuccess(
         )
     )
     Log.d(
-        TAG, "认证是否成功 ${nfcTransceive4.checkSW()}"
+        TAG, "认证是否成功 ${auth.checkSW()}"
     )
-    return nfcTransceive4.checkSW()
+    return auth.checkSW()
 }
 
 fun IsoDep.nfcWrite(data: ByteArray): Boolean {
