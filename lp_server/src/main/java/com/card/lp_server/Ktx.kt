@@ -17,6 +17,7 @@ val mAppContext: Application by lazy { Ktx.app }
 val mAppContainer: AppContainer by lazy {
     AppDataContainer()
 }
+
 val mLpServer by lazy {
     LServer()
 }

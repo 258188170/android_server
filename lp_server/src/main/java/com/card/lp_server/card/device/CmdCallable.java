@@ -36,7 +36,8 @@ class CmdCallable implements Callable<Pair<Boolean, byte[]>> {
         if (!command.isCmdStates() || !isSuccess) {
             Log.d(TAG, "命令执行失败-->cmdName:" + command.getCmdName() + "---fileName-->" + command.getFileName());
 //            return new Pair<Boolean, byte[]>(false, null);
-            return new Pair<Boolean, byte[]>(false, null);
+//            return new Pair<Boolean, byte[]>(false, null);
+            throw new RuntimeException("命令执行失败-->cmdName:" + command.getCmdName() + "---fileName-->" + command.getFileName());
         } else {
             Log.d(TAG, "命令执行成功-> cmdName:" + command.getCmdName() + "----fileName-->" + command.getFileName() + "  字节数组长度:" + (null != command.getBytes() ? command.getBytes().length : 0));
             return new Pair<Boolean, byte[]>(true, command.getBytes());

@@ -37,7 +37,8 @@ public class LonbestCard extends VendorDevice {
         return SingletonHelper.INSTANCE;
     }
 
-    ExecutorService mExecutor = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
+    ExecutorService mExecutor = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS,
+            new LinkedBlockingQueue<Runnable>());
 
     private static boolean isOpen = false;
     //一次传输最大数据64K（原63K）1024 * 63
@@ -57,9 +58,11 @@ public class LonbestCard extends VendorDevice {
         isOpen = connect.getFirst();
         return connect;
     }
+
     private boolean checkConnect() {
         return HIDCommunicationUtil.Companion.getInstance().setDevice(6790, 58409).findAndOpenHIDDevice();
     }
+
     public void close() {
         HIDCommunicationUtil.Companion.getInstance().closeUSBConnection();
     }
