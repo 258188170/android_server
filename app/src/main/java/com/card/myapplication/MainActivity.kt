@@ -601,19 +601,23 @@ class MainActivity : AppCompatActivity() {
     fun testnfc() {
         Log.d(TAG, "nfc: 开始")
         NFCManager.startSession {
-            val nfcAuthIsSuccess = it.nfcAuthIsSuccess()
-            Log.d(TAG, "nfc: $nfcAuthIsSuccess")
-            if (nfcAuthIsSuccess) {
-                val toJson = GsonUtils.toJson(RecordBean())
-                val nfcWrite = it.nfcWrite(toJson.toByteArray())
+            try {
+                val nfcAuthIsSuccess = it.nfcAuthIsSuccess()
+                Log.d(TAG, "nfc: $nfcAuthIsSuccess")
+                if (nfcAuthIsSuccess) {
+                    val toJson = GsonUtils.toJson(RecordBean())
+                    val nfcWrite = it.nfcWrite(toJson.toByteArray())
 
-                Log.d(TAG, "testnfc: nfcWrite-->$nfcWrite")
-                val nfcReadData = it.nfcReadData(0, toJson.toByteArray().size)
-                if (nfcReadData != null) {
-                    Log.d(TAG, "testnfc: ${ConvertUtils.bytes2String(nfcReadData)}")
+                    Log.d(TAG, "testnfc: nfcWrite-->$nfcWrite")
+                    val nfcReadData = it.nfcReadData(0, toJson.toByteArray().size)
+                    if (nfcReadData != null) {
+                        Log.d(TAG, "testnfc: ${ConvertUtils.bytes2String(nfcReadData)}")
+                    }
                 }
+                NFCManager.stopSession()
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
-            NFCManager.stopSession()
         }
     }
 }

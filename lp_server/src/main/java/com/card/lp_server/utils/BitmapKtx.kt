@@ -14,41 +14,24 @@ import com.blankj.utilcode.util.TimeUtils
 import com.card.lp_server.room.entity.RecordBean
 
 
-fun generateBitMapForLl(): Bitmap {
-    val mCurrentPaint = TextPaint()
-    mCurrentPaint.color = Color.BLACK
-    mCurrentPaint.textAlign = Paint.Align.LEFT
-    mCurrentPaint.textSize = 15f
-    val bitmap = Bitmap.createBitmap(480, 280, Bitmap.Config.ARGB_8888)
-    val canvas = Canvas(bitmap)
-    val zbxhmc = "长剑-20导弹"
-    val dybh = "CJ2390007"
-    val zldj = "新品"
-    val ccrq = "2023-10-12"
-    canvas.drawText("弹药型号：$zbxhmc", 25f, (70 + 20).toFloat(), mCurrentPaint)
-    canvas.drawText("弹药编号：$dybh", 25f, (110 + 20).toFloat(), mCurrentPaint)
-    canvas.drawText("质量等级：$zldj", 25f, (150 + 20).toFloat(), mCurrentPaint)
-    canvas.drawText("军检验收日期：$ccrq", 25f, (190 + 20).toFloat(), mCurrentPaint)
-    val time = TimeUtils.getNowString()
-    Log.d("TAG", "generateBitMapForLltest: 更新时间$time")
-    val qrImg = createQRCode("$zbxhmc#$dybh#$zldj#$ccrq#$time#")
-    canvas.drawBitmap(qrImg, 230f, 20f, mCurrentPaint)
-    canvas.save()
-    canvas.rotate(90f)
-    return bitmap
-}
 
-
+val textArray = arrayOf(
+    "导弹型号：%s",
+    "导弹弹号：%s",
+    "质量等级：%s",
+    "军检验收日期：%s",
+    "总挂飞架次：%s",
+    "总通电时间：%s"
+)
+val bitmapWidth = 480
+val bitmapHeight = 280
+val bitmap = Bitmap.createBitmap(bitmapWidth, bitmapHeight, Bitmap.Config.ARGB_8888)
 fun generateBitMapForLl(recordBean: RecordBean): Bitmap {
     val paint = TextPaint().apply {
         color = Color.BLACK
         textAlign = Paint.Align.LEFT
         textSize = 15f
     }
-
-    val bitmapWidth = 480
-    val bitmapHeight = 280
-    val bitmap = Bitmap.createBitmap(bitmapWidth, bitmapHeight, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(bitmap)
 
     val canvasHeight = bitmapHeight
@@ -60,20 +43,13 @@ fun generateBitMapForLl(recordBean: RecordBean): Bitmap {
     // Calculate the starting x-coordinate for drawText
     val textX = 20
 
+    val qrImg: Bitmap = createQRCode(recordBean)
+
     // Calculate the starting x-coordinate for drawBitmap
-    val bitmapX = bitmapWidth - 20 - createQRCode(GsonUtils.toJson(recordBean)).width
+    val bitmapX = bitmapWidth - 20 - qrImg.width
 
     // Calculate the starting y-coordinate for both drawText and drawBitmap
     var y = 10 + verticalPadding
-
-    val textArray = arrayOf(
-        "导弹型号：%s",
-        "导弹弹号：%s",
-        "质量等级：%s",
-        "军检验收日期：%s",
-        "总挂飞架次：%s",
-        "总通电时间：%s"
-    )
 
     textArray.forEachIndexed { index, format ->
         // Draw text with left margin and vertically centered
@@ -85,9 +61,6 @@ fun generateBitMapForLl(recordBean: RecordBean): Bitmap {
         )
         y += lineHeight
     }
-
-    val qrImg: Bitmap = createQRCode(GsonUtils.toJson(recordBean))
-
     // Calculate the vertical position to center the qrImg
     val qrImgVerticalPosition = (bitmapHeight - qrImg.height) / 2.toFloat()
 
@@ -112,8 +85,22 @@ private fun getValueAtIndex(recordBean: RecordBean, index: Int): String {
 }
 
 
-fun createQRCode(str: String?): Bitmap {
-    val encode = LPEncodeUtil.getInstance().encode(str, 3, 2, 3)
+fun createQRCode(recordBean: RecordBean): Bitmap {
+    val toJson = GsonUtils.toJson(recordBean)
+    val fromJson = GsonUtils.fromJson(toJson, RecordBean::class.java)
+    fromJson.codeUpRecs = null
+    fromJson.equMatches = null
+    fromJson.equReplaceRecs = null
+    fromJson.gasUpRecs = null
+    fromJson.gjzbRecs = null
+    fromJson.hdRecs = null
+    fromJson.importantNotes = null
+    fromJson.mtRecs = null
+    fromJson.poweronRecs = null
+    fromJson.repairRecs = null
+    fromJson.sftReplaceRecs = null
+    fromJson.tecReportImpRecs = null
+    val encode = LPEncodeUtil.getInstance().encode(GsonUtils.toJson(fromJson), 3, 2, 3)
     return BitmapFactory.decodeByteArray(encode, 0, encode.size)
 }
 

@@ -12,6 +12,7 @@ import com.card.lp_server.mAppContext
 import com.card.lp_server.model.RequestApdu
 import com.card.lp_server.model.ResponseApdu
 import com.card.lp_server.utils.encrypt3DES
+import kotlin.jvm.Throws
 
 private const val TAG = "NFCManager"
 
@@ -31,7 +32,7 @@ object NFCManager {
     fun onResume(activity: Activity) {
         val pendingIntent = PendingIntent.getActivity(
             activity, 0, Intent(activity, javaClass).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP),
-            PendingIntent.FLAG_MUTABLE
+            PendingIntent.FLAG_IMMUTABLE
         )
         NfcAdapter.getDefaultAdapter(activity)
             ?.enableForegroundDispatch(activity, pendingIntent, null, null)
@@ -94,27 +95,28 @@ fun IsoDep.nfcAuthIsSuccess(
     file: String = "ef31",
     key: String = "4C010101010101010101010101010143"
 ): Boolean {
-
     ///获取 8 字卡号
     val nfcTransceive = nfcTransceive(RequestApdu(INS = 0xb0, P1 = 0x81, P2 = 0x02, LE = 0x08))
 
     if (!nfcTransceive.checkSW()) {
-        Log.d(TAG, "nfcAuthIsSuccess: 获取卡号失败")
-        return false
+        Log.d(TAG, "nfcAuthIsSuccess: 获取卡号失败!")
+        throw RuntimeException("获取卡号失败")
     }
     //选择目录 df05
     val dirResponse =
         nfcTransceive(RequestApdu(INS = 0xa4, LC = 0x02, DATA = ConvertUtils.hexString2Bytes(dir)))
     if (!dirResponse.checkSW()) {
         Log.d(TAG, "nfcAuthIsSuccess: 选择目录 $dir 失败!")
-        return false
+        throw RuntimeException("选择目录 $dir 失败!")
+//        return false
     }
     //选择文件 ef31
     val fileResponse =
         nfcTransceive(RequestApdu(INS = 0xa4, LC = 0x02, DATA = ConvertUtils.hexString2Bytes(file)))
     if (!fileResponse.checkSW()) {
         Log.d(TAG, "nfcAuthIsSuccess: 选择文件 $file 失败!")
-        return false
+        throw RuntimeException(" 选择文件 $file 失败!")
+//        return false
     }
     //获取 8 字节随机数
     val randomResponse = nfcTransceive(
@@ -122,7 +124,8 @@ fun IsoDep.nfcAuthIsSuccess(
     )
     if (!randomResponse.checkSW()) {
         Log.d(TAG, "nfcAuthIsSuccess: 获取 8 字节随机数失败!")
-        return false
+        throw RuntimeException(" 获取 8 字节随机数失败!")
+//        return false
     }
     if (randomResponse.body == null || nfcTransceive.body == null)
         return false
@@ -145,7 +148,11 @@ fun IsoDep.nfcAuthIsSuccess(
     Log.d(
         TAG, "认证是否成功 ${auth.checkSW()}"
     )
-    return auth.checkSW()
+    if (auth.checkSW()) {
+        return true
+    } else {
+        throw RuntimeException(" 认证失败!")
+    }
 }
 
 fun IsoDep.nfcWrite(data: ByteArray): Boolean {
