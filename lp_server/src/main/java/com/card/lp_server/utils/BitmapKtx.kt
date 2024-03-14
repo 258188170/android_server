@@ -100,6 +100,7 @@ fun createQRCode(recordBean: RecordBean): Bitmap {
     fromJson.repairRecs = null
     fromJson.sftReplaceRecs = null
     fromJson.tecReportImpRecs = null
+    Log.d(TAG, "createQRCode: ${GsonUtils.toJson(fromJson)}")
     val encode = LPEncodeUtil.getInstance().encode(GsonUtils.toJson(fromJson), 3, 2, 3)
     return BitmapFactory.decodeByteArray(encode, 0, encode.size)
 }

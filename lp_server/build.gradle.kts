@@ -51,19 +51,17 @@ android {
         }
     }
 
-//    sourceSets.getByName("main") {
-//        jniLibs.setSrcDirs(listOf("libs"))
-//
-//    }
+
 }
 
 
 dependencies {
-    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar","*.aar",))))
+    api(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar","*.aar"))))
     implementation("androidx.core:core-ktx:1.10.1")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.9.0")
     implementation("androidx.lifecycle:lifecycle-process:2.7.0")
+    implementation(files("libs/LPEncode.jar"))
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
