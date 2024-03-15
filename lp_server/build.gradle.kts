@@ -82,4 +82,6 @@ dependencies {
 
     api("org.nanohttpd:nanohttpd:2.3.1")
     api("com.blankj:utilcodex:1.31.1")
+    implementation("com.github.258188170:lp_scan_zxing:1.0.0")
+
 }
