@@ -4,11 +4,8 @@ plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
     id("kotlin-kapt")
-    id("com.github.dcendents.android-maven")
 
 }
-
-group = "com.github.258188170"
 
 
 android {
@@ -59,7 +56,7 @@ android {
 
 
 dependencies {
-    api(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar","*.aar"))))
+    compileOnly(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar","*.aar"))))
     implementation("androidx.core:core-ktx:1.10.1")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.9.0")
